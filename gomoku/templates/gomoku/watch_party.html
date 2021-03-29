@@ -1,0 +1,58 @@
+{% extends 'gomoku_base.html' %}
+
+{% load static %}
+
+{% block title %}{{ party.player1 }} против {{ party.player2 }}{% endblock %}
+
+{% block content %}
+    <div class="alert">
+        <h3></h3>
+        <a class="close">&times;</a>
+    </div>
+    <div class="watch_party">
+        <div class="gomoku">
+            <div class="field">
+                <div class="column column-numbers">
+                    {% for i in count %}
+                        <div>{{ i }}</div>
+                    {% endfor %}
+                </div>
+                {% for i in letters %}
+                    <div class="column">
+                        {% for j in count %}
+                            <div class="dot" id="{{ i }}{{ j }}"></div>
+                        {% endfor %}
+                        <div class="letter">{{ i }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="grid">
+                {% for i in count14 %}
+                    <div class="row">
+                        {% for j in count14 %}
+                            <div class="cell"></div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="control-buttons">
+            <button title="Первый ход" id="first_move">&laquo;</button>
+            <button title="Предыдущий ход" id="pre_move">&lsaquo;</button>
+            <button title="Следующий ход" id="next_move">&rsaquo;</button>
+            <button title="Последний ход" id="last_move">&raquo;</button>
+        </div>
+    </div>
+    <script>
+        let moves = [
+            {% for move in party.get_moves %}
+                {
+                    player: "{{ move.player }}",
+                    coordinate: "{{ move.coordinate }}",
+                },
+            {% endfor %}
+        ];
+    </script>
+    <script src="{% static 'js/gomoku_tools.js' %}"></script>
+    <script src="{% static 'js/gomoku/watch_party.js' %}"></script>
+{% endblock %}

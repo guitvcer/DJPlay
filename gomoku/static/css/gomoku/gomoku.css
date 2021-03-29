@@ -1,0 +1,348 @@
+main {
+    justify-content: space-between;
+}
+
+.field {
+    display: flex;
+    flex-direction: row;
+}
+
+.dot {
+    width: 33px;
+    height: 33px;
+    margin-right: 16px;
+    margin-bottom: 16px;
+    border-radius: 100px;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    cursor: pointer;
+    opacity: 0;
+}
+.dot:hover, .blue-dot, .dot:focus {
+    opacity: 100%;
+    border: #393e46 1px solid;
+    border-radius: 100px;
+    background: #393e46;
+    color: #f7f7f7;
+    outline: none;
+}
+
+.white-dot:hover, .white-dot {
+    opacity: 100%;
+    background: white;
+    color: #393e46;
+    border: #393e46 1px solid;
+}
+
+.new_move {
+    background: #e48257 !important;
+}
+
+.row_move {
+    background: #f7a7a3;
+    color: #393e46;
+}
+
+.column {
+    padding-top: 5px;
+    z-index: 1000;
+}
+.column-numbers {
+    padding-top: 6px;
+}
+
+.column .dot:last-child {
+    margin-bottom: 0;
+}
+.column:last-child .dot {
+    margin-right: 0;
+}
+
+.letter {
+    padding-top: 15px;
+    padding-left: 8px;
+    font-size: 22px;
+}
+
+.column-numbers div {
+    margin-right: 25px;
+    margin-bottom: 22px;
+    font-size: 23px;
+}
+.column-numbers div:last-child {
+    margin-bottom: 0;
+}
+
+.grid {
+    border-right: #393e46 1px solid;
+    border-top: #393e46 1px solid;
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 64px;
+}
+.cell {
+    width: 49px;
+    height: 49px;
+    border-left: #393e46 1px solid;
+    border-bottom: #393e46 1px solid;
+    background: #f7f7f7;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.half-main {
+    width: 50%;
+    margin-left: 50px;
+    padding-top: 15px;
+}
+
+.start {
+    background: #393e46;
+    width: 100%;
+    height: 100%;
+    max-width: 700px;
+    margin: auto;
+    padding: 90px 60px 90px 60px;
+    color: #f7f7f7;
+    border-radius: 10px;
+    line-height: 27px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+}
+.start p {
+    font-size: 20px;
+    display: block;
+    width: 100%;
+    margin-bottom: 20px
+}
+.start button {
+    display: block;
+    width: 100%;
+}
+
+.findOpponentButton, .cancelWaitingButton, .giveUpButton {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: #f7f7f7;
+    font-size: 25px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #393e46;
+}
+.findOpponentButton:hover, .cancelWaitingButton, .giveUpButton {
+    background: #eeeeee;
+}
+
+.gomoku {
+    width: 100%;
+    max-width: 1800px;
+    display: flex;
+    margin: auto;
+    justify-content: space-between;
+    padding-left: 50px;
+}
+
+
+
+
+.watch_party {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.watch_party .control-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 100px;
+}
+.watch_party .control-buttons button {
+    font-size: 40px;
+    padding: 20px 50px 28px 50px;
+    cursor: pointer;
+    border-width: 0;
+    background: #393e46;
+    color: #f7f7f7;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-radius: 5px;
+}
+.watch_party .control-buttons button:hover {
+    background: #31373f;
+}
+
+
+@media (max-width: 1500px) {
+    .gomoku {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        width: 100%;
+        max-width: none;
+    }
+    .half-main {
+        width: 100%;
+        margin: 0 0 0 50px;
+    }
+    .start p {
+        margin-bottom: 50px;
+    }
+    .letter, .column-numbers div {
+        display: none;
+    }
+    .grid {
+        margin-left: 0;
+    }
+    .field {
+        position: relative;
+        top: 30px;
+    }
+    .half-main {
+        margin-left: 0;
+    }
+
+    .watch_party {
+        flex-direction: column;
+    }
+    .watch_party .gomoku {
+        padding-left: 0;
+    }
+    .watch_party .control-buttons {
+        margin-top: 50px;
+    }
+}
+
+@media (max-width: 900px) {
+    .gomoku {
+        padding: 50px 30px 50px 30px;
+    }
+    .half-main, .start {
+        width: 100%;
+    }
+    * {
+        font-size: 14px;
+    }
+    .start p {
+        font-size: 16px;
+        line-height: 22px;
+    }
+    .start {
+        padding: 40px;
+    }
+    .findOpponentButton, .cancelWaitingButton, .giveUpButton {
+        font-size: 18px;
+    }
+    .account .loginRegistration {
+        display: none;
+    }
+    .account .burgerMenu {
+        display: block;
+    }
+    header {
+        padding: 15px 50px 15px 50px;
+    }
+    .account .username {
+        display: none;
+    }
+    .account img {
+        width: 50px;
+        height: 50px;
+    }
+    .cell:not(.watch_party .cell) {
+        width: 25px;
+        height: 25px;
+    }
+    .dot:not(.watch_party .dot) {
+        width: 17px;
+        height: 17px;
+        font-size: 0;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+    .letter, .column-numbers div {
+        display: none;
+    }
+    .field:not(.watch_party .field) {
+        margin-left: 18px;
+        position: relative;
+        top: 16px;
+        right: 9px;
+    }
+    .grid:not(.watch_party .grid) {
+        margin: 10px 0 0 0;
+    }
+    .half-main {
+        margin-left: 0;
+    }
+
+    .watch_party {
+        margin-top: 50px;
+    }
+    .watch_party .cell {
+        width: 36px;
+        height: 36px;
+    }
+    .watch_party .dot {
+        width: 25px;
+        height: 25px;
+        font-size: 0;
+        margin-right: 11px;
+        margin-bottom: 11px;
+        display: block;
+    }
+    .watch_party .field {
+        margin-left: 20px;
+        position: relative;
+        top: 23px;
+        right: 9px;
+    }
+
+    .control-buttons button {
+        font-size: 30px !important;
+        padding: 15px 35px 15px 35px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .gomoku {
+        padding: 0 10px 50px 10px;
+    }
+
+    .watch_party .cell {
+        width: 25px;
+        height: 25px;
+    }
+    .watch_party .dot {
+        width: 17px;
+        height: 17px;
+        font-size: 0;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+    .watch_party .field {
+        margin-left: 18px;
+        position: relative;
+        top: 16px;
+        right: 9px;
+    }
+    .watch_party .grid {
+        margin: 10px 0 0 0;
+    }
+
+    .control-buttons button {
+        font-size: 20px !important;
+        padding: 20px 35px 20px 35px !important;
+    }
+}

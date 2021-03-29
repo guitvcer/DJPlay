@@ -1,0 +1,18 @@
+{% extends 'account/base.html' %}
+
+{% load static %}
+
+{% block title %}Вход в аккаунт{% endblock %}
+
+{% block content %}
+    <h1>Вход в аккаунт</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <input type="submit" value="Войти" class="submit">
+    </form>
+    <a href="{% url 'account:registration' %}">Нету аккаунта? Зарегистрируйтесь!</a><br>
+    <a href="/">Главная страница</a>
+    <script src="{% static 'js/tools.js' %}"></script>
+{% endblock %}

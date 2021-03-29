@@ -1,0 +1,25 @@
+{% load static %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                simple-alert
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                success-alert
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                warning-alert
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                danger-alert
+            {% endif %}">
+            {% autoescape off %}
+                <h3>{{ message }}</h3>
+            {% endautoescape %}
+            <a class="close">&times;</a>
+        </div>
+    {% endfor %}
+    <script src="{% static 'js/tools.js' %}"></script>
+    <script>
+        setEventForClose();
+    </script>
+{% endif %}

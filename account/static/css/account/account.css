@@ -1,0 +1,480 @@
+.image {
+    width: 250px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.image h2 {
+    font-size: 40px;
+}
+
+.game-card {
+    background: #f7f7f7;
+    height: 500px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.game-card:hover {
+    background: white;
+}
+
+.play_button {
+    text-decoration: none;
+    border-radius: 5px;
+    padding: 10px 14px 10px 14px;
+    font-size: 18px;
+    margin-top: 16px;
+    border: 1px solid #393e46;
+    color: #393e46;
+    background: white;
+}
+.play_button:hover {
+    background: #393e46;
+    color: #f7f7f7;
+}
+
+.game-card h3 {
+    font-size: 30px;
+    margin-top: 50px;
+}
+
+.profile {
+    margin: auto;
+    background: #f7f7f7;
+    width: 100%;
+    max-width: 1200px;
+    padding: 80px 50px 80px 50px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 100%;
+}
+.profile img {
+    display: block;
+    margin-bottom: 50px;
+}
+.user_data {
+    width: 65%;
+}
+.profile .user_data, .profile img {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.profile h2 {
+    margin-bottom: 50px;
+}
+.profile h3 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+.profile h4 {
+    line-height: 25px;
+    display: inline;
+}
+.profile img {
+    width: 320px;
+    height: 300px;
+    border-radius: 1000px;
+    margin-top: 35px;
+}
+.profile_buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+.profile a:not(.add_friend), .profile button {
+    display: block;
+    text-align: center;
+    width: 100%;
+    cursor: pointer;
+}
+.profile .row .column a {
+    display: inline;
+    background: none;
+    color: #393e46;
+    width: auto;
+    font-weight: bold;
+    text-decoration: none;
+    margin-top: 0;
+    font-size: 18px;
+}
+.profile .row .column a:hover {
+    text-decoration: underline;
+}
+
+.table {
+    margin-bottom: 20px;
+}
+.row {
+    display: flex;
+    padding-top: 5px;
+}
+.column {
+    width: 50%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+
+.profile input, #id_gender {
+    border: #393e46 1px solid;
+    border-radius: 5px;
+    padding: 6px 8px 6px 8px;
+    width: 100%;
+}
+#id_gender {
+    padding: 5px 8px 5px 8px;
+}
+.profile a, .profile button {
+    margin-top: 10px;
+}
+
+
+.profile a:first-child {
+    background: white;
+}
+
+.users_list_wrapper {
+    display: block;
+}
+.users_list_wrapper form {
+    width: 100%;
+    flex-direction: row;
+}
+.users_list_wrapper .input_submit input {
+    width: calc(100% - 80px);
+    border: #929aab 1px solid;
+    padding: 10px 15px 10px 15px;
+    background: white;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.users_list_wrapper button img {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    margin: auto;
+}
+.users_list_wrapper button {
+    width: 80px;
+    height: 50px;
+    background: #f0f2f5;
+    border: #929aab 1px solid;
+    border-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-left: none;
+    margin-top: 0;
+    cursor: pointer;
+}
+.input_submit {
+    display: flex;
+}
+.filters {
+    display: flex;
+    justify-content: flex-start;
+}
+.filters .checkbox {
+    display: flex;
+    align-items: center;
+    width: inherit !important;
+    padding: 15px;
+}
+.filters .checkbox input {
+    width: 23px !important;
+    height: 23px;
+    margin-left: 5px;
+}
+
+.users_list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+
+.active_user {
+    padding: 30px 20px 30px 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.active_user:hover {
+    background: white;
+}
+.active_user img {
+    width: 120px;
+    height: 120px;
+    margin: 0;
+    padding: 0;
+}
+.active_user a {
+    color: #393e46;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+.active_user a:hover {
+    text-decoration: underline;
+}
+.profile form[action='form'] {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.delete_profile form {
+    margin: auto;
+    margin-top: 0;
+    width: 100%;
+    max-width: 700px;
+}
+.delete_profile input {
+    padding: 11px 15px 11px 15px;
+    margin-top: 10px;
+}
+.delete_profile button {
+    cursor: pointer;
+}
+
+.link {
+    text-align: left !important;
+    color: #393e46;
+    text-decoration: none;
+    padding-top: 15px;
+    display: inline !important;
+}
+.link:hover {
+    text-decoration: underline;
+}
+
+
+.user_data h2 {
+    display: flex;
+    justify-content: space-between;
+}
+.add_friend {
+    margin: 0 !important;
+    font-weight: normal;
+    display: inline;
+}
+.add_friend:hover {
+    background: #393e46 !important;
+}
+
+#id_is_private {
+    margin-top: 10px;
+}
+
+.users_list h2 {
+    margin: auto;
+    font-size: 40px;
+}
+
+
+
+.parties .table {
+    width: 100%;
+    margin-top: 50px;
+}
+.parties .table a.table-row .table-column {
+    color: black;
+}
+.parties .table .table-row {
+    display: flex;
+    text-decoration: none;
+    margin-top: 0;
+    background: white;
+}
+.parties .table a.table-row:hover {
+    background: #fafafa;
+}
+.parties .table .table-row.table-header .table-column {
+    background: #393e46;
+    color: #f7f7f7;
+}
+.parties .table .table-row .table-column {
+    padding: 30px;
+    width: 25%;
+    text-align: center;
+}
+.parties .table .table-header {
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+.parties .table .table-header .table-column:first-child {
+    border-top-left-radius: 5px;
+}
+.parties .table .table-header .table-column:last-child {
+    border-top-right-radius: 5px;
+}
+.parties h2 {
+    margin-bottom: 0;
+}
+.parties .link {
+    font-size: 18px;
+}
+
+form[method='post'] {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+}
+.paginator {
+    display: flex;
+    flex-direction: row;
+}
+.paginator a {
+    font-size: 14px;
+    padding: 10px;
+    text-decoration: none;
+    background: #393e46 !important;
+    color: white;
+    border-radius: 5px;
+}
+.paginator a:hover {
+    background: #31373f !important;
+}
+.first_page {
+    margin-right: 10px;
+}
+.last_page {
+    margin-left: 10px;
+}
+.paginator div {
+    font-size: 14px;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    height: 36px;
+    position: relative;
+    top: 10px;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+.paginator-form input {
+    background: none;
+    color: white;
+    border: none;
+    padding: 0;
+    text-align: center;
+    width: 35px;
+    position: relative;
+    top: -2px;
+}
+
+
+#clear_image_field {
+    cursor: pointer;
+    display: inline;
+    padding: 12px 15px 12px 15px;
+    color: #393e46;
+    position: relative;
+    top: 30px;
+}
+#clear_image_field:hover {
+    color: black;
+    background: #eeeeee;
+    border-radius: 100px;
+}
+
+
+
+
+
+@media (max-width: 1200px) {
+    .profile {
+        padding: 40px 10px 40px 10px !important;
+    }
+    .profile .user_data {
+        width: 100%;
+    }
+    main {
+        height: 100%;
+    }
+    .profile {
+        height: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 900px) {
+    .profile img {
+        width: 280px;
+        height: 260px;
+    }
+    .active_user img {
+        width: 120px;
+        height: 120px;
+    }
+    .column {
+        font-size: 16px;
+    }
+}
+
+
+
+@media (max-width: 600px) {
+    .column {
+        width: 100%;
+    }
+    .row {
+        flex-direction: column;
+    }
+    .profile {
+        padding: 80px 10px 80px 10px;
+        height: 100%;
+    }
+    .profile img {
+        width: 220px;
+        height: 200px;
+    }
+    .active_user img {
+        width: 60px;
+        height: 60px;
+    }
+    .users_list {
+        flex-direction: column;
+    }
+    .active_user {
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 10px 20px 10px 20px;
+    }
+    .active_user img {
+        display: inline;
+    }
+    .active_user a {
+        display: inline !important;
+        position: relative;
+        top: -25px;
+        left: 10px;
+        text-align: right;
+    }
+    .input_submit button {
+        width: 60px;
+    }
+    .input_submit button img {
+        width: 20px;
+        height: 20px;
+    }
+    .input_submit input {
+        width: calc(100% - 60px) !important;
+    }
+    .row .column:first-child label {
+        display: none;
+    }
+}

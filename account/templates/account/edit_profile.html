@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Изменить профиль{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/account/file-upload.css' %}">
+    <form method="post">
+        <div class="profile edit_profile">
+            <div class="user_data">
+                <h2>{{ user.username }} - Профиль</h2>
+                <h3>Основная информация</h3>
+                {% csrf_token %}
+                <div class="table">
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_username">{{ form.username.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.username }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_email">{{ form.email.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.email }}
+                        </div>
+                    </div>
+                </div>
+                <h3>Дополнительная информация</h3>
+                <div class="table">
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_birthday">{{ form.birthday.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.birthday }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_first_name">{{ form.first_name.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_last_name">{{ form.last_name.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_gender">{{ form.gender.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.gender }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <label for="id_is_private">{{ form.is_private.label }}</label>
+                        </div>
+                        <div class="column">
+                            {{ form.is_private }}
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'account:change_password' %}" class="link">Сменить пароль</a>
+                <a href="{% url 'account:profile' %}" class="play_button">Назад</a>
+                <button type="submit" class="play_button">Сохранить</button>
+            </div>
+            <div class="mainuser-avatar">
+                <div id="clear_image_field" title="Удалить изображение">&#10006;</div>
+                <img src="{{ user.avatar.url }}" alt="">
+                <div class="input-file-container">
+                    <input type="hidden" id="id_clear_image" name="clear_image" value="off">
+                    <input type="file" class="input-file" id="id_avatar" name="avatar">
+                    <label tabindex="0" for="my-file" class="input-file-trigger">Загрузить</label>
+                    <p class="file-return">{% if user.photo.url != '/media/user.png' %}{{ user.photo.url }}{% endif %}</p>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        let gender = document.querySelector("#id_gender");
+
+        if ("{{ user.gender }}" === "M") {
+            gender.children[0].setAttribute("selected", "");
+            gender.children[2].removeAttribute("selected");
+        } else if ("{{ user.gender }}" === "F") {
+            gender.children[1].setAttribute("selected", "");
+            gender.children[2].removeAttribute("selected");
+        }
+    </script>
+    <script src="{% static 'js/account/file-upload.js' %}"></script>
+{% endblock %}

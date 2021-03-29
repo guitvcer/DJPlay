@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Сыгранные партии {{ mainuser.username }}{% endblock %}
+
+{% block content %}
+    <div class="profile parties">
+        <div class="table">
+            <div class="table-header table-row">
+                <div class="table-column">Игроки</div>
+                <div class="table-column">Результат</div>
+                <div class="table-column">Ходы</div>
+                <div class="table-column">Дата</div>
+            </div>
+            {% for party in parties %}
+                <a href="{% url 'gomoku:watch_party' id=party.id %}" class="table-row">
+                    <div class="table-column">{{ party.player1 }}, {{ party.player2 }}</div>
+                    <div class="table-column">
+                        {% if party.winner == mainuser.username %}
+                            Выигрыш
+                        {% else %}Проигрыш{% endif %}
+                    </div>
+                    <div class="table-column">{{ party.get_moves|length }}</div>
+                    <div class="table-column">{{ party.date }}</div>
+                </a>
+            {% endfor %}
+        </div>
+        <h2>Партии Гомоку {{ mainuser.username }}</h2>
+        <div class="paginator">
+            {% if page.number != 1 %}
+                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page=1" class="first_page">
+                    Первая&nbsp;страница
+                </a>
+                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page.previous_page_number }}" class="back_page round">←</a>
+            {% endif %}
+            <div class="current_page round" style="background: #31373f;">
+                <form method="get" class="paginator-form">
+                    <input type="text" name="page" value="{{ page.number }}">
+                </form>
+            </div>
+            {% if page.has_next %}
+                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page.next_page_number }}" class="next_page round">→</a>
+                <a class="last_page"
+                   href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page.paginator.num_pages }}">
+                    Последняя&nbsp;страница
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="profile users_list_wrapper">
+        <form method="post">
+            {% csrf_token %}
+            <div class="input_submit">
+                {{ form.search_keyword }}
+                <button type="submit"><img src="{{ ICONS }}/search.webp" alt=""></button>
+            </div>
+            <div class="filters">
+                <div class="checkbox">
+                    {{ form.is_online.label }}
+                    {{ form.is_online }}
+                </div>
+                {% if is_logged_in %}
+                    <div class="checkbox">
+                        {{ form.is_friend.label }}
+                        {{ form.is_friend }}
+                    </div>
+                {% endif %}
+            </div>
+        </form>
+        <h2>Найдено: {{ active_users|length }}</h2>
+        <div class="users_list">
+            {% for user in active_users %}
+                <div class="active_user">
+                    <img src="{{ user.avatar.url }}" alt="">
+                    <a href="{{ user.get_absolute_url }}">{{ user.username }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

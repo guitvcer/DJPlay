@@ -1,0 +1,220 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+body {
+    height: 100%;
+    background: #eeeeee;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    padding: 50px 5px 0 5px;
+    width: 100%;
+    max-width: 2100px;
+    margin: auto;
+}
+
+h1 {
+    font-size: 40px;
+    font-family: 'Monoton', cursive;
+    font-weight: normal;
+    padding: 5px 40px 5px 40px;
+    background: #393e46;
+    color: #eeeeee;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+h2 {
+    font-size: 30px;
+}
+h3 {
+    font-size: 24px;
+}
+h4 {
+    font-size: 18px;
+}
+
+header {
+    padding: 13px 70px 13px 100px;
+    border-bottom: #929aab 2px solid;
+    background: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+}
+.header-wrapper {
+    width: 100%;
+    max-width: 2560px;
+    display: flex;
+    justify-content: space-between;
+}
+
+header h1 {
+    display: block;
+}
+
+header a {
+    display: block;
+    text-decoration: none;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 100px;
+}
+
+.profile_link {
+    display: flex;
+    align-items: center;
+}
+.profile_link span {
+    margin-right: 12px;
+    font-size: 20px;
+}
+
+.account {
+    display: flex;
+    align-items: center;
+    padding: 5px 15px 5px 15px;
+    height: 70px;
+}
+.account:hover {
+    cursor: pointer;
+}
+.account a {
+    color: #393e46;
+    text-decoration: none;
+    font-size: 20px;
+    margin-right: 20px;
+}
+.account .loginRegistration {
+    display: flex;
+    flex-direction: row;
+}
+.account .loginRegistration a:hover {
+    text-decoration: underline;
+}
+.account .burgerMenu, .loginRegistrationBurger {
+    font-size: 35px;
+    display: none;
+}
+
+.account .loginRegistrationBurger {
+    position: absolute;
+    width: 100%;
+    top: 104px;
+    left: 0;
+    background: #f7f7f7;
+    border-bottom: 2px solid #929aab;
+}
+.loginRegistrationBurger a {
+    margin: 0;
+    color: #393e46;
+    padding: 20px 40px 20px 40px;
+    cursor: pointer;
+}
+.loginRegistrationBurger a:hover {
+    background: #eeeeee;
+}
+
+
+.menu {
+    position: absolute;
+    top: 100px;
+    right: 70px;
+    padding: 5px 0 5px 0;
+    background: #393e46;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: none;
+    z-index: 1000
+}
+.menu a {
+    color: #f7f7f7;
+    font-weight: normal;
+    padding: 10px 15px 10px 15px;
+    font-size: 18px;
+    display: block;
+    width: 100%;
+}
+.menu a:hover {
+    background: #31373f;
+}
+.menu-visible {
+    display: block;
+    z-index: 10000;
+}
+
+
+@media (max-width: 900px) {
+    .account .loginRegistration {
+        display: none;
+    }
+    .account .burgerMenu {
+        display: block;
+    }
+    header {
+        padding: 15px 50px 15px 50px;
+    }
+    .profile_link span {
+        display: none;
+    }
+    .account img {
+        width: 50px;
+        height: 50px;
+    }
+    h4 {
+        font-size: 16px;
+    }
+    .menu {
+        width: 100%;
+        top: 104px;
+        left: 0;
+        background: #f7f7f7;
+        border-bottom: 2px solid #929aab;
+    }
+
+    .menu a {
+        margin: 0;
+        color: #393e46;
+        padding: 20px 40px 20px 40px;
+        cursor: pointer;
+    }
+    .menu a:hover {
+        background: #eeeeee;
+    }
+    .menu-visible-mobile {
+        display: block;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 15px 10px 15px 10px;
+    }
+    .account, .account a {
+        padding-right: 0;
+        margin-right: 0;
+    }
+    .header-wrapper .account {
+        padding-left: 0;
+    }
+    header {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
