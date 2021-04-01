@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #eeeeee;
+            color: #393e46;
+            font-family: 'Raleway', sans-serif;
+        }
+        h1 {
+            font-size: 120px;
+            margin-top: 150px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 30px;
+        }
+        a {
+            text-decoration: none;
+            color: #393e46;
+            font-size: 16px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="error">
+        <h1>{% block status_code %}{% endblock %}</h1>
+        <h2>{% block message %}{% endblock %}</h2>
+        <a href="/">На главную</a>
+    </div>
+</body>
+</html>
