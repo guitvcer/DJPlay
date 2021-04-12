@@ -1,9 +1,8 @@
 const username = document.querySelector('.username').innerHTML,
-    field = document.querySelector('.field'),
     startBlock = document.querySelector('.start'),
     AtoO = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'];
 
-let party_id, myMove = true, move = 1,
+let party_id, myMove = true,
     opponentUsername, findOpponentSocket, gomokuPartySocket, statusGomokuPartySocket = false;
 
 
@@ -21,28 +20,6 @@ function clearField() {
     myMove = true;
     move = 1;
 }
-
-
-
-// задать класс для точки после хода
-function register_move(dot) {
-
-    try {
-        document.querySelector('.new_move').classList.remove('new_move');
-    } catch(e) {}
-
-    if (move % 2 === 0) {
-        dot.classList.add('blue-dot');
-    } else {
-        dot.classList.add('white-dot');
-    }
-
-    dot.classList.add('new_move');
-    dot.innerHTML = move;
-
-    move++;
-}
-
 
 
 function findOpponent() {

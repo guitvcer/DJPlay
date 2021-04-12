@@ -1,4 +1,4 @@
-let n = 1, field = document.querySelector('.field');
+let n = 1, move = 1, field = document.querySelector('.field');
 
 // создание точек
 for (let i = 1; i <= 15; i++) {
@@ -31,3 +31,33 @@ function resizeFieldHeight() {
 
 resizeFieldHeight();
 window.addEventListener('resize', resizeFieldHeight);
+
+// задать класс для точки после хода
+function register_move(dot) {
+    try {
+        document.querySelector('.new_move').classList.remove('new_move');
+    } catch(e) {}
+
+    if (move % 2 === 0) {
+        dot.classList.add('blue-dot');
+    } else {
+        dot.classList.add('white-dot');
+    }
+
+    dot.classList.add('new_move');
+    dot.innerHTML = move;
+
+    move++;
+}
+
+// зарегистрировать ход
+field.addEventListener('click', function(event) {
+    let target = event.target;
+
+    if (target.classList.contains('dot') &&
+        !(target.classList.contains('blue-dot') ||
+        target.classList.contains('white-dot'))
+    ) {
+        register_move(event.target);
+    }
+});
