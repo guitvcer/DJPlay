@@ -2,39 +2,7 @@ const field = document.querySelector('.field'), first_move = document.getElement
     pre_move = document.getElementById('pre_move'), next_move = document.getElementById('next_move'),
     last_move = document.getElementById('last_move');
 
-let n = 1, number_of_last_move;
-
-// создание точек
-for (let i = 1; i <= 15; i++) {
-    field.innerHTML += `<div class="row" id="row${i}"></div>`
-    for (let j = 1; j <= 15; j++) {
-        document.querySelector(`#row${i}`)
-            .innerHTML += `<div class="dot" id="${String.fromCharCode(97 + i) + String(j)}" tabindex="${n}"></div>`;
-    }
-    n++;
-}
-
-// изменение высоты .field при изменении размера окна
-function resizeFieldHeight() {
-    field.setAttribute('style', `height: ${field.offsetWidth}px`);
-    let value;
-    if (window.innerWidth <= 600) {
-        value = String((field.offsetWidth - 280) / 14) + 'px';
-    } else {
-        value = String((field.offsetWidth - 492) / 14) + 'px';
-    }
-
-    for (let row of document.querySelectorAll('.row')) {
-        row.setAttribute('style', 'margin-right: ' + value)
-    }
-
-    for (let el of document.querySelectorAll('.dot')) {
-        el.setAttribute('style', 'margin-bottom: ' + value);
-    }
-}
-
-resizeFieldHeight();
-window.addEventListener('resize', resizeFieldHeight);
+let number_of_last_move;
 
 
 // добавить классы white-dot и blue-dot точкам из партии
