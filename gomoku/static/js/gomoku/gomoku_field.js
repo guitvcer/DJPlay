@@ -1,4 +1,4 @@
-let n = 1;
+let n = 1, field = document.querySelector('.field');
 
 // создание точек
 for (let i = 1; i <= 15; i++) {
