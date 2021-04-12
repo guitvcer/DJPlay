@@ -7,17 +7,6 @@ let party_id, myMove = true, move = 1, n = 1,
     opponentUsername, findOpponentSocket, gomokuPartySocket, statusGomokuPartySocket = false;
 
 
-
-// Задать атрибут tabindex для каждой точки в поле
-for (let i = 1; i <= 15; i++) {
-    for (let j = 0; j <= 14; j++) {
-        field.children[i].children[j].setAttribute('tabindex', n);
-        n++;
-    }
-}
-
-
-
 // очистить поле
 function clearField() {
     let dots = document.querySelectorAll('.dot');
@@ -112,19 +101,19 @@ field.addEventListener('keydown', function(event) {
                 document.querySelector(focusTo).focus();
             }
         } else if (event.keyCode == '38') {
-            // UP
+            // DOWN
 
-            if (id[1] === 1 && id[2] === 5) {
-                document.querySelector('#' + id[0] + '1').focus();
+            if (id[1] === 1 && id.length === 2) {
+                document.querySelector('#' + id[0] + '15').focus();
             } else {
                 let focusTo;
 
                 if (id.length === 2) {
-                    focusTo = "#" + id[0] + String(+id[1] + 1);
+                    if (id[1] === '1')
+                        focusTo = "#" + id[0] + "15";
+                    else focusTo = "#" + id[0] + String(+id[1] - 1);
                 } else if (id.length === 3) {
-                    if (id[1] + id[2] === '15')
-                        focusTo = "#" + id[0] + "1";
-                    else focusTo = "#" + id[0] + String(Number(String(id[1] + id[2])) + 1);
+                    focusTo = "#" + id[0] + String(Number(String(id[1] + id[2])) - 1);
                 }
                 document.querySelector(focusTo).focus();
             }
@@ -146,26 +135,25 @@ field.addEventListener('keydown', function(event) {
                 document.querySelector(focusTo).focus();
             }
         } else if (event.keyCode == '40') {
+            // UP
 
-            // DOWN
-            if (id[1] === 1 && id.length === 2) {
-                document.querySelector('#' + id[0] + '15').focus();
+            if (id[1] === 1 && id[2] === 5) {
+                document.querySelector('#' + id[0] + '1').focus();
             } else {
                 let focusTo;
 
                 if (id.length === 2) {
-                    if (id[1] === '1')
-                        focusTo = "#" + id[0] + "15";
-                    else focusTo = "#" + id[0] + String(+id[1] - 1);
+                    focusTo = "#" + id[0] + String(+id[1] + 1);
                 } else if (id.length === 3) {
-                    focusTo = "#" + id[0] + String(Number(String(id[1] + id[2])) - 1);
+                    if (id[1] + id[2] === '15')
+                        focusTo = "#" + id[0] + "1";
+                    else focusTo = "#" + id[0] + String(Number(String(id[1] + id[2])) + 1);
                 }
                 document.querySelector(focusTo).focus();
             }
         }
     }
 });
-
 
 
 // отправить ход на сервер если игра с соперником
@@ -189,7 +177,6 @@ field.addEventListener('click', function(event) {
         }
     }
 });
-
 
 
 function createFindOpponentButton() {
@@ -395,6 +382,39 @@ function createCancelWaitingButton() {
 
     cancelWaitingButton.addEventListener('click', cancelWaiting);
 }
+
+
+// создание точек
+for (let i = 1; i <= 15; i++) {
+    field.innerHTML += `<div class="row" id="row${i}"></div>`
+    for (let j = 1; j <= 15; j++) {
+        document.querySelector(`#row${i}`)
+            .innerHTML += `<div class="dot" id="${String.fromCharCode(97 + i) + String(j)}" tabindex="${n}"></div>`;
+    }
+    n++;
+}
+
+// изменение высоты .field при изменении размера окна
+function resizeFieldHeight() {
+    field.setAttribute('style', `height: ${field.offsetWidth}px`);
+    let value;
+    if (window.innerWidth <= 600) {
+        value = String((field.offsetWidth - 280) / 14) + 'px';
+    } else {
+        value = String((field.offsetWidth - 492) / 14) + 'px';
+    }
+
+    for (let row of document.querySelectorAll('.row')) {
+        row.setAttribute('style', 'margin-right: ' + value)
+    }
+
+    for (let el of document.querySelectorAll('.dot')) {
+        el.setAttribute('style', 'margin-bottom: ' + value);
+    }
+}
+
+resizeFieldHeight();
+window.addEventListener('resize', resizeFieldHeight);
 
 
 

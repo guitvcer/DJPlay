@@ -4,13 +4,37 @@ const field = document.querySelector('.field'), first_move = document.getElement
 
 let n = 1, number_of_last_move;
 
-// Задать атрибут tabindex для каждой точки в поле
+// создание точек
 for (let i = 1; i <= 15; i++) {
-    for (let j = 0; j <= 14; j++) {
-        field.children[i].children[j].setAttribute('tabindex', n);
-        n++;
+    field.innerHTML += `<div class="row" id="row${i}"></div>`
+    for (let j = 1; j <= 15; j++) {
+        document.querySelector(`#row${i}`)
+            .innerHTML += `<div class="dot" id="${String.fromCharCode(97 + i) + String(j)}" tabindex="${n}"></div>`;
+    }
+    n++;
+}
+
+// изменение высоты .field при изменении размера окна
+function resizeFieldHeight() {
+    field.setAttribute('style', `height: ${field.offsetWidth}px`);
+    let value;
+    if (window.innerWidth <= 600) {
+        value = String((field.offsetWidth - 280) / 14) + 'px';
+    } else {
+        value = String((field.offsetWidth - 492) / 14) + 'px';
+    }
+
+    for (let row of document.querySelectorAll('.row')) {
+        row.setAttribute('style', 'margin-right: ' + value)
+    }
+
+    for (let el of document.querySelectorAll('.dot')) {
+        el.setAttribute('style', 'margin-bottom: ' + value);
     }
 }
+
+resizeFieldHeight();
+window.addEventListener('resize', resizeFieldHeight);
 
 
 // добавить классы white-dot и blue-dot точкам из партии
@@ -28,11 +52,11 @@ for (let index in moves) {
 
 // первый ход
 first_move.addEventListener('click', function() {
-    for (let i = 1; i <= 15; i++) {
-        for (let j = 0; j <= 14; j++) {
-            field.children[i].children[j].classList.remove('blue-dot');
-            field.children[i].children[j].classList.remove('white-dot');
-        }
+    for (let el of document.querySelectorAll('.dot')) {
+        el.classList.remove('white-dot');
+    }
+    for (let el of document.querySelectorAll('.dot')) {
+        el.classList.remove('blue-dot');
     }
     document.getElementById(moves[0].coordinate).classList.add('white-dot');
     number_of_last_move = 0;

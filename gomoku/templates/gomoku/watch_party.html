@@ -11,30 +11,7 @@
     </div>
     <div class="watch_party">
         <div class="gomoku">
-            <div class="field">
-                <div class="column column-numbers">
-                    {% for i in count %}
-                        <div>{{ i }}</div>
-                    {% endfor %}
-                </div>
-                {% for i in letters %}
-                    <div class="column">
-                        {% for j in count %}
-                            <div class="dot" id="{{ i }}{{ j }}"></div>
-                        {% endfor %}
-                        <div class="letter">{{ i }}</div>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="grid">
-                {% for i in count14 %}
-                    <div class="row">
-                        {% for j in count14 %}
-                            <div class="cell"></div>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </div>
+            <div class="field"></div>
         </div>
         <div class="control-buttons">
             <button title="Первый ход" id="first_move">&laquo;</button>

@@ -111,7 +111,6 @@ def check_row(move, party, player):
 
             # диагональ 2
             try:
-
                 move = Move.objects.get(
                     coordinate=get_letter(x, n - i) + str(int(y) + i - n), party=party, player=player)
                 z_moves2.append(move.coordinate)
@@ -147,8 +146,7 @@ def register_move(coordinate, party_id, player):
 
     party = Party.objects.get(id=party_id)
 
-    if Move.objects.filter(coordinate=coordinate, party=party).exists() or coordinate == 'give_up' or\
-            not validate_move(coordinate):
+    if coordinate == 'give_up':
         player_gives_up(party_id, player)
     else:
         move = Move.objects.create(coordinate=coordinate, player=player, party=party)
