@@ -135,12 +135,12 @@ field.addEventListener('keydown', function(event) {
 
 // отправить ход на сервер если игра с соперником
 // зарегистрировать ход
-field.addEventListener('click', function(event) {
+field.onclick = function(event) {
     let target = event.target;
 
     if (target.classList.contains('dot') &&
-        !(target.classList.contains('blue-dot') ||
-        target.classList.contains('white-dot'))
+        !target.classList.contains('blue-dot') &&
+        !target.classList.contains('white-dot')
     ) {
         if (statusGomokuPartySocket) {
             if (myMove) {
@@ -153,7 +153,7 @@ field.addEventListener('click', function(event) {
             register_move(event.target);
         }
     }
-});
+}
 
 
 function createFindOpponentButton() {

@@ -1,6 +1,5 @@
-const field = document.querySelector('.field'), first_move = document.getElementById('first_move'),
-    pre_move = document.getElementById('pre_move'), next_move = document.getElementById('next_move'),
-    last_move = document.getElementById('last_move');
+const first_move = document.getElementById('first_move'), pre_move = document.getElementById('pre_move'),
+    next_move = document.getElementById('next_move'), last_move = document.getElementById('last_move');
 
 let number_of_last_move;
 

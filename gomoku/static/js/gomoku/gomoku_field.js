@@ -1,4 +1,5 @@
-let n = 1, move = 1, field = document.querySelector('.field');
+const field = document.querySelector('.field');
+let n = 1, move = 1;
 
 // создание точек
 for (let i = 1; i <= 15; i++) {
@@ -51,7 +52,7 @@ function register_move(dot) {
 }
 
 // зарегистрировать ход
-field.addEventListener('click', function(event) {
+field.onclick = function(event) {
     let target = event.target;
 
     if (target.classList.contains('dot') &&
@@ -60,4 +61,4 @@ field.addEventListener('click', function(event) {
     ) {
         register_move(event.target);
     }
-});
+}
