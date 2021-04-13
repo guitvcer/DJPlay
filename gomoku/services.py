@@ -35,6 +35,9 @@ def player_gives_up(party_id, loser):
 
     party = Party.objects.get(id=party_id)
 
+    if party.winner is not None:
+        return
+
     if party.player1 == loser:
         party.winner = party.player2.username
     else:
@@ -127,38 +130,17 @@ def check_row(move, party, player):
             return z_moves2
 
 
-def validate_move(coordinate):
-    """Валидация координат ходов"""
-
-    if len(coordinate) < 2 or len(coordinate) > 3:
-        return False
-
-    if ord(coordinate[0]) not in range(97, 112):
-        return False
-
-    if len(coordinate) == 3:
-        if int(coordinate[1] + coordinate[2]) > 15:
-            return False
-
-
 def register_move(coordinate, party_id, player):
     """Зарегистрировать ход, и вернуть коордианаты, в случае когда ход делает линию из 5 точек"""
 
     party = Party.objects.get(id=party_id)
 
+    print(coordinate)
+
     if coordinate == 'give_up':
+        print("first")
         player_gives_up(party_id, player)
     else:
+        print("second")
         move = Move.objects.create(coordinate=coordinate, player=player, party=party)
         return check_row(move, party, player)
-
-
-def get_letters_from_a_to_o():
-    """Получить буквы от a до o для игрового поля"""
-
-    letters = []
-
-    for i in range(97, 112):
-        letters.append(chr(i))
-
-    return letters

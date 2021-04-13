@@ -240,7 +240,6 @@ function createFindOpponentButton() {
                         if (message['win']) {
                             // побеждает, так как сделал линию из 5 точек
                             createAlert("success-alert", "Вы выиграли.");
-                            //clearField();
                             createFindOpponentButton();
                             gomokuPartySocket.close();
                             statusGomokuPartySocket = false;
