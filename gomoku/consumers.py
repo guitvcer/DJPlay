@@ -100,7 +100,6 @@ class GomokuPartyConsumer(WebsocketConsumer):
 
         try:
             move = text_data['move']
-            print(move)
             result = register_move(move, self.party_id, player)
 
             if type(result) == list:

@@ -135,12 +135,8 @@ def register_move(coordinate, party_id, player):
 
     party = Party.objects.get(id=party_id)
 
-    print(coordinate)
-
     if coordinate == 'give_up':
-        print("first")
         player_gives_up(party_id, player)
     else:
-        print("second")
         move = Move.objects.create(coordinate=coordinate, player=player, party=party)
         return check_row(move, party, player)

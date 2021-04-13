@@ -9,7 +9,7 @@
 	max-width: 500px;
 	margin: 20px auto;
 	padding: 30px;
-	position: absolute;
+	position: fixed;
 	border-radius: 5px;
 	box-shadow: 0 0 15px 5px #ccc;
 	right: 10px;
