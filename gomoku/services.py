@@ -1,6 +1,6 @@
 from account.models import Game, Queue
 from account.services import get_user_by_token
-from .models import Party, Move
+from .models import Party, Move, Message
 
 
 def update_queue_of_gomoku(token):
@@ -133,6 +133,9 @@ def check_row(move, party, player):
 def register_move(coordinate, party_id, player):
     """Зарегистрировать ход, и вернуть коордианаты, в случае когда ход делает линию из 5 точек"""
 
+    if coordinate == 'nothing':
+        return
+
     party = Party.objects.get(id=party_id)
 
     if coordinate == 'give_up':
@@ -140,3 +143,40 @@ def register_move(coordinate, party_id, player):
     else:
         move = Move.objects.create(coordinate=coordinate, player=player, party=party)
         return check_row(move, party, player)
+
+
+def create_message(party_id, text, player):
+    """Создание сообщения"""
+
+    party = Party.objects.get(id=party_id)
+    message = Message.objects.create(party=party, text=text, player=player)
+    return message
+
+
+def get_last_move_of_player(party_id, player):
+    """Получить последний ход игрока определенной партии"""
+
+    party = Party.objects.get(id=party_id)
+
+    if party.player1 == player:
+        player2 = party.player2
+    else:
+        player2 = party.player1
+
+    return party.get_moves().filter(player=player2).last().coordinate
+
+
+def get_and_delete_moves_after_returnable_move(party_id, coordinate):
+    """Удалить ходы после возвращаемого хода"""
+
+    party = Party.objects.get(id=party_id)
+    move = Move.objects.get(coordinate=coordinate, party=party)
+    moves = []
+
+    for i in range(move.id, party.get_moves().last().id + 1):
+        removable_move = Move.objects.get(id=i)
+        moves.append(removable_move.coordinate)
+        removable_move.delete()
+
+    return moves
+

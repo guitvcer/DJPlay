@@ -1,9 +1,9 @@
 const username = document.querySelector('.username').innerHTML,
-    startBlock = document.querySelector('.start'),
+    startBlock = document.querySelector('.start'), return_move = document.querySelector('#return_move'),
     AtoO = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'];
 
-let party_id, myMove = true,
-    opponentUsername, findOpponentSocket, gomokuPartySocket, statusGomokuPartySocket = false;
+let party_id, myMove = true, color, opponentUsername, findOpponentSocket, gomokuPartySocket, gomokuChatSocket,
+    statusGomokuPartySocket = false;
 
 
 // очистить поле
@@ -133,6 +133,20 @@ field.addEventListener('keydown', function(event) {
 });
 
 
+return_move.addEventListener('click', function() {
+    if (statusGomokuPartySocket) {
+        let moves = document.querySelectorAll('.' + color),
+            coordinate = moves[moves.length-1].id;
+
+        gomokuChatSocket.send(text_data=JSON.stringify({
+            'party_id': party_id,
+            'text': '/return_move',
+            'coordinate': coordinate,
+        }));
+    }
+});
+
+
 // отправить ход на сервер если игра с соперником
 // зарегистрировать ход
 field.onclick = function(event) {
@@ -230,27 +244,31 @@ function createFindOpponentButton() {
                     createFindOpponentButton();
                     gomokuPartySocket.close();
                     statusGomokuPartySocket = false;
+                } else if (message['move'] === 'nothing') {
+                    // пропуск хода, после отмены ходы
+                    myMove = false;
                 } else {
                     // обычный ход, продолжающий партию
                     let dot = document.getElementById(message['move']);
                     myMove = false;
                     register_move(dot);
 
-                    try {
-                        if (message['win']) {
-                            // побеждает, так как сделал линию из 5 точек
-                            createAlert("success-alert", "Вы выиграли.");
-                            createFindOpponentButton();
-                            gomokuPartySocket.close();
-                            statusGomokuPartySocket = false;
+                    if (dot.innerHTML === '1')
+                        color = 'white-dot';
 
-                            let row_moves = JSON.parse(message['row_moves']);
+                    if (message['win']) {
+                        // побеждает, так как сделал линию из 5 точек
+                        createAlert("success-alert", "Вы выиграли.");
+                        createFindOpponentButton();
+                        gomokuPartySocket.close();
+                        statusGomokuPartySocket = false;
 
-                            for (let row_move of row_moves) {
-                                document.getElementById(row_move).classList.add('row_move');
-                            }
+                        let row_moves = JSON.parse(message['row_moves']);
+
+                        for (let row_move of row_moves) {
+                            document.getElementById(row_move).classList.add('row_move');
                         }
-                    } catch(e) {}
+                    } else createAlert('simple-alert', 'Ход соперника');
                 }
             } else {
                 // другой пользователь сделал ход...
@@ -267,30 +285,94 @@ function createFindOpponentButton() {
                     createFindOpponentButton();
                     gomokuPartySocket.close();
                     statusGomokuPartySocket = false;
+                } else if (message['move'] === 'nothing') {
+                    // пропуск хода, после отмены хода
+                    myMove = true;
                 } else {
                     // обычный ход, продолжающий партию
                     let dot = document.getElementById(message['move']);
                     myMove = true;
                     register_move(dot);
 
-                    try {
-                        if (message['win']) {
-                            // побеждает, так как сделал линию из 5 точек
-                            createAlert("danger-alert", "Вы проиграли.");
-                            createFindOpponentButton();
-                            gomokuPartySocket.close();
-                            statusGomokuPartySocket = false;
+                    if (dot.innerHTML === '1')
+                        color = 'blue-dot';
 
-                            let row_moves = JSON.parse(message['row_moves']);
+                    if (message['win']) {
+                        // побеждает, так как сделал линию из 5 точек
+                        createAlert("danger-alert", "Вы проиграли.");
+                        createFindOpponentButton();
+                        gomokuPartySocket.close();
+                        statusGomokuPartySocket = false;
 
-                            for (let row_move of row_moves) {
-                                document.getElementById(row_move).classList.add('row_move');
-                            }
+                        let row_moves = JSON.parse(message['row_moves']);
+
+                        for (let row_move of row_moves) {
+                            document.getElementById(row_move).classList.add('row_move');
                         }
-                    } catch(e) {}
+                    } else createAlert('simple-alert', 'Ваш ход');
                 }
             }
         }
+
+        gomokuChatSocket = new WebSocket('ws://' + domain + '/gomoku/ws/chat');
+
+        gomokuChatSocket.onmessage = function(e) {
+            let data = JSON.parse(e.data);
+
+            if (data['text'] === '/return_move') {
+                if (data['username'] === username) {
+                    createAlert('simple-alert', 'Запрос отправлен');
+                } else {
+                    createAlert('simple-alert', 'Соперник запрашивает возвращение хода' +
+                        '<button id="accept_return">&#9745;</button>' +
+                        '<button id="decline_return">&#9746;</button>');
+
+                    const accept_return = document.querySelector('#accept_return'),
+                        decline_return = document.querySelector('#decline_return');
+
+                    accept_return.addEventListener('click', function(event) {
+                        gomokuChatSocket.send(text_data=JSON.stringify({
+                            'text': '/return_move_accept',
+                            'party_id': party_id,
+                            'coordinate': data['coordinate'],
+                        }));
+                        gomokuPartySocket.send(text_data=JSON.stringify({
+                            'party_id': party_id,
+                            'move': 'nothing',
+                        }));
+                    });
+
+                    decline_return.addEventListener('click', function() {
+                        gomokuChatSocket.send(text_data=JSON.stringify({
+                            'text': '/return_move_decline',
+                            'party_id': party_id,
+                        }));
+                    });
+                }
+            } else if (data['text'] === '/return_move_accept') {
+                for (let coordinate of data['removable_moves']) {
+                    let move_el = document.querySelector('#' + coordinate)
+                    move_el.classList.remove('white-dot');
+                    move_el.classList.remove('blue-dot');
+                    move_el.classList.remove('new_move');
+                    move_el.innerHTML = "";
+                    move--;
+                }
+
+                if (data['username'] === username) {
+                    createAlert('simple-alert', 'Ход соперника был отменен')
+                } else {
+                    createAlert('success-alert', 'Соперник отменил Ваш ход');
+                }
+            } else if (data['text'] === '/return_move_decline') {
+                if (data['username'] === username) {
+                    createAlert('simple-alert', 'Ход соперника не был отменен');
+                } else {
+                    createAlert('danger-alert', 'Соперник не отменил ход');
+                }
+            }
+        }
+
         setTimeout(function() {
             gomokuPartySocket.send(text_data=JSON.stringify({
                 'party_id': party_id,

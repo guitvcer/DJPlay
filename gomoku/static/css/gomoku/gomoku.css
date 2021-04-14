@@ -44,8 +44,12 @@ main {
     border: #393e46 1px solid;
 }
 
-.new_move {
-    background: #e48257 !important;
+.new_move, .new_move:focus {
+    border: 5px solid #e48257;
+    padding: 0;
+}
+.new_move:hover {
+    padding: 0;
 }
 
 .row_move {
@@ -138,6 +142,58 @@ main {
 }
 .watch_party .control-buttons button:hover {
     background: #31373f;
+}
+
+
+.panel {
+    position: fixed;
+    bottom: 0;
+    padding: 4px;
+    background: white;
+    border-top: 1px solid #929aab;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 1000;
+}
+.panel button {
+    border: 0;
+    border-radius: 5px;
+    padding: 2px 8px 2px 8px;
+    background: #f7f7f7;
+    cursor: pointer;
+    margin: 0 3px 0 3px;
+}
+.panel button:hover {
+    background: #eeeeee;
+}
+.panel button img {
+    width: 20px;
+    height: 20px;
+}
+
+
+#accept_return, #decline_return {
+    padding: 0;
+    margin: 0 2px 0 2px;
+    cursor: pointer;
+    font-size: 28px;
+    border: 0;
+    position: relative;
+    top: 4px;
+}
+#accept_return {
+    color: #178344;
+    margin-left: 6px;
+}
+#accept_return:hover {
+    color: #136735;
+}
+#decline_return {
+    color: #8f130c;
+}
+#decline_return:hover {
+    color: #72120a;
 }
 
 

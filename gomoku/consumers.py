@@ -3,11 +3,12 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 from account.services import get_user_by_token
-from .services import update_queue_of_gomoku, register_move
+from .services import update_queue_of_gomoku, register_move, create_message, get_last_move_of_player,\
+    get_and_delete_moves_after_returnable_move
 
 
 class FindOpponentConsumer(WebsocketConsumer):
-    """Consumer нахождения соперника"""
+    """Consumer поиска соперника"""
 
     # подключение пользователя в группы
     def connect(self):
@@ -127,7 +128,7 @@ class GomokuPartyConsumer(WebsocketConsumer):
         except KeyError:
             pass
 
-
+    # отправить сообщение
     def send_move(self, event):
         message = {'username': event['username'],
                    'move': event['move']}
@@ -135,6 +136,100 @@ class GomokuPartyConsumer(WebsocketConsumer):
         try:
             message['win'] = event['win']
             message['row_moves'] = event['row_moves']
+        except KeyError:
+            pass
+
+        self.send(text_data=json.dumps(message))
+
+
+class GomokuChatConsumer(WebsocketConsumer):
+    """Consumer чата Гомоку"""
+
+    # подключение
+    def connect(self):
+        self.room_name = 'chat'
+        self.room_group_name = 'gomoku_%s' % self.room_name
+        self.user_token = self.scope['cookies']['access']
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name,
+            self.channel_name,
+        )
+
+        self.accept()
+
+    # отключение
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name,
+            self.channel_name,
+        )
+
+    # получение сообщений
+    def receive(self, text_data):
+        text_data = json.loads(text_data)
+        party_id = text_data['party_id']
+        text = text_data['text']
+        player = get_user_by_token(self.user_token)
+        message = create_message(party_id, text, player)
+
+        if message.text == '/return_move_accept':
+            removable_moves = get_and_delete_moves_after_returnable_move(party_id, text_data['coordinate'])
+
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'send_message',
+                    'username': message.player,
+                    'text': message.text,
+                    'removable_moves': removable_moves,
+                }
+            )
+        elif message.text == '/return_move_decline':
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'send_message',
+                    'username': message.player,
+                    'text': message.text,
+                }
+            )
+        elif message.text == '/return_move':
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'send_message',
+                    'username': message.player,
+                    'text': message.text,
+                    'date': message.date,
+                    'coordinate': text_data['coordinate'],
+                }
+            )
+        else:
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'send_message',
+                    'username': message.player,
+                    'text': message.text,
+                    'date': message.date,
+                }
+            )
+
+    # отправить сообщение
+    def send_message(self, event):
+        message = {
+            'username': event['username'].username,
+            'text': event['text'],
+        }
+
+        try:
+            message['coordinate'] = event['coordinate']
+        except KeyError:
+            pass
+
+        try:
+            message['removable_moves'] = event['removable_moves']
         except KeyError:
             pass
 
