@@ -133,20 +133,6 @@ field.addEventListener('keydown', function(event) {
 });
 
 
-return_move.addEventListener('click', function() {
-    if (statusGomokuPartySocket) {
-        let moves = document.querySelectorAll('.' + color),
-            coordinate = moves[moves.length-1].id;
-
-        gomokuChatSocket.send(text_data=JSON.stringify({
-            'party_id': party_id,
-            'text': '/return_move',
-            'coordinate': coordinate,
-        }));
-    }
-});
-
-
 // отправить ход на сервер если игра с соперником
 // зарегистрировать ход
 field.onclick = function(event) {
@@ -223,6 +209,19 @@ function createFindOpponentButton() {
 
         gomokuPartySocket.onclose = function(e) {
 
+        }
+
+        return_move.onclick = function() {
+            if (statusGomokuPartySocket) {
+                let moves = document.querySelectorAll('.' + color),
+                    coordinate = moves[moves.length-1].id;
+
+                gomokuChatSocket.send(text_data=JSON.stringify({
+                    'party_id': party_id,
+                    'text': '/return_move',
+                    'coordinate': coordinate,
+                }));
+            }
         }
 
         // получить от сервера ход

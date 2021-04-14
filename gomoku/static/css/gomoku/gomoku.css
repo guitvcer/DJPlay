@@ -37,7 +37,7 @@ main {
     outline: none;
 }
 
-.white-dot:hover, .white-dot {
+.white-dot:hover, .white-dot, .white-dot:focus {
     opacity: 100%;
     background: white;
     color: #393e46;
@@ -344,5 +344,9 @@ main {
         bottom: 10px;
         right: 10px;
         font-size: 0px;
+    }
+
+    .field {
+        margin-top: 120px;
     }
 }
