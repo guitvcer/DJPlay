@@ -24,7 +24,6 @@ main {
     cursor: pointer;
     font-size: 18px;
     display: flex;
-    padding-top: 4px;
     justify-content: center;
     z-index: 999;
 }
@@ -37,6 +36,13 @@ main {
     outline: none;
 }
 
+.dot:not(.new_move), .new_move:hover {
+    padding: 4px;
+}
+.new_move:hover:focus {
+    padding: 0;
+}
+
 .white-dot:hover, .white-dot, .white-dot:focus {
     opacity: 100%;
     background: white;
@@ -46,10 +52,6 @@ main {
 
 .new_move, .new_move:focus {
     border: 5px solid #e48257;
-    padding: 0;
-}
-.new_move:hover {
-    padding: 0;
 }
 
 .row_move {
@@ -115,33 +117,28 @@ main {
 }
 
 
-
-
-.watch_party {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
 .watch_party .control-buttons {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    padding-bottom: 100px;
+    padding-top: 30px;
 }
 .watch_party .control-buttons button {
     font-size: 40px;
     padding: 20px 50px 28px 50px;
     cursor: pointer;
     border-width: 0;
-    background: #393e46;
-    color: #f7f7f7;
+    background: #eeeeee;
+    color: #393e46;
     margin-left: 1px;
     margin-right: 1px;
     border-radius: 5px;
+    font-weight: bold;
+    width: calc((100% - 6px) / 4);
 }
 .watch_party .control-buttons button:hover {
-    background: #31373f;
+    background: #f7f7f7;
 }
 
 
@@ -217,16 +214,6 @@ main {
         margin-left: 0;
     }
 
-    .watch_party {
-        flex-direction: column;
-    }
-    .watch_party .gomoku {
-        padding-left: 0;
-    }
-    .watch_party .control-buttons {
-        margin-top: 50px;
-    }
-
     .field {
         margin-top: 40px;
         margin-bottom: 40px;
@@ -274,28 +261,6 @@ main {
         margin-left: 0;
     }
 
-    .watch_party {
-        margin-top: 50px;
-    }
-    .watch_party .cell {
-        width: 36px;
-        height: 36px;
-    }
-    .watch_party .dot {
-        width: 25px;
-        height: 25px;
-        font-size: 0;
-        margin-right: 11px;
-        margin-bottom: 11px;
-        display: block;
-    }
-    .watch_party .field {
-        margin-left: 20px;
-        position: relative;
-        top: 23px;
-        right: 9px;
-    }
-
     .control-buttons button {
         font-size: 30px !important;
         padding: 15px 35px 15px 35px !important;
@@ -312,27 +277,6 @@ main {
         padding: 0 10px 50px 10px;
     }
 
-    .watch_party .cell {
-        width: 25px;
-        height: 25px;
-    }
-    .watch_party .dot {
-        width: 17px;
-        height: 17px;
-        font-size: 0;
-        margin-right: 8px;
-        margin-bottom: 8px;
-    }
-    .watch_party .field {
-        margin-left: 18px;
-        position: relative;
-        top: 16px;
-        right: 9px;
-    }
-    .watch_party .grid {
-        margin: 10px 0 0 0;
-    }
-
     .control-buttons button {
         font-size: 20px !important;
         padding: 20px 35px 20px 35px !important;
@@ -344,9 +288,5 @@ main {
         bottom: 10px;
         right: 10px;
         font-size: 0px;
-    }
-
-    .field {
-        margin-top: 120px;
     }
 }

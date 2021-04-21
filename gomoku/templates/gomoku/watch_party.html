@@ -9,15 +9,23 @@
         <h3></h3>
         <a class="close">&times;</a>
     </div>
-    <div class="watch_party">
-        <div class="gomoku">
-            <div class="field"></div>
-        </div>
-        <div class="control-buttons">
-            <button title="Первый ход" id="first_move">&laquo;</button>
-            <button title="Предыдущий ход" id="pre_move">&lsaquo;</button>
-            <button title="Следующий ход" id="next_move">&rsaquo;</button>
-            <button title="Последний ход" id="last_move">&raquo;</button>
+    <div class="gomoku watch_party">
+        <div class="field"></div>
+        <div class="half-main">
+            <div class="start">
+                <div class="statictics">
+                    {{ party.player1 }} против {{ party.player2}}<br>
+                    Дата - {{ party.date }}<br>
+                    Победитель - {{ party.winner }}<br>
+                    Ходов - {{ party.get_moves|length }}<br>
+                </div>
+                <div class="control-buttons">
+                    <button title="Первый ход" id="first_move">&laquo;</button>
+                    <button title="Предыдущий ход" id="pre_move">&lsaquo;</button>
+                    <button title="Следующий ход" id="next_move">&rsaquo;</button>
+                    <button title="Последний ход" id="last_move">&raquo;</button>
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -33,4 +41,15 @@
     <script src="{% static 'js/gomoku_tools.js' %}"></script>
     <script src="{% static 'js/gomoku/gomoku_field.js' %}"></script>
     <script src="{% static 'js/gomoku/watch_party.js' %}"></script>
+    {% block style %}
+        <style>
+            main {
+                display: block !important;
+            }
+            h2 {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+        </style>
+    {% endblock %}
 {% endblock %}

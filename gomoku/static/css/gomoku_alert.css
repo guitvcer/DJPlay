@@ -83,3 +83,9 @@
 .alert li {
 	margin-left: 30px;
 }
+
+@media (max-width: 600px) {
+    .alert {
+        top: 5px;
+    }
+}
