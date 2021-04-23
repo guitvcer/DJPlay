@@ -1,4 +1,4 @@
-const field = document.querySelector('.field');
+const field = document.querySelector('.field'), new_move_sound = document.querySelector('#new_move_sound');
 let n = 1, move = 1;
 
 // создание точек
@@ -49,6 +49,8 @@ function register_move(dot) {
     dot.innerHTML = move;
 
     move++;
+
+    new_move_sound.play();
 }
 
 // зарегистрировать ход
