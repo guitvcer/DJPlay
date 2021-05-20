@@ -14,9 +14,6 @@ class MainUser(AbstractUser):
     is_online = models.BooleanField(default=False, verbose_name="Онлайн?")
     is_private = models.BooleanField(default=False, verbose_name="Приватный аккаунт?")
 
-    # rating = models.PositiveIntegerField(verbose_name='Рейтинг', default=1000)
-    # rank = models.CharField(verbose_name='Звание', default='Четвертый разряд', max_length=64)
-
     def __str__(self):
         return self.username
 
@@ -75,6 +72,28 @@ class MainUser(AbstractUser):
         """Есть ли доступ user'у просматривать данные этого пользователя"""
 
         return user != self and not self.is_private or user in self.get_friends or user == self
+
+    def get_messages(self, user=None):
+        """Получить все сообщения связанные с двумя пользователями или одним"""
+
+        list_of_ids = []
+
+        if user is None:
+            for message in Message.objects.filter(sent_from=self):
+                list_of_ids.append(message.id)
+
+            for message in Message.objects.filter(sent_to=self):
+                list_of_ids.append(message.id)
+        else:
+            for message in Message.objects.filter(sent_from=self, sent_to=user):
+                list_of_ids.append(message.id)
+
+            for message in Message.objects.filter(sent_from=user, sent_to=self):
+                list_of_ids.append(message.id)
+
+        messages = Message.objects.filter(id__in=list_of_ids)
+
+        return messages
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -144,3 +163,20 @@ class MainUserView(models.Model):
     class Meta:
         verbose_name = 'Просмотр пользователя'
         verbose_name_plural = 'Просмотры пользователя'
+
+
+class Message(models.Model):
+    """Модель сообщения в чате"""
+
+    text = models.CharField(max_length=256, verbose_name="Текст")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
+    sent_from = models.ForeignKey(MainUser, on_delete=models.PROTECT, verbose_name="Отправитель", related_name="+")
+    sent_to = models.ForeignKey(MainUser, on_delete=models.PROTECT, verbose_name="Получатель", related_name="+")
+
+    def __str__(self):
+        return f'От {self.sent_from} к {self.sent_to}'
+
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
+        ordering = ('date', )

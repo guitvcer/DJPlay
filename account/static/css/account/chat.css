@@ -1,0 +1,205 @@
+html {
+    height: 100%;
+}
+main {
+    height: calc(100% - 105px);
+    padding: 0;
+}
+
+#messages {
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    display: flex;
+    border: 2px solid #929aab;
+    border-top: none;
+    border-bottom: none;
+    box-shadow: 0 0 20px rgba(0,0,0, 0.1);
+}
+
+.chatBlock {
+    width: calc(100% - 300px);
+    border-left: 1px solid #393e46;
+    background: #f7f7f7;
+}
+.chatBlock.selected {
+    background: #EEEEEE;
+}
+
+.chatHeader {
+    display: flex;
+    padding: 12px;
+    background: #929aab;
+    width: 100%;
+    border-bottom: 1px solid #393e46;
+}
+.chatUserAvatar {
+    border-radius: 100px;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #393e46;
+}
+.chatUserUsername {
+    font-weight: normal;
+    display: inline;
+    padding-top: 10px;
+    padding-left: 15px;
+}
+.chatUserUsername a {
+    text-decoration: none;
+    font-size: 18px;
+    color: #f7f7f7;
+}
+
+.usersList {
+    width: 300px;
+}
+.userBlock {
+    width: 100%;
+    display: flex;
+    padding: 12px;
+    background: #f7f7f7;
+    cursor: pointer;
+}
+.userBlock .chatUserUsername a {
+    color: #393e46;
+}
+.userBlock:hover, .userBlock.selected {
+    background: white;
+}
+
+.chatMessages {
+    height: calc(100% - 74px - 47px);
+    width: 100%;
+    padding: 5px 10px 5px 10px;
+    overflow: auto;
+}
+.message {
+    width: 100%;
+    margin: 5px 0 5px 0;
+}
+.message-received, .message-sent {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #393e46;
+    display: inline-block;
+    max-width: calc(80%);
+    word-break: break-word;
+}
+.message-sent-wrapper {
+    display: flex;
+    justify-content: flex-end;
+}
+.message-sent {
+    color: #f7f7f7;
+    background: #393e46;
+}
+
+.chatInput {
+    width: 100%;
+}
+.chatInput form {
+    border-top: 1px solid #393e46;
+    padding: 5px 15px 5px 15px;
+}
+#messageInput, #messageSubmit {
+    border: 1px solid #393e46;
+    border-radius: 5px;
+}
+#messageSubmit {
+    cursor: pointer;
+    background: #393e46;
+    color: #f7f7f7;
+    padding: 5px 7px 5px 7px;
+    position: relative;
+    top: 2px;
+}
+#messageSubmit img {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 2px;
+}
+#messageInput {
+    width: calc(100% - 41px);
+    padding: 8px 15px 8px 15px;
+}
+
+.selectChat {
+    font-size: 24px;
+    text-align: center;
+    padding-top: 100px;
+}
+
+.d-none {
+    display: none;
+}
+
+#chatSearchForm {
+    padding: 15px 10px 15px 10px;
+}
+#chatSearchForm input, #chatSearchForm button {
+    border-radius: 5px;
+    border: 1px solid #393e46;
+    margin: 0;
+}
+#chatSearchForm input {
+    padding: 8px 15px 8px 15px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    width: calc(100% - 48px);
+}
+#chatSearchForm button {
+    background: #f0f2f5;
+    padding: 5px 10px 5px 10px;
+    cursor: pointer;
+    position: relative;
+    top: 2.5px;
+    left: -5px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+#chatSearchForm img {
+    width: 21px;
+    height: 21px;
+}
+
+.backButton img {
+    width: 28px;
+    height: 28px;
+}
+.backButton {
+    background: none;
+    border-radius: 100px;
+    cursor: pointer;
+    border: none;
+    width: 50px;
+    height: 50px;
+    margin-right: 5px;
+    padding-top: 3px;
+}
+.backButton:hover {
+    background: #868d9d;
+}
+
+.usersList h2 {
+    padding: 20px 15px 20px 15px;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.lastMessage {
+    font-size: 14px;
+    padding: 0 15px 0 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    line-clamp: 1;
+    box-orient: vertical;
+}

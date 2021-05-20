@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/account/chat.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="messages">
+        <div class="usersList">
+            <h2>Сообщения</h2>
+            <form id="chatSearchForm" class="d-none">
+                <input type="text" name="chatSearch" id="chatSearch" placeholder="Поиск" maxlength="256" autocomplete="off">
+                <button><img src="/media/icons/search.png" alt=""></button>
+            </form>
+            {% for x in users %}
+                <div class="userBlock" id="chat_{{ x.id }}">
+                    <img src="{{ x.avatar.url }}" class="chatUserAvatar" alt="">
+                    <div class="userBlockText">
+                        <h3 class="chatUserUsername"><a href="{% url 'account:chat_user' x.id %}">{{ x.username }}</a></h3>
+                        <p class="lastMessage"></p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="chatBlock">
+            <h3 class="selectChat">Выберите чат, чтобы общаться</h3>
+            <div class="chatHeader d-none">
+                <button class="backButton"><img src="/media/icons/back.png" alt=""></button>
+                <img class="chatUserAvatar" alt="">
+                <h3 class="chatUserUsername"><a class="chatInterlocutor"></a></h3>
+            </div>
+            <div class="chatMessages d-none"></div>
+            <div class="chatInput d-none">
+                <form id="chatForm">
+                    <input type="text" name="messageInput" id="messageInput" placeholder="Сообщение" autocomplete="off">
+                    <button type="submit" id="messageSubmit" title="Отправить"><img src="/media/icons/submit.png" alt=""></button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/account/chat.js' %}"></script>
+{% endblock %}

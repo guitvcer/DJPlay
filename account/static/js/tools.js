@@ -40,3 +40,13 @@ function createAlert(alert_level, message) {
     let h3 = document.querySelector('.alert h3');
     h3.innerHTML = message;
 }
+
+function createNewAlert(alert_level, message) {
+    // создать новое уведомление
+
+    document.body.innerHTML += `
+         <div class="alert ${alert_level}">
+            <h3>${message}</h3>
+            <a class="close">&times;</a>
+        </div>`;
+}

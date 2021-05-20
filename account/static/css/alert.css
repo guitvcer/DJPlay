@@ -9,11 +9,11 @@
 	max-width: 500px;
 	margin: 20px auto;
 	padding: 30px;
-	position: fixed;
 	border-radius: 5px;
 	box-shadow: 0 0 15px 5px #ccc;
 	right: 10px;
 	top: 100px;
+	z-index: 10000;
 }
 
 .alert h3 {
@@ -31,8 +31,12 @@
 	right: 15px;
 	top: 25px;
 	text-align: center;
-	font-size: 15px;
+	font-size: 22px;
 	cursor: pointer;
+}
+
+.simple-alert, .success-alert, .danger-alert, .warning-alert {
+	display: block !important;
 }
 
 .simple-alert {
@@ -83,4 +87,9 @@
     .alert {
         top: 5px;
     }
+}
+
+.constant-alert {
+	display: none;
+	position: fixed;
 }

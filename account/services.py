@@ -1,9 +1,9 @@
 import re
 from django.db.models import Q
-from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
+from .models import Message
 
 from .models import MainUser, FriendRequest
 
@@ -304,3 +304,38 @@ def has_user_access_to_view_data_of_mainuser(mainuser, request):
     else:
         if mainuser.is_private:
             return False
+
+
+def create_message(sent_from, interlocutor, message):
+    """Создать сообщение"""
+
+    sent_to = MainUser.objects.get(username=interlocutor)
+
+    if len(message) < 256:
+        message = Message.objects.create(text=message, sent_from=sent_from, sent_to=sent_to)
+        return message
+    else:
+        return 'Максимальное количество знаков - 256'
+
+
+def get_last_messages_with_every_user(current_user):
+    """Получить последние сообщения с каждым пользователем"""
+
+    all_users = MainUser.objects.all()
+    list_of_ids = []
+
+    for user in all_users:
+        messages = current_user.get_messages(user)
+
+        if messages.count() > 0:
+            list_of_ids.append(messages.last().id)
+
+    messages = Message.objects.filter(id__in=list_of_ids)
+
+    return messages
+
+
+def search_messages(keyword, messages=Message.objects.all()):
+    """Искать сообщение"""
+
+    return messages.filter(Q(text__icontains=keyword))

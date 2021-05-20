@@ -1,11 +1,16 @@
+import json
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from . import forms
 from .models import Game, MainUser, FriendRequest, MainUserView
+from .serializers import MainUserSerializer, MessageSerializer
 from .services import (
     create_mainuser,
     is_authenticated,
@@ -17,7 +22,9 @@ from .services import (
     delete_mainuser,
     change_password_of_user,
     create_or_delete_or_accept_friend_request,
-    has_user_access_to_view_data_of_mainuser
+    has_user_access_to_view_data_of_mainuser,
+    get_last_messages_with_every_user,
+    search_messages
 )
 
 
@@ -130,6 +137,7 @@ def authorization(request):
             response = redirect('/')
             response.set_cookie('access', data['access'])
             response.set_cookie('refresh', data['refresh'])
+            response.set_cookie('id', get_user_by_token(data['access']).id)
             return response
 
     return render(request, 'account/authorization.html', {'form': form})
@@ -142,6 +150,7 @@ def logout(request):
         response = redirect('/')
         response.delete_cookie('access')
         response.delete_cookie('refresh')
+        response.delete_cookie('id')
         return response
 
     return redirect('/')
@@ -271,3 +280,75 @@ def users_views(request, username):
         context['form'] = forms.SearchMainUserForm(request.POST)
 
     return render(request, 'account/users.html', context)
+
+
+def chat(request, id=None):
+    """Страница чата"""
+
+    if is_authenticated(request):
+        return render(request, 'account/chat.html', {'users': MainUser.objects.all()})
+
+    return redirect(reverse('account:authorization'))
+
+
+class ChatUserAPIView(APIView):
+    """API для чата с определенным пользователем"""
+
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, id):
+        interlocutor = MainUser.objects.get(id=id)
+        messages = interlocutor.get_messages(request.user)
+        serializer = MessageSerializer(messages, many=True)
+        data = json.dumps(serializer.data)
+        data = json.loads(data)
+        data.append({
+            'interlocutor': interlocutor.username,
+            'avatar': interlocutor.avatar.url,
+            'link': interlocutor.get_absolute_url(),
+        })
+
+        return Response(data)
+
+
+class ChatUsersAPIView(APIView):
+    """Получить последние сообщения со всех чатов для блока с пользователями слева"""
+
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        messages = get_last_messages_with_every_user(request.user)
+
+        if not messages:
+            return Response([])
+        else:
+            serializer = MessageSerializer(messages, many=True)
+            return Response(serializer.data)
+
+
+class ChatSearchAPIView(APIView):
+    """API поиска сообщений"""
+
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        keyword = request.GET.get('q')
+        messages = search_messages(keyword, request.user.get_messages())
+        serializer = MessageSerializer(messages, many=True)
+
+        return Response(serializer.data)
+
+
+class UserAPIView(APIView):
+    """API возвращающий данные о пользователе по id"""
+
+    def get(self, request):
+        id = request.GET.get('id')
+        user = MainUser.objects.get(id=id)
+
+        if user.is_private:
+            return Response([user.id, user.username, user.is_private])
+
+        serializer = MainUserSerializer(user)
+
+        return Response(serializer.data)
