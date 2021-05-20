@@ -6,7 +6,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="msapplication-TileColor" content="#393e46">
+    <meta name="theme-color" content="#393e46">
     <title>{% block title %}{% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="/media/djplay.ico">
     <link rel="stylesheet" href="{% static 'css/gomoku_home.css' %}">
     <link rel="stylesheet" href="{% static 'css/gomoku_alert.css' %}">
     <link rel="stylesheet" href="{% static 'css/gomoku/gomoku.css' %}">
@@ -21,6 +24,10 @@
         <script src="{% static 'js/gomoku_connection.js' %}"></script>
     {% endif %}
     {% include 'gomoku_messages.html' %}
+    <div class="alert constant-alert">
+        <h3></h3>
+        <a class="close">&times;</a>
+    </div>
     <header>
         <div class="header-wrapper">
             <a href="/"><h1>DJPLAY</h1></a>
@@ -32,7 +39,7 @@
                     </div>
                     <div class="menu">
                         <a href="{{ user.get_absolute_url }}">Профиль</a>
-                        <a href="#">Сообщения</a>
+                        <a href="{% url 'account:chat' %}">Сообщения</a>
                         <a href="{% url 'account:users' %}">Пользователи</a>
                         <a href="{% url 'account:edit_profile' %}">Изменить профиль</a>
                         {% if user.is_superuser %}
@@ -60,5 +67,7 @@
         {% endblock %}
     </main>
     <script src="{% static 'js/gomoku_burger.js' %}"></script>
+    <script src="{% static 'js/chat.js' %}"></script>
+    {% block script %}{% endblock %}
 </body>
 </html>

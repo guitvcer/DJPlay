@@ -5,3 +5,4 @@ migrations
 /media
 /venv
 /.idea
+ngrok.exe

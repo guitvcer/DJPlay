@@ -179,4 +179,3 @@ def get_and_delete_moves_after_returnable_move(party_id, coordinate):
         removable_move.delete()
 
     return moves
-
