@@ -14,4 +14,5 @@ ___
     python manage.py makemigrations account
     python manage.py makemigrations gomoku
     python manage.py migrate
+    python manage.py setup
     python manage.py runserver
