@@ -11,6 +11,7 @@
 	padding: 30px;
 	border-radius: 5px;
 	box-shadow: 0 0 15px 5px #ccc;
+	position: fixed;
 	right: 10px;
 	top: 100px;
 	z-index: 10000;

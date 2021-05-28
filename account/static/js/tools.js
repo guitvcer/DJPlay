@@ -25,6 +25,7 @@ function setEventForClose() {
         .querySelector('.close')
         .addEventListener('click', function(event) {
             event.preventDefault();
+            console.log("CLICKED");
             fadeOut(event.currentTarget.closest('.alert'));
         });
 }

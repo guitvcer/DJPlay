@@ -1,6 +1,6 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -23,6 +23,7 @@
     <script src="{% static 'js/tools.js' %}"></script>
     {% if is_logged_in %}
         <script src="{% static 'js/connection.js' %}"></script>
+        <script src="{% static 'js/chat.js' %}"></script>
     {% endif %}
     {% include 'messages.html' %}
      <div class="alert constant-alert">
@@ -68,7 +69,6 @@
         {% endblock %}
     </main>
     <script src="{% static 'js/burger.js' %}"></script>
-    <script src="{% static 'js/chat.js' %}"></script>
     {% block script %}{% endblock %}
 </body>
 </html>

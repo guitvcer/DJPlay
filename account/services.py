@@ -1,4 +1,3 @@
-import re
 from django.db.models import Q
 from django.shortcuts import redirect
 from django.utils.datastructures import MultiValueDictKeyError
@@ -21,7 +20,7 @@ def is_mainuser_exists(username):
 def is_password_valid(password):
     """Валидация пароля"""
 
-    return re.fullmatch(r'[A-Za-z0-9@#$%^&+=.]{8,}', password)
+    return len(password) >= 8
 
 
 def is_email_exists(email):
@@ -45,11 +44,7 @@ def create_mainuser(data):
         return "Введен недопустимый символ в имени пользователя."
 
     if not is_password_valid(password1):
-        return "<ul>Пароль должен:" \
-               "<li>иметь хотя бы одно число</li>" \
-               "<li>иметь хотя бы по одной букве нижнего и верхнего регистра</li>" \
-               "<li>иметь хотя бы один специальный символ (@#$%^&+=.)</li>" \
-               "<li>быть длиной от 8 символов.</li></ul>"
+        return "<ul>Пароль должен быть от 8 символов."
 
     if password1 != password2:
         return "Пароли не совпадают."

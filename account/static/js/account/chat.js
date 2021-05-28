@@ -173,29 +173,29 @@ document.addEventListener('keydown', function(event) {
 });
 
 // Получение сообщений
-    chatSocket.onmessage = function(e) {
-        let data = JSON.parse(e.data);
+chatSocket.onmessage = function(e) {
+    let data = JSON.parse(e.data);
 
-        if (data.type === 'message') {
-            if (data.sent_from === username) {
-                chatMessages.innerHTML += `
-                    <div class="message message-sent-wrapper">
-                        <div class="message-sent">${data.text}</div>
-                    </div>`;
-            } else {
-                chatMessages.innerHTML += `
-                    <div class="message message-received-wrapper">
-                        <div class="message-received">${data.text}</div>
-                    </div>`;
-                messageSound.play();
-            }
-        } else {
-            createNewAlert('danger-alert', data.text);
-            setEventForClose();
+    if (data.type === 'message') {
+        if (data.sent_from === username && data.sent_to === chatInterlocutor.innerHTML) {
+            chatMessages.innerHTML += `
+                <div class="message message-sent-wrapper">
+                    <div class="message-sent">${data.text}</div>
+                </div>`;
+        } else if (data.sent_from === chatInterlocutor.innerHTML && data.sent_to === username) {
+            chatMessages.innerHTML += `
+                <div class="message message-received-wrapper">
+                    <div class="message-received">${data.text}</div>
+                </div>`;
+            messageSound.play();
         }
-
-        loadLastMessages();
+    } else {
+        createNewAlert('danger-alert', data.text);
+        setEventForClose();
     }
+
+    loadLastMessages();
+}
 
 // Обработчик для отправки сообщений
 chatForm.addEventListener('submit', function(event) {
@@ -213,7 +213,9 @@ chatForm.addEventListener('submit', function(event) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }, 50);
 
-    document.querySelector('.startChat').remove();
+    try {
+        document.querySelector('.startChat').remove();
+    } catch (e) {}
 });
 
 
