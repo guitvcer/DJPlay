@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('gomoku/', include('gomoku.urls')),
+    path('chess/', include('chess.urls')),
 
     path('', home, name='home'),
 ]

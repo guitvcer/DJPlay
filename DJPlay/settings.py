@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     'account',
     'gomoku',
+    'chess',
 ]
 
 MIDDLEWARE = [

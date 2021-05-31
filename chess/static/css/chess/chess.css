@@ -3,60 +3,12 @@ main {
 }
 
 .field {
-    background-image: url("/media/gomoku/field_background.png");
+    background-image: url("/media/chess/field_background.png");
     background-size: 100%;
     width: 700px;
     height: 700px;
     display: flex;
     flex-direction: row;
-}
-
-.dot {
-    width: 35px;
-    height: 35px;
-    border-radius: 100px;
-    border: 1px solid #393e46;
-    background: white;
-    position: relative;
-    bottom: 15px;
-    right: 15px;
-    opacity: 0;
-    cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    justify-content: center;
-    z-index: 999;
-}
-.dot:hover, .blue-dot, .dot:focus {
-    opacity: 100%;
-    border: #393e46 1px solid;
-    border-radius: 100px;
-    background: #393e46;
-    color: #f7f7f7;
-    outline: none;
-}
-
-.dot:not(.new_move), .new_move:hover {
-    padding: 4px;
-}
-.new_move:hover:focus {
-    padding: 0;
-}
-
-.white-dot:hover, .white-dot, .white-dot:focus {
-    opacity: 100%;
-    background: white;
-    color: #393e46;
-    border: #393e46 1px solid;
-}
-
-.new_move, .new_move:focus {
-    border: 5px solid #e48257;
-}
-
-.row_move {
-    background: #f7a7a3;
-    color: #393e46;
 }
 
 .half-main {
@@ -80,18 +32,22 @@ main {
     flex-wrap: wrap;
     align-content: space-between;
 }
-.start p {
+.start p, .start ul, .start li {
     font-size: 20px;
-    display: block;
     width: 100%;
-    margin-bottom: 20px
+}
+.start ul {
+    padding-left: 30px;
+}
+.start p:last-child {
+    margin-bottom: 50px;
 }
 .start button {
     display: block;
     width: 100%;
 }
 
-.findOpponentButton, .cancelWaitingButton, .giveUpButton {
+.findOpponentButton, .cancelWaitingButton, .giveUpButton, .startButton {
     width: 100%;
     padding: 20px;
     text-align: center;
@@ -103,42 +59,17 @@ main {
     text-decoration: none;
     color: #393e46;
 }
-.findOpponentButton:hover, .cancelWaitingButton:hover, .giveUpButton:hover {
+.findOpponentButton:hover, .cancelWaitingButton:hover, .giveUpButton:hover, .startButton:hover {
     background: #eeeeee;
 }
 
-.gomoku {
+.chess {
     width: 100%;
     max-width: 1800px;
     display: flex;
     margin: auto;
     justify-content: space-between;
     padding-left: 50px;
-}
-
-
-.watch_party .control-buttons {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding-top: 30px;
-}
-.watch_party .control-buttons button {
-    font-size: 40px;
-    padding: 20px 50px 28px 50px;
-    cursor: pointer;
-    border-width: 0;
-    background: #eeeeee;
-    color: #393e46;
-    margin-left: 1px;
-    margin-right: 1px;
-    border-radius: 5px;
-    font-weight: bold;
-    width: calc((100% - 6px) / 4);
-}
-.watch_party .control-buttons button:hover {
-    background: #f7f7f7;
 }
 
 
@@ -195,7 +126,7 @@ main {
 
 
 @media (max-width: 1500px) {
-    .gomoku {
+    .chess {
         display: flex;
         flex-direction: column-reverse;
         align-items: center;
@@ -221,7 +152,7 @@ main {
 }
 
 @media (max-width: 900px) {
-    .gomoku {
+    .chess {
         padding: 50px 30px 50px 30px;
     }
     .half-main, .start {
@@ -230,14 +161,14 @@ main {
     * {
         font-size: 14px;
     }
-    .start p {
+    .start p, .start ul, .start li {
         font-size: 16px;
         line-height: 22px;
     }
     .start {
         padding: 40px;
     }
-    .findOpponentButton, .cancelWaitingButton, .giveUpButton {
+    .findOpponentButton, .cancelWaitingButton, .giveUpButton, .startButton {
         font-size: 18px;
     }
     .account .loginRegistration {
@@ -261,32 +192,14 @@ main {
         margin-left: 0;
     }
 
-    .control-buttons button {
-        font-size: 30px !important;
-        padding: 15px 35px 15px 35px !important;
-    }
-
     .field {
-        width: 100%;
-        max-width: 650px;
+        margin-top: 40px;
+        margin-bottom: 40px;
     }
 }
 
 @media (max-width: 600px) {
-    .gomoku {
+    .chess {
         padding: 0 10px 50px 10px;
-    }
-
-    .control-buttons button {
-        font-size: 20px !important;
-        padding: 20px 35px 20px 35px !important;
-    }
-
-    .dot {
-        width: 20px;
-        height: 20px;
-        bottom: 10px;
-        right: 10px;
-        font-size: 0px;
     }
 }

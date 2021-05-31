@@ -6,6 +6,7 @@ from django.urls import reverse
 class MainUser(AbstractUser):
     """Модель основного пользователя"""
 
+    id = models.AutoField(primary_key=True)
     avatar = models.ImageField(default="/user.png", verbose_name="Фото профиля")
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=(('M', 'Мужской'), ('F', 'Женский')),
@@ -104,6 +105,7 @@ class MainUser(AbstractUser):
 class Game(models.Model):
     """Модель игры"""
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, verbose_name="Название игры")
     app_name = models.CharField(max_length=64, verbose_name="Название приложения")
     rules = models.TextField(verbose_name="Правила игры")
@@ -121,6 +123,7 @@ class Game(models.Model):
 class Queue(models.Model):
     """Модель очереди для игры"""
 
+    id = models.AutoField(primary_key=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name="Очередь для")
     player1 = models.ForeignKey(MainUser, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
 
@@ -135,6 +138,7 @@ class Queue(models.Model):
 class FriendRequest(models.Model):
     """Модель для добавления/удаления друзей"""
 
+    id = models.AutoField(primary_key=True)
     request_from = models.ForeignKey(MainUser, on_delete=models.PROTECT, verbose_name="Запрос на дружбу от",
                                      related_name="+")
 
@@ -154,6 +158,7 @@ class FriendRequest(models.Model):
 class MainUserView(models.Model):
     """Модель просмотров пользователя"""
 
+    id = models.AutoField(primary_key=True)
     view_from = models.ForeignKey(MainUser, on_delete=models.PROTECT, verbose_name="Просмотр от", related_name="+")
     view_to = models.ForeignKey(MainUser, on_delete=models.CASCADE, verbose_name="Просмотр к", related_name="+")
 
@@ -168,6 +173,7 @@ class MainUserView(models.Model):
 class Message(models.Model):
     """Модель сообщения в чате"""
 
+    id = models.AutoField(primary_key=True)
     text = models.CharField(max_length=256, verbose_name="Текст")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
     sent_from = models.ForeignKey(MainUser, on_delete=models.PROTECT, verbose_name="Отправитель", related_name="+")
