@@ -15,6 +15,7 @@ class Move(models.Model):
     class Meta:
         verbose_name = 'Ход партии Гомоку'
         verbose_name_plural = 'Ходы партии Гомоку'
+        ordering = ('id', )
 
 
 class Party(models.Model):
