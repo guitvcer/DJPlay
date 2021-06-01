@@ -1,6 +1,7 @@
 const username = document.querySelector('.username').innerHTML,
     startBlock = document.querySelector('.start'), return_move = document.querySelector('#return_move'),
-    AtoO = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'];
+    AtoO = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'],
+    clear_field = document.querySelector('#clear_field');
 
 let party_id, myMove = true, color, opponentUsername, findOpponentSocket, gomokuPartySocket, gomokuChatSocket,
     statusGomokuPartySocket = false;
@@ -47,6 +48,17 @@ function giveUp() {
         'move': 'give_up',
     }));
 }
+
+
+
+clear_field.addEventListener('click', function() {
+    if (statusGomokuPartySocket) {
+        createAlert('danger-alert', 'Во время игры нельзя очищать поле');
+        return;
+    }
+
+    clearField();
+});
 
 
 
