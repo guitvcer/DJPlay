@@ -3,15 +3,17 @@
 {% block title %}DJPlay{% endblock %}
 
 {% block content %}
-    {% for game in all_games %}
-        <div class="game-card">
-            {% if game.is_released %}
-                <img class="image" src="/media/{{ game.image }}" alt="">
-            {% else %}
-                <div class="image"><h2>Скоро!</h2></div>
-            {% endif %}
-            <h3>{{ game.name }}</h3>
-            <a href="/{{ game.app_name }}/" class="play_button">Играть</a>
-        </div>
-    {% endfor %}
+    <div class="home-main">
+        {% for game in all_games %}
+            <div class="game-card">
+                {% if game.is_released %}
+                    <img class="image" src="/media/{{ game.image }}" alt="">
+                {% else %}
+                    <div class="image"><h2>Скоро!</h2></div>
+                {% endif %}
+                <h3>{{ game.name }}</h3>
+                <a href="/{{ game.app_name }}/" class="play_button">Играть</a>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
