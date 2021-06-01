@@ -4,6 +4,7 @@
 [DJPlay](http://13.58.137.214/) - это веб-сайт с логическими играми в реальном времени написанный на Django. Разрабатывалась в целях обучения.
 ## Список игр
 * Гомоку (5 в ряд)
+* Шахматы (в разработке)
 
 ___
 
@@ -13,6 +14,7 @@ ___
     pip install -r requirements.txt
     python manage.py makemigrations account
     python manage.py makemigrations gomoku
+    python manage.py makemigrations chess
     python manage.py migrate
     python manage.py setup
     python manage.py runserver

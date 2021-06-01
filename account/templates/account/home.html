@@ -5,15 +5,13 @@
 {% block content %}
     <div class="home-main">
         {% for game in all_games %}
-            <div class="game-card">
-                {% if game.is_released %}
+            {% if game.is_released %}
+                <div class="game-card">
                     <img class="image" src="/media/{{ game.image }}" alt="">
-                {% else %}
-                    <div class="image"><h2>Скоро!</h2></div>
-                {% endif %}
-                <h3>{{ game.name }}</h3>
-                <a href="/{{ game.app_name }}/" class="play_button">Играть</a>
-            </div>
+                    <h3>{{ game.name }}</h3>
+                    <a href="/{{ game.app_name }}/" class="play_button">Играть</a>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endblock %}
