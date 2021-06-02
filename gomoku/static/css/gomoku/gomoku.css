@@ -201,6 +201,7 @@ main {
         align-items: center;
         width: 100%;
         max-width: none;
+        padding-left: 0;
     }
     .half-main {
         width: 100%;

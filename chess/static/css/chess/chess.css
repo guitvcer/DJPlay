@@ -136,6 +136,14 @@ main {
     justify-content: center;
     align-content: center;
 }
+.fieldCell.selected {
+    border: 2px solid green;
+}
+.available-move {
+    background: yellow;
+    opacity: 0.1;
+    border: 2px dotted orange;
+}
 .piece {
     width: 80%;
     height: 80%;
@@ -155,6 +163,7 @@ main {
         align-items: center;
         width: 100%;
         max-width: none;
+        padding-left: 0;
     }
     .half-main {
         width: 100%;
