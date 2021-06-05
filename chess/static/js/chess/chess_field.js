@@ -1,10 +1,14 @@
-const field = document.querySelector('.field'), a_to_h = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+const field = document.querySelector('.field'), a_to_h = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+    clearField = document.querySelector('#clear_field'),
+    newMoveAudio = new Audio(src='/media/sounds/new_move.mp3');
 
 let selected_piece, color = 'white';
 
 
 // заполнить поле
 function fillField(color) {
+    field.innerHTML = '';
+
     if (color === 'white') {
         for (let i = 8; i >= 1; i--) { // строка (число)
             for (let j = 0; j < 8; j++) { // столбец (буква)
@@ -290,6 +294,13 @@ function movePiece(el) {
 
         unselectAllCells();
 
+        if (status === 'offline') {
+            if (color === 'white') color = 'black';
+            else if (color === 'black') color = 'white';
+        }
+
+        newMoveAudio.play();
+
         return true;
     }
 
@@ -299,6 +310,7 @@ function movePiece(el) {
 
 // обработчик для поля
 document.body.addEventListener('click', function(event) {
+    // ничего не делать если кликнуто за пределами поля
     if (!(event.target.classList.contains('field') || event.target.closest('.field')))
         return;
 
@@ -355,6 +367,15 @@ document.body.addEventListener('keydown', function(event) {
         unselectAllCells();
     }
 })
+
+
+clearField.addEventListener('click', function () {
+    if (status === 'offline') {
+        color = 'white';
+        fillField(color);
+        createAlert('success', 'Доска обновлена.');
+    }
+});
 
 
 fillField(color);
