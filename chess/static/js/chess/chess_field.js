@@ -1,8 +1,10 @@
 const field = document.querySelector('.field'), a_to_h = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
     clearField = document.querySelector('#clear_field'),
-    newMoveAudio = new Audio(src='/media/sounds/new_move.mp3');
+    newMoveAudio = new Audio(src='/media/sounds/new_move.mp3'),
+    pawnTransformationModal = document.querySelector('#pawnTransformationModal'),
+    pawnTransformationModalClose = document.querySelector('#pawnTransformationModal .close');
 
-let selected_piece, color = 'white';
+let selected_piece, color = 'white', status = 'offline';
 
 
 // заполнить поле
@@ -74,6 +76,17 @@ function unselectAllCells() {
     }
 
     selectedPiece = null;
+}
+
+
+// превратить пешку
+function pawnTransformation(el, piece) {
+    let pieceColor;
+
+    if (el.firstChild.classList.contains('white')) pieceColor = 'white';
+    else if (el.firstChild.classList.contains('black')) pieceColor = 'black';
+
+    el.innerHTML = `<img src="/media/chess/pieces/${pieceColor}/${piece}.png`;
 }
 
 
@@ -292,6 +305,15 @@ function movePiece(el) {
         selectedPiece = null;
         el.firstChild.classList.add('moved');
 
+        // показать модаль для превращения пешки
+        if (el.firstChild.classList.contains('pawn')) {
+            if (el.firstChild.classList.contains('white') && el.id.split("")[1] === "8") {
+                pawnTransformationModal.style.display = 'block';
+            } else if (el.firstChild.classList.contains('black') && el.id.split("")[1] === "1") {
+                pawnTransformationModal.style.display = 'block';
+            }
+        }
+
         unselectAllCells();
 
         if (status === 'offline') {
@@ -374,6 +396,48 @@ clearField.addEventListener('click', function () {
         color = 'white';
         fillField(color);
         createAlert('success', 'Доска обновлена.');
+    }
+});
+
+
+// превращение пешки в определнную фигуру (обработчик на нажатие кнопки в модали)
+pawnTransformations.addEventListener('click', function(event) {
+    let pawn, piece = null, color;
+
+    for (let i = 0; i < 8; i++) {
+        let el = document.querySelector(`#${a_to_h[i]}8`);
+
+        if (el.firstChild.classList.contains('pawn')) {
+            pawn = el;
+            break;
+        }
+    }
+
+    if (event.target.id === 'pawnQueen' || event.target.closest('#pawnQueen')) {
+        piece = 'queen';
+
+        if (pawn.firstChild.classList.contains('white')) color = 'white';
+        else if (pawn.firstChild.classList.contains('black')) color = 'black';
+    } else if (event.target.id === 'pawnKnight' || event.target.closest('#pawnKnight')) {
+        piece = 'knight';
+
+        if (pawn.firstChild.classList.contains('white')) color = 'white';
+        else if (pawn.firstChild.classList.contains('black')) color = 'black';
+    } else if (event.target.id === 'pawnRook' || event.target.closest('#pawnRook')) {
+        piece = 'rook';
+
+        if (pawn.firstChild.classList.contains('white')) color = 'white';
+        else if (pawn.firstChild.classList.contains('black')) color = 'black';
+    } else if (event.target.id === 'pawnBishop' || event.target.closest('#pawnBishop')) {
+        piece = 'bishop';
+
+        if (pawn.firstChild.classList.contains('white')) color = 'white';
+        else if (pawn.firstChild.classList.contains('black')) color = 'black';
+    }
+
+    if (piece != null) {
+        pawnTransformationModal.style.display = 'none';
+        pawn.innerHTML = `<img src="/media/chess/pieces/${color}/${piece}.png" class="piece ${piece} ${color}">`;
     }
 });
 
