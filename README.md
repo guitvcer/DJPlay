@@ -12,9 +12,7 @@ ___
     git clone https://github.com/guitvcer/DJPlay.git
     cd DJPlay
     pip install -r requirements.txt
-    python manage.py makemigrations account
-    python manage.py makemigrations gomoku
-    python manage.py makemigrations chess
+    python manage.py makemigrations account gomoku chess
     python manage.py migrate
     python manage.py setup
     python manage.py runserver
