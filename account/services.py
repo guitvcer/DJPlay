@@ -1,4 +1,7 @@
+from django.core.handlers.asgi import ASGIRequest
 from django.db.models import Q
+from django.db.models.query import QuerySet
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
@@ -7,29 +10,29 @@ from .models import Message
 from .models import MainUser, FriendRequest
 
 
-def check_username(username):
+def check_username(username: str) -> bool:
     return " " in username
 
 
-def is_mainuser_exists(username):
+def is_mainuser_exists(username: str) -> bool:
     """Проверка на существования конкретного пользователя"""
 
     return MainUser.objects.filter(username=username).exists()
 
 
-def is_password_valid(password):
+def is_password_valid(password: str) -> bool:
     """Валидация пароля"""
 
     return len(password) >= 8
 
 
-def is_email_exists(email):
+def is_email_exists(email: str) -> bool:
     """Существует ли этот email"""
 
     return MainUser.objects.filter(email=email).exists()
 
 
-def create_mainuser(data):
+def create_mainuser(data: dict) -> (str, bool):
     """Создать основного пользователя"""
 
     username = data['username']
@@ -58,7 +61,7 @@ def create_mainuser(data):
     return True
 
 
-def is_authenticated(request):
+def is_authenticated(request: ASGIRequest) -> bool:
     """Авторизован ли пользователь"""
 
     result = 'access' in request.COOKIES
@@ -72,7 +75,7 @@ def is_authenticated(request):
     return result
 
 
-def get_user_by_token(access_token, refresh_token=None):
+def get_user_by_token(access_token: str, refresh_token=None) -> MainUser:
     """Получить пользователя по токену"""
 
     try:
@@ -89,7 +92,7 @@ def get_user_by_token(access_token, refresh_token=None):
         return logout_mainuser()
 
 
-def update_mainuser(data, user):
+def update_mainuser(data: dict, user: MainUser) -> (str, bool):
     """Обновление данных о пользователе"""
 
     username = data['username']
@@ -133,7 +136,7 @@ def update_mainuser(data, user):
     return True
 
 
-def authorize_user(username, password):
+def authorize_user(username: str, password: str) -> (str, dict):
     """Авторизовать пользователя по логину/паролю"""
 
     error = 'Неверные имя пользователя и/или пароль.'
@@ -156,7 +159,7 @@ def authorize_user(username, password):
     return data
 
 
-def get_active_users_by_filter(request):
+def get_active_users_by_filter(request: ASGIRequest) -> QuerySet:
     """Получить всех активных пользователей по фильтру"""
 
     active_users = MainUser.objects.filter(is_active=True)
@@ -202,7 +205,7 @@ def get_active_users_by_filter(request):
     return active_users
 
 
-def logout_mainuser():
+def logout_mainuser() -> HttpResponseRedirect:
     """Выйти из аккаунта"""
 
     response = redirect('/')
@@ -211,7 +214,7 @@ def logout_mainuser():
     return response
 
 
-def delete_mainuser(user, password):
+def delete_mainuser(user: MainUser, password: str) -> (bool, str):
     """Перевести поле пользователя is_active на False проверив пароль"""
 
     if user.check_password(password):
@@ -222,7 +225,7 @@ def delete_mainuser(user, password):
         return "Неверный пароль."
 
 
-def change_password_of_user(user, data):
+def change_password_of_user(user: MainUser, data: dict) -> (bool, str):
     """Сменить пароль пользователю"""
 
     old_password = data['old_password']
@@ -248,7 +251,7 @@ def change_password_of_user(user, data):
     return True
 
 
-def create_or_delete_or_accept_friend_request(request_from, username_of_request_to):
+def create_or_delete_or_accept_friend_request(request_from: MainUser, username_of_request_to: MainUser) -> str:
     """Создать|удалить|принять запрос на дружбу"""
 
     request_to = MainUser.objects.get(username=username_of_request_to)
@@ -284,7 +287,7 @@ def create_or_delete_or_accept_friend_request(request_from, username_of_request_
         return "Вы отправили запрос на дружбу."
 
 
-def has_user_access_to_view_data_of_mainuser(mainuser, request):
+def has_user_access_to_view_data_of_mainuser(mainuser: MainUser, request: ASGIRequest) -> bool:
     """Имеет ли пользователь просматривать данные mainuser"""
 
     if is_authenticated(request):
@@ -301,7 +304,7 @@ def has_user_access_to_view_data_of_mainuser(mainuser, request):
             return False
 
 
-def create_message(sent_from, interlocutor, message):
+def create_message(sent_from: MainUser, interlocutor: str, message: str) -> (Message, str):
     """Создать сообщение"""
 
     sent_to = MainUser.objects.get(username=interlocutor)
@@ -313,7 +316,7 @@ def create_message(sent_from, interlocutor, message):
         return 'Максимальное количество знаков - 256'
 
 
-def get_last_messages_with_every_user(current_user):
+def get_last_messages_with_every_user(current_user: MainUser) -> QuerySet:
     """Получить последние сообщения с каждым пользователем"""
 
     all_users = MainUser.objects.all()
@@ -330,7 +333,7 @@ def get_last_messages_with_every_user(current_user):
     return messages
 
 
-def search_messages(keyword, messages=Message.objects.all()):
+def search_messages(keyword: str, messages=Message.objects.all()) -> QuerySet:
     """Искать сообщение"""
 
     return messages.filter(Q(text__icontains=keyword))
