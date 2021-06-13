@@ -1,33 +1,4 @@
-from account.models import Game, Queue
-from account.services import get_user_by_token
 from .models import Party, Move, Message
-
-
-def update_queue_of_gomoku(token):
-    """Обновить очередь Гомоку"""
-
-    gomoku = Game.objects.get(name="Гомоку")
-    queue = Queue.objects.get(game=gomoku)
-
-    if token is None:
-        queue.player1 = None
-        queue.save()
-        return
-
-    player = get_user_by_token(token)
-
-    if queue.player1 is None:
-        queue.player1 = player
-        queue.save()
-    elif queue.player1 == player:
-        queue.player1 = None
-        queue.save()
-    else:
-        # если очередь заполнена, создается игра и очищается очередь
-        party = Party.objects.create(player1=queue.player1, player2=player)
-        queue.player1 = None
-        queue.save()
-        return party
 
 
 def player_gives_up(party_id, loser):

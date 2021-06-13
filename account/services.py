@@ -1,3 +1,4 @@
+import random
 from django.core.handlers.asgi import ASGIRequest
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -5,9 +6,9 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
-from .models import Message
-
-from .models import MainUser, FriendRequest
+from chess.models import Party as ChessParty
+from gomoku.models import Party as GomokuParty
+from .models import MainUser, FriendRequest, Message, Queue, Game
 
 
 def check_username(username: str) -> bool:
@@ -337,3 +338,41 @@ def search_messages(keyword: str, messages=Message.objects.all()) -> QuerySet:
     """Искать сообщение"""
 
     return messages.filter(Q(text__icontains=keyword))
+
+
+
+def update_queue(game: Game, token: str) -> (ChessParty, GomokuParty):
+    """Обновить очередь определенной игры"""
+
+    queue = Queue.objects.get(game=game)
+
+    if token is None:
+        queue.player1 = None
+        queue.save()
+        return
+
+    player = get_user_by_token(token)
+
+    if queue.player1 is None:
+        queue.player1 = player
+        queue.save()
+    elif queue.player1 == player:
+        queue.player1 = None
+        queue.save()
+    else:
+        # если очередь заполнена, создается игра и очищается очередь
+        party = None
+
+        if game.name == 'Шахматы':
+            random_int = random.randint(0, 1)
+
+            if random_int == 0:
+                party = ChessParty.objects.create(white=queue.player1, black=player)
+            else:
+                party = ChessParty.objects.create(white=player, black=queue.player1)
+        elif game.name == 'Гомоку':
+            party = GomokuParty.objects.create(player1=queue.player1, player2=player)
+
+        queue.player1 = None
+        queue.save()
+        return party

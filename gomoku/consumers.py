@@ -2,9 +2,11 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
-from account.services import get_user_by_token
-from .services import update_queue_of_gomoku, register_move, create_message, get_last_move_of_player,\
-    get_and_delete_moves_after_returnable_move
+from account.models import Game
+from account.services import get_user_by_token, update_queue
+from .services import register_move, create_message, get_and_delete_moves_after_returnable_move
+
+game = Game.objects.get(name='Гомоку')
 
 
 class FindOpponentConsumer(WebsocketConsumer):
@@ -24,7 +26,7 @@ class FindOpponentConsumer(WebsocketConsumer):
 
     # отключение
     def disconnect(self, close_code):
-        update_queue_of_gomoku(None)
+        update_queue(game, None)
 
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
@@ -35,7 +37,7 @@ class FindOpponentConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data = json.loads(text_data)
         token = text_data['message']
-        new_party = update_queue_of_gomoku(token)
+        new_party = update_queue(game, token)
 
         if new_party is not None:
             async_to_sync(self.channel_layer.group_send)(

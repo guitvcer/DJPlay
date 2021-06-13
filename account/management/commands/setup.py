@@ -13,7 +13,7 @@ class Command(BaseCommand):
             try:
                 gomoku = Game.objects.get(name="Гомоку")
                 Queue.objects.get(game=gomoku)
-            except (Game.DoesNotExist, Queue.DoesNotExist):
+            except Game.DoesNotExist:
                 gomoku = Game.objects.create(
                     name="Гомоку",
                     app_name="gomoku",
@@ -25,11 +25,14 @@ class Command(BaseCommand):
                     is_released=True
                 )
                 Queue.objects.create(game=gomoku)
+            except Queue.DoesNotExist:
+                Queue.objects.create(game=gomoku)
 
             try:
-                Game.objects.get(name='Шахматы')
+                chess = Game.objects.get(name='Шахматы')
+                Queue.objects.get(game=chess)
             except Game.DoesNotExist:
-                Game.objects.create(
+                chess = Game.objects.create(
                     name="Шахматы",
                     app_name="chess",
                     rules="Шахматная партия ведётся между двумя соперниками на шахматной доске путём передвижения"
@@ -41,6 +44,9 @@ class Command(BaseCommand):
                     image="/chess.png",
                     is_released=False
                 )
+                Queue.objects.create(game=chess)
+            except Queue.DoesNotExist:
+                Queue.objects.create(game=chess)
 
             self.stdout.write(self.style.SUCCESS('Database was successfully set up'))
         except OperationalError:

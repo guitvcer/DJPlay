@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'channels',
 
     'account',
-    'gomoku',
     'chess',
+    'gomoku',
 ]
 
 MIDDLEWARE = [
