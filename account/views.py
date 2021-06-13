@@ -128,16 +128,12 @@ def authorization(request):
     form = forms.AuthorizationForm()
 
     if request.method == 'POST':
-        data = authorize_user(request.POST['username'], request.POST['password'])
+        form = forms.AuthorizationForm(request.POST)
 
-        if type(data) == str:
-            messages.add_message(request, messages.ERROR, data)
-        else:
-            response = redirect('/')
-            response.set_cookie('access', data['access'])
-            response.set_cookie('refresh', data['refresh'])
-            response.set_cookie('id', get_user_by_token(data['access']).id)
-            return response
+        if form.is_valid():
+            return form.authorize(redirect('/'))
+
+        messages.add_message(request, messages.ERROR, form.errors)
 
     return render(request, 'account/authorization.html', {'form': form})
 

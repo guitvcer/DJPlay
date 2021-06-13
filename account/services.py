@@ -108,6 +108,12 @@ def update_mainuser(data: dict, user: MainUser) -> (str, bool):
     return True
 
 
+def generate_tokens(mainuser: MainUser) -> dict:
+    refresh = RefreshToken.for_user(mainuser)
+
+    return {'access': str(refresh.access_token), 'refresh': str(refresh)}
+
+
 def authorize_user(username: str, password: str) -> (str, dict):
     """Авторизовать пользователя по логину/паролю"""
 

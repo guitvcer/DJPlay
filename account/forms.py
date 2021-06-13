@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 
 from . import models
+from .services import generate_tokens
 
 
 class RegistrationForm(forms.ModelForm):
@@ -69,7 +70,7 @@ class RegistrationForm(forms.ModelForm):
         fields = ('username', 'password1', 'password2', 'email')
 
 
-class AuthorizationForm(forms.ModelForm):
+class AuthorizationForm(forms.Form):
     """Форма входа в аккаунт пользователя"""
 
     username = forms.CharField(label="", max_length=32, label_suffix="",
@@ -78,9 +79,37 @@ class AuthorizationForm(forms.ModelForm):
         'placeholder': 'Пароль',
         'autocomplete': 'current-password'}))
 
-    class Meta:
-        model = models.MainUser
-        fields = ('username', 'password')
+    def clean_username(self):
+        try:
+            models.MainUser.objects.get(username=self.cleaned_data['username'])
+        except models.MainUser.DoesNotExist:
+            raise ValidationError("Неверные имя пользователя и/или пароль.")
+
+        return self.cleaned_data['username']
+
+    def clean_password(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data['password']
+
+        if username is None:
+            return
+
+        mainuser = models.MainUser.objects.get(username=username)
+
+        if mainuser.check_password(password):
+            return password
+
+        raise ValidationError("Неверные имя пользователя и/или пароль.")
+
+    def authorize(self, response):
+        mainuser = models.MainUser.objects.get(username=self.cleaned_data['username'])
+        tokens = generate_tokens(mainuser)
+
+        response.set_cookie('access', tokens['access'])
+        response.set_cookie('refresh', tokens['refresh'])
+        response.set_cookie('id', mainuser.id)
+
+        return response
 
 
 class DateInput(forms.DateInput):
