@@ -96,7 +96,7 @@ class AuthorizationForm(forms.Form):
 
         mainuser = models.MainUser.objects.get(username=username)
 
-        if mainuser.check_password(password):
+        if mainuser.check_password(password) and mainuser.is_active == True:
             return password
 
         raise ValidationError("Неверные имя пользователя и/или пароль.")
@@ -110,6 +110,15 @@ class AuthorizationForm(forms.Form):
         response.set_cookie('id', mainuser.id)
 
         return response
+
+    def delete(self):
+        print(self)  # без print, self.cleaned_data пропадает почему-то
+        username = self.cleaned_data['username']
+        mainuser = models.MainUser.objects.get(username=username)
+        mainuser.is_active = False
+        mainuser.save()
+
+        return mainuser
 
 
 class DateInput(forms.DateInput):

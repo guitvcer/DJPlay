@@ -170,17 +170,16 @@ def delete_profile(request):
     """Страница удаления профиля"""
 
     if is_authenticated(request):
-        form = forms.MainUserDeleteForm()
+        form = forms.AuthorizationForm()
 
         if request.method == 'POST':
-            form = forms.MainUserDeleteForm(request.POST)
-            result = delete_mainuser(get_user_by_token(request.COOKIES['access']),
-                                     request.POST['password'])
+            form = forms.AuthorizationForm(request.POST)
 
-            if type(result) == str:
-                messages.add_message(request, messages.ERROR, result)
-            else:
+            if form.is_valid:
+                form.delete()
                 return logout_mainuser()
+
+            messages.add_message(request, messages.ERROR, form.errors)
 
         return render(request, 'account/delete_profile.html', {'form': form})
 
