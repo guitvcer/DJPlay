@@ -1,4 +1,7 @@
 from django import forms
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 from . import models
 
@@ -19,6 +22,47 @@ class RegistrationForm(forms.ModelForm):
 
     email = forms.EmailField(label="", label_suffix="",
                              widget=forms.EmailInput(attrs={'placeholder': 'Эл. почта'}))
+
+    def clean_password1(self):
+        password1 = self.cleaned_data['password1']
+        validate_password(password1)
+
+        return password1
+
+    def clean_password2(self):
+
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data['password2']
+
+        if password1 is None:
+            return
+
+        if password1 != password2:
+            raise ValidationError("Пароли не совпадают.")
+
+        return password2
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        validate_email(email)
+
+        try:
+            models.MainUser.objects.get(email=email)
+            raise ValidationError("Пользователь с таким email уже существует.")
+        except models.MainUser.DoesNotExist:
+            return email
+
+    def save(self):
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password1']
+        email = self.cleaned_data['email']
+
+        new_user = models.MainUser(username=username, email=email)
+        new_user.set_password(password)
+        new_user.save()
+
+        return new_user
 
     class Meta:
         model = models.MainUser

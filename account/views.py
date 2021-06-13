@@ -12,7 +12,6 @@ from . import forms
 from .models import Game, MainUser, FriendRequest, MainUserView
 from .serializers import MainUserSerializer, MessageSerializer
 from .services import (
-    create_mainuser,
     is_authenticated,
     get_user_by_token,
     update_mainuser,
@@ -110,12 +109,12 @@ def registration(request):
 
     if request.method == "POST":
         form = forms.RegistrationForm(request.POST)
-        result = create_mainuser(request.POST)
 
-        if result is not True:
-            messages.add_message(request, messages.ERROR, result)
-        else:
+        if form.is_valid():
+            form.save()
             return redirect(reverse('account:authorization'))
+
+        messages.add_message(request, messages.ERROR, form.errors)
 
     return render(request, 'account/registration.html', {'form': form})
 

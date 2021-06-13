@@ -33,35 +33,6 @@ def is_email_exists(email: str) -> bool:
     return MainUser.objects.filter(email=email).exists()
 
 
-def create_mainuser(data: dict) -> (str, bool):
-    """Создать основного пользователя"""
-
-    username = data['username']
-    password1 = data['password1']
-    password2 = data['password2']
-    email = data['email']
-
-    if is_mainuser_exists(username):
-        return "Пользователь уже существует."
-
-    if check_username(username):
-        return "Введен недопустимый символ в имени пользователя."
-
-    if not is_password_valid(password1):
-        return "<ul>Пароль должен быть от 8 символов."
-
-    if password1 != password2:
-        return "Пароли не совпадают."
-
-    if is_email_exists(email):
-        return "Пользователь с этой эл. почтой уже существует."
-
-    mainuser = MainUser.objects.create_user(username, email, password1)
-    mainuser.save()
-
-    return True
-
-
 def is_authenticated(request: ASGIRequest) -> bool:
     """Авторизован ли пользователь"""
 

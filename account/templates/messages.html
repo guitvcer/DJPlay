@@ -13,7 +13,7 @@
                 danger-alert
             {% endif %}">
             {% autoescape off %}
-                <h3>{{ message }}</h3>
+                <h3 id="messageH3">{{ message }}</h3>
             {% endautoescape %}
             <a class="close">&times;</a>
         </div>
@@ -21,5 +21,14 @@
     <script src="{% static 'js/tools.js' %}"></script>
     <script>
         setEventForClose();
+
+        let messageWrapper = document.querySelector('#messageH3').firstChild;
+        let messageText = "";
+
+        for (let i of messageWrapper.childNodes) {
+            messageText += i.childNodes[1].firstChild.innerHTML + "<br>";
+        }
+
+        messageH3.innerHTML = messageText;
     </script>
 {% endif %}
