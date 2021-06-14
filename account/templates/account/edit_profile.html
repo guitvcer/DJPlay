@@ -6,7 +6,7 @@
 
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/account/file-upload.css' %}">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div class="profile edit_profile">
             <div class="user_data">
                 <h2>{{ user.username }} - Профиль</h2>

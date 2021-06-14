@@ -143,7 +143,7 @@ class MainUserUpdateForm(forms.ModelForm):
                                choices=(('M', 'Мужской'), ('F', 'Женский'), (None, 'Не указано')))
 
     birthday = forms.DateField(label="Дата рождения", label_suffix="", required=False,
-                               widget=forms.DateInput(attrs={'placeholder': 'Дата рождения'}))
+                               widget=DateInput(attrs={'placeholder': 'Дата рождения'}))
 
     email = forms.EmailField(label="Эл.почта", label_suffix="",
                              widget=forms.EmailInput(attrs={'placeholder': 'Эл.почта'}))
@@ -155,7 +155,7 @@ class MainUserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = models.MainUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'avatar', 'is_private')
+        fields = ('username', 'first_name', 'last_name', 'email', 'avatar',  'birthday', 'gender', 'is_private')
 
 
 class MainUserDeleteForm(forms.ModelForm):

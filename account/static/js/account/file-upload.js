@@ -6,7 +6,8 @@ var fileInput         = document.querySelector( ".input-file"),
     clear_image_field = document.querySelector("#clear_image_field"),
     avatar            = document.querySelector("#id_avatar"),
     clear_image       = document.querySelector("#id_clear_image"),
-    image             = document.querySelector(".mainuser-avatar img");
+    image             = document.querySelector(".mainuser-avatar img"),
+    id_avatar         = document.querySelector('#id_avatar');
 
 button.addEventListener( "keydown", function( event ) {
     if ( event.keyCode == 13 || event.keyCode == 32 ) {
@@ -25,6 +26,7 @@ fileInput.addEventListener( "change", function( event ) {
             reader = new FileReader();
 
         reader.readAsDataURL(file);
+
         reader.onload = function() {
             image.src = reader.result;
         }

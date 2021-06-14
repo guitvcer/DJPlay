@@ -25,10 +25,12 @@
         let messageWrapper = document.querySelector('#messageH3').firstChild;
         let messageText = "";
 
-        for (let i of messageWrapper.childNodes) {
-            messageText += i.childNodes[1].firstChild.innerHTML + "<br>";
-        }
+        if (messageWrapper.tagName === 'UL') {
+            for (let i of messageWrapper.childNodes) {
+                messageText += i.childNodes[1].firstChild.innerHTML + "<br>";
+            }
 
-        messageH3.innerHTML = messageText;
+            messageH3.innerHTML = messageText;
+        }
     </script>
 {% endif %}

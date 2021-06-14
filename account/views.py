@@ -85,14 +85,15 @@ def edit_profile(request):
         form = forms.MainUserUpdateForm(instance=user)
 
         if request.method == 'POST':
-            form = forms.MainUserUpdateForm(request.POST)
-            result = update_mainuser(request.POST, get_user_by_token(token))
+            form = forms.MainUserUpdateForm(request.POST, request.FILES, instance=user)
 
-            if result is not True:
-                messages.add_message(request, messages.ERROR, result)
-            else:
+            if form.is_valid():
+                form.save()
                 messages.add_message(request, messages.SUCCESS, "Ваш профиль был обновлен")
+
                 return redirect(reverse('account:profile'))
+
+            messages.add_message(request, messages.ERROR, form.errors)
 
         return render(request, 'account/edit_profile.html', {'form': form})
 
