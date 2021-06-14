@@ -180,7 +180,7 @@ class MainUserChangePasswordForm(forms.ModelForm):
     def clean_old_password(self):
         old_password = self.cleaned_data['old_password']
 
-        if self.mainuser.check_password(old_password):
+        if self.instance.check_password(old_password):
             return old_password
 
         raise ValidationError("Введен неверный старый пароль.")
@@ -204,10 +204,10 @@ class MainUserChangePasswordForm(forms.ModelForm):
         return password2
 
     def save(self):
-        self.mainuser.set_password(self.cleaned_data['password1'])
-        self.mainuser.save()
+        self.instance.set_password(self.cleaned_data['password1'])
+        self.instance.save()
 
-        return self.mainuser
+        return self.instance
 
     class Meta:
         model = models.MainUser

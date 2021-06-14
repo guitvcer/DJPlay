@@ -109,6 +109,7 @@ def registration(request):
 
         if form.is_valid():
             form.save()
+            messages.add_message(request, messages.SUCCESS, 'Вы успешно зарегистрировались.')
             return redirect(reverse('account:authorization'))
 
         messages.add_message(request, messages.ERROR, form.errors)
@@ -128,7 +129,13 @@ def authorization(request):
         form = forms.AuthorizationForm(request.POST)
 
         if form.is_valid():
-            return form.authorize(redirect('/'))
+            messages.add_message(request, messages.SUCCESS, 'Вы успешно вошли в аккаунт.')
+            redirect_url = '/'
+
+            if request.GET.get('next'):
+                redirect_url = request.GET['next']
+
+            return form.authorize(redirect(redirect_url))
 
         messages.add_message(request, messages.ERROR, form.errors)
 
@@ -139,12 +146,15 @@ def logout(request):
     """Выход из аккаунта"""
 
     if is_authenticated(request):
+        messages.add_message(request, messages.SUCCESS, 'Вы успешно вышли из аккаунта.')
+
         response = redirect('/')
         response.delete_cookie('access')
         response.delete_cookie('refresh')
         response.delete_cookie('id')
         return response
 
+    messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
     return redirect('/')
 
 
@@ -174,30 +184,37 @@ def delete_profile(request):
 
             if form.is_valid:
                 form.delete()
+                messages.add_message(request, messages.SUCCESS, 'Вы успешно удалили свой аккаунт.')
                 return logout_mainuser()
 
             messages.add_message(request, messages.ERROR, form.errors)
 
         return render(request, 'account/delete_profile.html', {'form': form})
 
+    messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
     return redirect(reverse('account:authorization'))
 
 
 def change_password(request):
     """Сменить пароль"""
 
-    form = forms.MainUserChangePasswordForm()
-    if request.method == 'POST':
-        form = forms.MainUserChangePasswordForm(request.POST)
-        form.mainuser = get_user_by_token(request.COOKIES['access'])
+    if is_authenticated(request):
+        form = forms.MainUserChangePasswordForm()
+        if request.method == 'POST':
+            mainuser = get_user_by_token(request.COOKIES['access'])
+            form = forms.MainUserChangePasswordForm(request.POST, instance=mainuser)
 
-        if form.is_valid():
-            form.save()
-            return logout_mainuser()
+            if form.is_valid():
+                form.save()
+                messages.add_message(request, messages.SUCCESS, "Вы успешно сменили пароль.")
+                return logout_mainuser()
 
-        messages.add_message(request, messages.ERROR, form.errors)
+            messages.add_message(request, messages.ERROR, form.errors)
 
-    return render(request, 'account/change_password.html', {'form': form})
+        return render(request, 'account/change_password.html', {'form': form})
+
+    messages.add_message(request, messages.WARNING, 'Вы не авторизованы')
+    return redirect('/')
 
 
 def friend_request(request, username_of_request_to):

@@ -19,7 +19,8 @@
             <div class="start">
                 <p>{{ game.rules }}</p>
                 {% if not is_logged_in %}
-                    <a href="{% url 'account:authorization' %}" class="findOpponentButton">Найти соперника</a>
+                    <a href="{% url 'account:authorization' %}?next={{ request.path }}"
+                       class="findOpponentButton">Найти соперника</a>
                 {% endif %}
             </div>
         </div>

@@ -40,7 +40,7 @@
                 <p>{{ game.rules|safe }}</p>
                 <button class="startButton" id="playVSComputer">Играть против компьютера</button>
                 {% if not is_logged_in %}
-                    <a href="{% url 'account:authorization' %}" class="findOpponentButton">Найти соперника</a>
+                    <a href="{% url 'account:authorization' %}?next={{ request.path }}" class="findOpponentButton">Найти соперника</a>
                 {% endif %}
             </div>
         </div>
