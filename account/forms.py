@@ -181,6 +181,38 @@ class MainUserChangePasswordForm(forms.ModelForm):
     password2 = forms.CharField(label="", label_suffix="",
                                    widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль'}))
 
+    def clean_old_password(self):
+        old_password = self.cleaned_data['old_password']
+
+        if self.mainuser.check_password(old_password):
+            return old_password
+
+        raise ValidationError("Введен неверный старый пароль.")
+
+    def clean_password1(self):
+        password1 = self.cleaned_data['password1']
+        validate_password(password1)
+
+        return password1
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data['password2']
+
+        if password1 is None:
+            return
+
+        if password1 != password2:
+            raise ValidationError("Пароли не совпадают.")
+
+        return password2
+
+    def save(self):
+        self.mainuser.set_password(self.cleaned_data['password1'])
+        self.mainuser.save()
+
+        return self.mainuser
+
     class Meta:
         model = models.MainUser
         fields = ('old_password', 'password1', 'password2')

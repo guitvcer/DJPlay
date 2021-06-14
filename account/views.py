@@ -192,12 +192,13 @@ def change_password(request):
     form = forms.MainUserChangePasswordForm()
     if request.method == 'POST':
         form = forms.MainUserChangePasswordForm(request.POST)
-        result = change_password_of_user(get_user_by_token(request.COOKIES['access']), request.POST)
+        form.mainuser = get_user_by_token(request.COOKIES['access'])
 
-        if type(result) == str:
-            messages.add_message(request, messages.ERROR, result)
-        else:
+        if form.is_valid():
+            form.save()
             return logout_mainuser()
+
+        messages.add_message(request, messages.ERROR, form.errors)
 
     return render(request, 'account/change_password.html', {'form': form})
 
