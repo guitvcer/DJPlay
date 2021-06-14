@@ -14,12 +14,8 @@ from .serializers import MainUserSerializer, MessageSerializer
 from .services import (
     is_authenticated,
     get_user_by_token,
-    update_mainuser,
-    authorize_user,
     get_active_users_by_filter,
     logout_mainuser,
-    delete_mainuser,
-    change_password_of_user,
     create_or_delete_or_accept_friend_request,
     has_user_access_to_view_data_of_mainuser,
     get_last_messages_with_every_user,

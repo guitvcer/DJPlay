@@ -158,17 +158,6 @@ class MainUserUpdateForm(forms.ModelForm):
         fields = ('username', 'first_name', 'last_name', 'email', 'avatar',  'birthday', 'gender', 'is_private')
 
 
-class MainUserDeleteForm(forms.ModelForm):
-    """Форма для удаления профиля"""
-
-    password = forms.CharField(label="", label_suffix="",
-                               widget=forms.PasswordInput(attrs={'placeholder': 'Введите пароль'}))
-
-    class Meta:
-        model = models.MainUser
-        fields = ('password', )
-
-
 class MainUserChangePasswordForm(forms.ModelForm):
     """Форма для смены пароля пользователя"""
 

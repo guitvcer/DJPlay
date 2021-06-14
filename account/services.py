@@ -11,28 +11,6 @@ from gomoku.models import Party as GomokuParty
 from .models import MainUser, FriendRequest, Message, Queue, Game
 
 
-def check_username(username: str) -> bool:
-    return " " in username
-
-
-def is_mainuser_exists(username: str) -> bool:
-    """Проверка на существования конкретного пользователя"""
-
-    return MainUser.objects.filter(username=username).exists()
-
-
-def is_password_valid(password: str) -> bool:
-    """Валидация пароля"""
-
-    return len(password) >= 8
-
-
-def is_email_exists(email: str) -> bool:
-    """Существует ли этот email"""
-
-    return MainUser.objects.filter(email=email).exists()
-
-
 def is_authenticated(request: ASGIRequest) -> bool:
     """Авторизован ли пользователь"""
 
@@ -64,77 +42,10 @@ def get_user_by_token(access_token: str, refresh_token=None) -> MainUser:
         return logout_mainuser()
 
 
-def update_mainuser(data: dict, user: MainUser) -> (str, bool):
-    """Обновление данных о пользователе"""
-
-    username = data['username']
-    email = data['email']
-    birthday = data['birthday']
-    first_name = data['first_name']
-    last_name = data['last_name']
-    gender = data['gender']
-    is_private = data.get('is_private', False)
-    avatar = data.get('avatar', False)
-    clear_image = data['clear_image']
-
-    if is_mainuser_exists(username) and user.username != username:
-        return "Это имя пользователя уже занято."
-
-    if is_email_exists(email) and user.email != email:
-        return "Эту эл.почту уже использует другой пользователь."
-
-    user.username = username
-    user.email = email
-
-    if birthday != "":
-        user.birthday = birthday
-
-    user.first_name = first_name
-    user.last_name = last_name
-    user.gender = gender
-
-    if clear_image == 'on':
-        user.avatar = '/user.png'
-    elif avatar != "" and avatar is not False:
-        user.avatar = avatar
-
-    if is_private == 'on':
-        user.is_private = True
-    else:
-        user.is_private = False
-
-    user.save()
-
-    return True
-
-
 def generate_tokens(mainuser: MainUser) -> dict:
     refresh = RefreshToken.for_user(mainuser)
 
     return {'access': str(refresh.access_token), 'refresh': str(refresh)}
-
-
-def authorize_user(username: str, password: str) -> (str, dict):
-    """Авторизовать пользователя по логину/паролю"""
-
-    error = 'Неверные имя пользователя и/или пароль.'
-
-    if not is_mainuser_exists(username):
-        return error
-
-    mainuser = MainUser.objects.get(username=username)
-
-    if mainuser.is_active is False:
-        return 'Ваш профиль был удален.'
-
-    if not mainuser.check_password(password):
-        return error
-
-    refresh = RefreshToken.for_user(mainuser)
-
-    data = {'access': str(refresh.access_token), 'refresh': str(refresh)}
-
-    return data
 
 
 def get_active_users_by_filter(request: ASGIRequest) -> QuerySet:
@@ -190,43 +101,6 @@ def logout_mainuser() -> HttpResponseRedirect:
     response.delete_cookie('access')
     response.delete_cookie('refresh')
     return response
-
-
-def delete_mainuser(user: MainUser, password: str) -> (bool, str):
-    """Перевести поле пользователя is_active на False проверив пароль"""
-
-    if user.check_password(password):
-        user.is_active = False
-        user.save()
-        return True
-    else:
-        return "Неверный пароль."
-
-
-def change_password_of_user(user: MainUser, data: dict) -> (bool, str):
-    """Сменить пароль пользователю"""
-
-    old_password = data['old_password']
-    password1 = data['password1']
-    password2 = data['password2']
-
-    if not user.check_password(old_password):
-        return "Введен неверный старый пароль."
-
-    if not is_password_valid(password1):
-        return "<ul>Пароль должен:" \
-               "<li>иметь хотя бы одно число</li>" \
-               "<li>иметь хотя бы по одной букве нижнего и верхнего регистра</li>" \
-               "<li>иметь хотя бы один специальный символ (@#$%^&+=.)</li>" \
-               "<li>быть длиной от 8 символов.</li></ul>"
-
-    if password1 != password2:
-        return "Пароли не совпадают."
-
-    user.set_password(password1)
-    user.save()
-
-    return True
 
 
 def create_or_delete_or_accept_friend_request(request_from: MainUser, username_of_request_to: MainUser) -> str:
