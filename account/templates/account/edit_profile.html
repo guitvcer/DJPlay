@@ -82,7 +82,7 @@
                 <div id="clear_image_field" title="Удалить изображение">&#10006;</div>
                 <img src="{{ user.avatar.url }}" alt="">
                 <div class="input-file-container">
-                    <input type="hidden" id="id_clear_image" name="clear_image" value="off">
+                    {{ form.remove_avatar }}
                     <input type="file" class="input-file" id="id_avatar" name="avatar">
                     <label tabindex="0" for="my-file" class="input-file-trigger">Загрузить</label>
                     <p class="file-return">{% if user.photo.url != '/media/user.png' %}{{ user.photo.url }}{% endif %}</p>

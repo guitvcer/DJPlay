@@ -148,10 +148,17 @@ class MainUserUpdateForm(forms.ModelForm):
     email = forms.EmailField(label="Эл.почта", label_suffix="",
                              widget=forms.EmailInput(attrs={'placeholder': 'Эл.почта'}))
 
+    remove_avatar = forms.CharField(widget=forms.HiddenInput(), required=False)
     avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'input-file'}))
 
     is_private = forms.BooleanField(label="Приватный аккаунт?", label_suffix="", required=False,
                                     widget=forms.CheckboxInput(attrs={'class': 'switch'}))
+
+    def clean_remove_avatar(self):
+        if self.cleaned_data['remove_avatar'] == 'off':
+            self.cleaned_data['avatar'] = '/user.png'
+
+            return self.cleaned_data['avatar']
 
     class Meta:
         model = models.MainUser

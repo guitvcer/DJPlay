@@ -5,20 +5,21 @@ var fileInput         = document.querySelector( ".input-file"),
     the_return        = document.querySelector(".file-return"),
     clear_image_field = document.querySelector("#clear_image_field"),
     avatar            = document.querySelector("#id_avatar"),
-    clear_image       = document.querySelector("#id_clear_image"),
     image             = document.querySelector(".mainuser-avatar img"),
-    id_avatar         = document.querySelector('#id_avatar');
+    remove_avatar     = document.querySelector('#id_remove_avatar');
 
 button.addEventListener( "keydown", function( event ) {
-    if ( event.keyCode == 13 || event.keyCode == 32 ) {
+    if (event.keyCode == 13 || event.keyCode == 32) {
         fileInput.focus();
     }
 });
 button.addEventListener( "click", function( event ) {
-   fileInput.focus();
-   return false;
+    fileInput.focus();
+    return false;
 });
 fileInput.addEventListener( "change", function( event ) {
+    remove_avatar.value = "";
+
     the_return.innerHTML = this.value;
 
     if (event.target.files && event.target.files[0]) {
@@ -32,9 +33,8 @@ fileInput.addEventListener( "change", function( event ) {
         }
     }
 });
-clear_image_field.addEventListener("click", function(event) {
-    avatar.value = "";
+clear_image_field.addEventListener("click", function() {
+    remove_avatar.value = 'off';
     the_return.innerHTML = "";
     image.src = "/media/user.png";
-    clear_image.value = "on";
 });
