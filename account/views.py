@@ -1,13 +1,13 @@
 import json
 from django.contrib import messages
-from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView, ListView, FormView, CreateView, UpdateView, DetailView, View
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
+from gomoku.models import Party
 from . import forms
 from .models import Game, MainUser, FriendRequest, MainUserView
 from .serializers import MainUserSerializer, MessageSerializer
@@ -19,285 +19,336 @@ from .services import (
     create_or_delete_or_accept_friend_request,
     has_user_access_to_view_data_of_mainuser,
     get_last_messages_with_every_user,
-    search_messages
+    search_messages,
+    UsersMixin,
 )
 
 
-def home(request):
+class HomeView(TemplateView):
     """Главная страница"""
 
-    return render(request, 'account/home.html', {'all_games': Game.objects.all()})
+    template_name = 'account/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['all_games'] = Game.objects.all()
+        return context
 
 
-def profile(request, username=None):
-    """Страница профиля пользователя"""
+class ProfileView(DetailView):
+    """Страния профиля пользователя"""
 
-    context = {}
+    model = MainUser
+    template_name = 'account/profile.html'
 
-    if username is not None:
-        mainuser = get_object_or_404(MainUser, username=username)
+    def get(self, request, *args, **kwargs):
+        if kwargs.get('username') is None and is_authenticated(request) is False:
+            messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
+            return redirect('/')
 
-        context['mainuser'] = mainuser
+        return super().get(request, *args, **kwargs)
 
-        if is_authenticated(request):
+    def get_object(self):
+        username = self.kwargs.get('username')
 
-            user = get_user_by_token(request.COOKIES['access'])
+        if username is None:
+            return get_user_by_token(self.kwargs['access'])
 
-            if mainuser != user:
-                try:
-                    MainUserView.objects.get(view_from=user, view_to=mainuser)
-                except MainUserView.DoesNotExist:
-                    MainUserView.objects.create(view_from=user, view_to=mainuser)
+        return get_object_or_404(MainUser, username=username)
 
-            try:
-                context['friend_request'] = FriendRequest.objects.get(
-                    request_from=get_user_by_token(request.COOKIES['access']),
-                    request_to=context['mainuser'])
-            except FriendRequest.DoesNotExist:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        print(kwargs)
+
+        if self.object is not None:
+            context['mainuser'] = self.object
+
+            if is_authenticated(self.request):
+
+                user = get_user_by_token(self.request.COOKIES['access'])
+
+                if self.object != user:
+                    try:
+                        MainUserView.objects.get(view_from=user, view_to=self.object)
+                    except MainUserView.DoesNotExist:
+                        MainUserView.objects.create(view_from=user, view_to=self.object)
+
                 try:
                     context['friend_request'] = FriendRequest.objects.get(
-                        request_from=context['mainuser'],
-                        request_to=get_user_by_token(request.COOKIES['access'])
-                    )
+                        request_from=get_user_by_token(self.request.COOKIES['access']),
+                        request_to=context['mainuser'])
                 except FriendRequest.DoesNotExist:
-                    pass
-            except KeyError:
-                context['friend_request'] = None
+                    try:
+                        context['friend_request'] = FriendRequest.objects.get(
+                            request_from=context['mainuser'],
+                            request_to=get_user_by_token(self.request.COOKIES['access'])
+                        )
+                    except FriendRequest.DoesNotExist:
+                        pass
+                except KeyError:
+                    context['friend_request'] = None
+        else:
+            context['mainuser'] = get_user_by_token(self.request.COOKIES['access'])
 
-    elif is_authenticated(request):
-        context['mainuser'] = get_user_by_token(request.COOKIES['access'])
-    else:
-        return redirect('/')
-
-    return render(request, 'account/profile.html', context)
+        return context
 
 
-def edit_profile(request):
+class EditProfileView(UpdateView):
     """Страница обновления данных о пользователе"""
 
-    if is_authenticated(request):
-        token = request.COOKIES['access']
-        user = get_user_by_token(token)
-        form = forms.MainUserUpdateForm(instance=user)
+    model = MainUser
+    template_name = 'account/edit_profile.html'
+    form_class = forms.MainUserUpdateForm
+    success_url = reverse_lazy('account:profile')
 
-        if request.method == 'POST':
-            form = forms.MainUserUpdateForm(request.POST, request.FILES, instance=user)
+    def get(self, request, *args, **kwargs):
+        if is_authenticated(request):
+            return super().get(request, *args, **kwargs)
 
-            if form.is_valid():
-                form.save()
-                messages.add_message(request, messages.SUCCESS, "Ваш профиль был обновлен")
-
-                return redirect(reverse('account:profile'))
-
-            messages.add_message(request, messages.ERROR, form.errors)
-
-        return render(request, 'account/edit_profile.html', {'form': form})
-
-    return redirect('/')
-
-
-def registration(request):
-    """Страница регистрации пользователя"""
-
-    if is_authenticated(request):
+        messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
         return redirect('/')
 
-    form = forms.RegistrationForm()
+    def get_object(self, queryset=None):
+        return get_user_by_token(self.request.COOKIES['access'])
 
-    if request.method == "POST":
-        form = forms.RegistrationForm(request.POST)
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Ваш профиль был обновлен.')
+        return super().form_valid(form)
 
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS, 'Вы успешно зарегистрировались.')
-            return redirect(reverse('account:authorization'))
-
-        messages.add_message(request, messages.ERROR, form.errors)
-
-    return render(request, 'account/registration.html', {'form': form})
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
 
 
-def authorization(request):
+class RegistrationView(CreateView):
+    """Страница регистрациия пользователя"""
+
+    model = MainUser
+    template_name = 'account/registration.html'
+    form_class = forms.RegistrationForm
+    success_url = reverse_lazy('account:authorization')
+
+    def get(self, request, *args, **kwargs):
+        if is_authenticated(request):
+            messages.add_message(request, messages.WARNING, 'Вы уже авторизованы.')
+            return redirect('/')
+
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Вы успешно зарегистрировались.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
+
+
+class AuthorizationView(FormView):
     """Страница входа в аккаунт пользователя"""
 
-    if is_authenticated(request):
-        return redirect('/')
+    model = MainUser
+    template_name = 'account/authorization.html'
+    form_class = forms.AuthorizationForm
 
-    form = forms.AuthorizationForm()
+    def get(self, request, *args, **kwargs):
+        if is_authenticated(request):
+            messages.add_message(self.request, messages.WARNING, 'Вы уже авторизованы')
+            return redirect('/')
 
-    if request.method == 'POST':
-        form = forms.AuthorizationForm(request.POST)
+        return self.render_to_response(self.get_context_data())
 
-        if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, 'Вы успешно вошли в аккаунт.')
-            redirect_url = '/'
+    def get_success_url(self):
+        return self.kwargs.get('next', '/')
 
-            if request.GET.get('next'):
-                redirect_url = request.GET['next']
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Вы успешно вошли в аккаунт.')
+        return form.authorize(redirect(self.get_success_url()))
 
-            return form.authorize(redirect(redirect_url))
-
-        messages.add_message(request, messages.ERROR, form.errors)
-
-    return render(request, 'account/authorization.html', {'form': form})
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, self.get_form().errors)
+        return super().form_invalid(self.get_form())
 
 
-def logout(request):
+class LogoutView(View):
     """Выход из аккаунта"""
 
-    if is_authenticated(request):
-        messages.add_message(request, messages.SUCCESS, 'Вы успешно вышли из аккаунта.')
+    @staticmethod
+    def get(request, *args, **kwargs):
+        if is_authenticated(request):
+            messages.add_message(request, messages.SUCCESS, 'Вы успешно вышли из аккаунта.')
 
-        response = redirect('/')
-        response.delete_cookie('access')
-        response.delete_cookie('refresh')
-        response.delete_cookie('id')
-        return response
+            response = redirect('/')
+            response.delete_cookie('access')
+            response.delete_cookie('refresh')
+            response.delete_cookie('id')
+            return response
 
-    messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
-    return redirect('/')
-
-
-def users(request):
-    """Страница со всеми пользователями сайта"""
-
-    active_users = get_active_users_by_filter(request)
-    context = {
-        'active_users': active_users,
-        'form': forms.SearchMainUserForm(),
-        'title': 'Пользователи DJPlay',
-    }
-    if request.method == 'POST':
-        context['form'] = forms.SearchMainUserForm(request.POST)
-
-    return render(request, 'account/users.html', context)
+        messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
 
 
-def delete_profile(request):
+class DeleteProfileView(FormView):
     """Страница удаления профиля"""
 
-    if is_authenticated(request):
-        form = forms.AuthorizationForm()
+    model = MainUser
+    template_name = 'account/delete_profile.html'
+    success_url = '/'
+    form_class = forms.AuthorizationForm
 
-        if request.method == 'POST':
-            form = forms.AuthorizationForm(request.POST)
+    def get(self, request, *args, **kwargs):
+        if is_authenticated(request):
+            return super().get(request, *args, **kwargs)
 
-            if form.is_valid:
-                form.delete()
-                messages.add_message(request, messages.SUCCESS, 'Вы успешно удалили свой аккаунт.')
-                return logout_mainuser()
+        messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
+        return redirect('/')
 
-            messages.add_message(request, messages.ERROR, form.errors)
+    def get_object(self):
+        return get_user_by_token(self.request.COOKIES['access'])
 
-        return render(request, 'account/delete_profile.html', {'form': form})
+    def form_valid(self, form):
+        form.delete()
+        messages.add_message(self.request, messages.SUCCESS, 'Вы успешно удалили свой аккаунт.')
+        return logout_mainuser()
 
-    messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
-    return redirect(reverse('account:authorization'))
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
 
 
-def change_password(request):
+class ChangePasswordView(FormView):
     """Сменить пароль"""
 
-    if is_authenticated(request):
-        form = forms.MainUserChangePasswordForm()
-        if request.method == 'POST':
-            mainuser = get_user_by_token(request.COOKIES['access'])
-            form = forms.MainUserChangePasswordForm(request.POST, instance=mainuser)
+    model = MainUser
+    template_name = 'account/change_password.html'
+    form_class = forms.MainUserChangePasswordForm
 
-            if form.is_valid():
-                form.save()
-                messages.add_message(request, messages.SUCCESS, "Вы успешно сменили пароль.")
-                return logout_mainuser()
+    def get(self, request, *args, **kwargs):
+        if is_authenticated(request):
+            return super().get(request, *args, **kwargs)
 
-            messages.add_message(request, messages.ERROR, form.errors)
+        messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
+        return redirect('/')
 
-        return render(request, 'account/change_password.html', {'form': form})
+    def get_form(self):
+        mainuser = self.get_object()
+        return self.form_class(instance=mainuser, **self.get_form_kwargs())
 
-    messages.add_message(request, messages.WARNING, 'Вы не авторизованы')
-    return redirect('/')
+    def get_object(self):
+        return get_user_by_token(self.request.COOKIES['access'])
+
+    def form_valid(self, form):
+        form.save()
+        messages.add_message(self.request, messages.SUCCESS, 'Вы успешно сменили пароль.')
+        return logout_mainuser(reverse('account:authorization'))
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
 
 
-def friend_request(request, username_of_request_to):
+class FriendRequestView(View):
     """Отправить запрос на дружбу"""
 
-    if is_authenticated(request):
-        result = create_or_delete_or_accept_friend_request(
-            get_user_by_token(request.COOKIES['access']),
-            username_of_request_to)
+    @staticmethod
+    def get(request, *args, **kwargs):
+        if is_authenticated(request):
+            result = create_or_delete_or_accept_friend_request(
+                get_user_by_token(request.COOKIES['access']),
+                kwargs['username_of_request_to'])
 
-        messages.add_message(request, messages.SUCCESS, result)
-        return redirect(reverse('account:users_profile', args=(username_of_request_to,)))
+            messages.add_message(request, messages.SUCCESS, result)
+            return redirect(reverse('account:users_profile', args=(kwargs['username_of_request_to'],)))
 
-    return redirect(reverse('account:authorization'))
-
-
-def gomoku_parties(request, username):
-    """Страница сыгранных партии конкретного пользователя"""
-
-    mainuser = MainUser.objects.get(username=username)
-    mainusers_all_parties = mainuser.get_gomoku_parties()
-
-    paginator = Paginator(mainusers_all_parties, 10)
-    if 'page' in request.GET:
-        page_num = request.GET['page']
-    else:
-        page_num = 1
-    page = paginator.get_page(page_num)
-
-    return render(request, 'account/gomoku_parties.html', {
-        'mainuser': mainuser,
-        'parties': page.object_list,
-        'page': page,
-    })
+        messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
+        return redirect(reverse('account:users_profile', args=(kwargs['username_of_request_to'],)))
 
 
-def users_friends(request, username):
+class GomokuPartiesView(ListView):
+    """Страница сыгранных партии определенного пользователя"""
+
+    model = Party
+    paginate_by = 10
+    context_object_name = 'parties'
+    template_name = 'account/gomoku_parties.html'
+
+    def get_mainuser(self):
+        return get_object_or_404(MainUser, username=self.kwargs['username'])
+
+    def get_queryset(self):
+        return self.get_mainuser().get_gomoku_parties()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mainuser'] = self.get_mainuser()
+        return context
+
+
+class UsersView(UsersMixin, FormView, ListView):
+    """Страница со всеми пользователями сайта"""
+
+    form_class = forms.SearchMainUserForm
+
+    def get(self, request, *args, **kwargs):
+        self.mainuser = get_user_by_token(request.COOKIES['access'])
+
+        return super(ListView, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        self.object_list = get_active_users_by_filter(self.request)
+        return self.object_list
+
+
+class UsersFriendView(FormView, ListView, UsersMixin):
     """Страница списка друзей определенного пользователя"""
 
-    mainuser = get_object_or_404(MainUser, username=username)
+    form_class = forms.SearchMainUserForm
 
-    if not has_user_access_to_view_data_of_mainuser(mainuser, request):
-        return HttpResponseForbidden()
+    def get(self, request, *args, **kwargs):
+        self.mainuser = get_object_or_404(MainUser, username=self.kwargs['username'])
+        if not has_user_access_to_view_data_of_mainuser(self.mainuser, request):
+            return HttpResponseForbidden()
 
-    context = {
-        'active_users': mainuser.get_friends(),
-        'form': forms.SearchMainUserForm(),
-        'title': f'Друзья {mainuser}',
-    }
+        return super().get(request, *args, **kwargs)
 
-    if request.method == 'POST':
-        context['form'] = forms.SearchMainUserForm(request.POST)
-
-    return render(request, 'account/users.html', context)
+    def get_queryset(self):
+        self.mainuser = get_object_or_404(MainUser, username=self.kwargs['username'])
+        self.object_list = get_active_users_by_filter(self.request, self.mainuser.get_friends(), True)
+        return self.object_list
 
 
-def users_views(request, username):
+class UsersViewsView(UsersMixin, ListView, FormView):
     """Страница списка пользователей посетивших опредленного пользователя"""
 
-    mainuser = get_object_or_404(MainUser, username=username)
+    form_class = forms.SearchMainUserForm
 
-    if not has_user_access_to_view_data_of_mainuser(mainuser, request):
-        return HttpResponseForbidden()
+    def get(self, request, *args, **kwargs):
+        self.mainuser = get_object_or_404(MainUser, username=self.kwargs['username'])
+        if not has_user_access_to_view_data_of_mainuser(self.mainuser, request):
+            return HttpResponseForbidden()
 
-    context = {
-        'active_users': mainuser.get_views(),
-        'form': forms.SearchMainUserForm(),
-        'title': f'Пользователи посетившие {mainuser}'
-    }
+        return super().get(request, *args, **kwargs)
 
-    if request.method == 'POST':
-        context['form'] = forms.SearchMainUserForm(request.POST)
-
-    return render(request, 'account/users.html', context)
+    def get_queryset(self):
+        self.mainuser = get_object_or_404(MainUser, username=self.kwargs['username'])
+        self.object_list = get_active_users_by_filter(self.request, self.mainuser.get_views(), True)
+        return self.object_list
 
 
-def chat(request, id=None):
+class ChatView(ListView):
     """Страница чата"""
 
-    if is_authenticated(request):
-        return render(request, 'account/chat.html', {'users': MainUser.objects.all()})
+    model = MainUser
+    template_name = 'account/chat.html'
+    queryset = MainUser.objects.all()
+    context_object_name = 'users'
 
-    return redirect(reverse('account:authorization'))
+    def get(self, request, *args, **kwargs):
+        if is_authenticated(request):
+            return super().get(request, *args, **kwargs)
+
+        messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
+        return redirect('/')
 
 
 class ChatUserAPIView(APIView):
@@ -305,10 +356,11 @@ class ChatUserAPIView(APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request, id):
-        interlocutor = MainUser.objects.get(id=id)
-        messages = interlocutor.get_messages(request.user)
-        serializer = MessageSerializer(messages, many=True)
+    @staticmethod
+    def get(request, user_id):
+        interlocutor = MainUser.objects.get(id=user_id)
+        messages_queryset = interlocutor.get_messages(request.user)
+        serializer = MessageSerializer(messages_queryset, many=True)
         data = json.dumps(serializer.data)
         data = json.loads(data)
         data.append({
@@ -325,13 +377,14 @@ class ChatUsersAPIView(APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request):
-        messages = get_last_messages_with_every_user(request.user)
+    @staticmethod
+    def get(request):
+        messages_queryset = get_last_messages_with_every_user(request.user)
 
         if not messages:
             return Response([])
         else:
-            serializer = MessageSerializer(messages, many=True)
+            serializer = MessageSerializer(messages_queryset, many=True)
             return Response(serializer.data)
 
 
@@ -340,10 +393,11 @@ class ChatSearchAPIView(APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         keyword = request.GET.get('q')
-        messages = search_messages(keyword, request.user.get_messages())
-        serializer = MessageSerializer(messages, many=True)
+        messages_queryset = search_messages(keyword, request.user.get_messages())
+        serializer = MessageSerializer(messages_queryset, many=True)
 
         return Response(serializer.data)
 
@@ -351,9 +405,10 @@ class ChatSearchAPIView(APIView):
 class UserAPIView(APIView):
     """API возвращающий данные о пользователе по id"""
 
-    def get(self, request):
-        id = request.GET.get('id')
-        user = MainUser.objects.get(id=id)
+    @staticmethod
+    def get(request):
+        user_id = request.GET.get('id')
+        user = MainUser.objects.get(id=user_id)
 
         if user.is_private:
             return Response([user.id, user.username, user.is_private])

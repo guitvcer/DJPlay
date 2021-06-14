@@ -1,4 +1,4 @@
-from account.views import home
+from account.views import HomeView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -11,7 +11,8 @@ urlpatterns = [
     path('gomoku/', include('gomoku.urls')),
     path('chess/', include('chess.urls')),
 
-    path('', home, name='home'),
+    # path('', home, name='home'),
+    path('', HomeView.as_view(), name='home'),
 ]
 
 if settings.DEBUG:

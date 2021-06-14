@@ -30,21 +30,21 @@
         </div>
         <h2>Партии Гомоку {{ mainuser.username }}</h2>
         <div class="paginator">
-            {% if page.number != 1 %}
+            {% if page_obj.number != 1 %}
                 <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page=1" class="first_page">
                     Первая&nbsp;страница
                 </a>
-                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page.previous_page_number }}" class="back_page round">←</a>
+                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page_obj.previous_page_number }}" class="back_page round">←</a>
             {% endif %}
             <div class="current_page round" style="background: #31373f;">
                 <form method="get" class="paginator-form">
-                    <input type="text" name="page" value="{{ page.number }}">
+                    <input type="text" name="page" value="{{ page_obj.number }}">
                 </form>
             </div>
-            {% if page.has_next %}
-                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page.next_page_number }}" class="next_page round">→</a>
+            {% if page_obj.has_next %}
+                <a href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page_obj.next_page_number }}" class="next_page round">→</a>
                 <a class="last_page"
-                   href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page.paginator.num_pages }}">
+                   href="{% url 'account:gomoku_parties' username=mainuser.username %}?page={{ page_obj.paginator.num_pages }}">
                     Последняя&nbsp;страница
                 </a>
             {% endif %}

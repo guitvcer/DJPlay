@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.db.models import Q
 
 from . import models
 from .services import generate_tokens
@@ -154,6 +155,17 @@ class MainUserUpdateForm(forms.ModelForm):
     is_private = forms.BooleanField(label="Приватный аккаунт?", label_suffix="", required=False,
                                     widget=forms.CheckboxInput(attrs={'class': 'switch'}))
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        validate_email(email)
+
+        try:
+            models.MainUser.objects.get(email=email)
+            raise ValidationError("Пользователь с таким email уже существует.")
+        except models.MainUser.DoesNotExist:
+            return email
+
     def clean_remove_avatar(self):
         if self.cleaned_data['remove_avatar'] == 'off':
             self.cleaned_data['avatar'] = '/user.png'
@@ -221,3 +233,14 @@ class SearchMainUserForm(forms.Form):
                                      widget=forms.TextInput(attrs={'placeholder': 'Поиск'}))
     is_online = forms.BooleanField(label="Онлайн", required=False)
     is_friend = forms.BooleanField(label="В друзьях", required=False)
+
+    def search(self, queryset):
+        search_keyword = self.cleaned_data['search_keyword']
+        is_online = self.cleaned_data['is_online']
+        is_friend = self.cleaned_data['is_friend']
+        active_users = models.MainUser.objects.filter(is_active=True)
+
+        if search_keyword is not None:
+            r = Q(username__icontains=search_keyword) | Q(first_name__icontains=search_keyword) | \
+                Q(last_name__icontains=search_keyword) | Q(email__icontains=search_keyword)
+            active_users = active_users.filter(r)

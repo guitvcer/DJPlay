@@ -38,16 +38,16 @@ class MainUser(AbstractUser):
                 except FriendRequest.DoesNotExist:
                     pass
 
-        friends = []
+        ids_friends = []
 
         for fq in fqs:
             for active_user in active_users:
                 if active_user.id == fq.request_to.id:
-                    friends.append(active_user)
+                    ids_friends.append(active_user.id)
                 elif active_user.id == fq.request_from.id:
-                    friends.append(active_user)
+                    ids_friends.append(active_user.id)
 
-        return friends
+        return MainUser.objects.filter(id__in=ids_friends)
 
     def get_gomoku_parties(self):
         """Получить сыгранные партии Гомоку"""

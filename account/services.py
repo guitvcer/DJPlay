@@ -2,8 +2,8 @@ import random
 from django.core.handlers.asgi import ASGIRequest
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http.response import HttpResponseRedirect, HttpResponseForbidden
+from django.shortcuts import redirect, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
 from chess.models import Party as ChessParty
@@ -25,7 +25,7 @@ def is_authenticated(request: ASGIRequest) -> bool:
     return result
 
 
-def get_user_by_token(access_token: str, refresh_token=None) -> MainUser:
+def get_user_by_token(access_token: str, refresh_token=None) -> (MainUser, HttpResponseRedirect):
     """Получить пользователя по токену"""
 
     try:
@@ -35,7 +35,6 @@ def get_user_by_token(access_token: str, refresh_token=None) -> MainUser:
         return user
     except TokenError:
         refresh = RefreshToken(refresh_token)
-        access = refresh.access_token
         refresh.set_jti()
         refresh.set_exp()
 
@@ -48,15 +47,16 @@ def generate_tokens(mainuser: MainUser) -> dict:
     return {'access': str(refresh.access_token), 'refresh': str(refresh)}
 
 
-def get_active_users_by_filter(request: ASGIRequest) -> QuerySet:
+def get_active_users_by_filter(request: ASGIRequest, active_users=MainUser.objects.filter(is_active=True),
+                               showMe=False) -> QuerySet:
     """Получить всех активных пользователей по фильтру"""
 
-    active_users = MainUser.objects.filter(is_active=True)
     mainuser = None
 
     if is_authenticated(request):
         mainuser = get_user_by_token(request.COOKIES['access'])
-        active_users = active_users.exclude(id=mainuser.id)
+        if showMe is False:
+            active_users = active_users.exclude(id=mainuser.id)
 
     if request.method == 'POST':
         data = request.POST
@@ -79,25 +79,26 @@ def get_active_users_by_filter(request: ASGIRequest) -> QuerySet:
         try:
             if data['is_friend'] == 'on':
                 friends = mainuser.get_friends()
-                filtered_users = []
+                ids_filtered_users = []
                 for friend in friends:
                     for active_user in active_users:
                         if friend == active_user:
-                            filtered_users.append(friend)
-                return filtered_users
+                            ids_filtered_users.append(friend.id)
+                return MainUser.objects.filter(id__in=ids_filtered_users)
 
         except MultiValueDictKeyError:
             pass
         except KeyError:
             pass
 
+    print(active_users)
     return active_users
 
 
-def logout_mainuser() -> HttpResponseRedirect:
+def logout_mainuser(url='/') -> HttpResponseRedirect:
     """Выйти из аккаунта"""
 
-    response = redirect('/')
+    response = redirect(url)
     response.delete_cookie('access')
     response.delete_cookie('refresh')
     return response
@@ -151,6 +152,8 @@ def has_user_access_to_view_data_of_mainuser(mainuser: MainUser, request: ASGIRe
 
         if mainuser.is_private and user not in mainuser.get_friends():
             return False
+
+        return True
     else:
         if mainuser.is_private:
             return False
@@ -191,7 +194,6 @@ def search_messages(keyword: str, messages=Message.objects.all()) -> QuerySet:
     return messages.filter(Q(text__icontains=keyword))
 
 
-
 def update_queue(game: Game, token: str) -> (ChessParty, GomokuParty):
     """Обновить очередь определенной игры"""
 
@@ -227,3 +229,28 @@ def update_queue(game: Game, token: str) -> (ChessParty, GomokuParty):
         queue.player1 = None
         queue.save()
         return party
+
+
+class UsersMixin:
+    model = MainUser
+    template_name = 'account/users.html'
+    context_object_name = 'active_users'
+    mainuser = None
+    object_list = None
+    title = None
+
+    def get(self, request, *args, **kwargs):
+        self.mainuser = get_object_or_404(MainUser, username=self.kwargs['username'])
+        if not has_user_access_to_view_data_of_mainuser(self.mainuser, request):
+            return HttpResponseForbidden()
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+
+    def form_valid(self, form):
+        self.get_queryset()
+        return self.render_to_response(self.get_context_data())
