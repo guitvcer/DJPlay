@@ -5,5 +5,5 @@ from . import views
 app_name = 'chess'
 
 urlpatterns = [
-    path('', views.play_chess, name="play"),
+    path('', views.PlayChessView.as_view(), name="play"),
 ]
