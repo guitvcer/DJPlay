@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from gomoku.models import Party
 from . import forms
-from .models import Game, MainUser, FriendRequest, MainUserView
+from .models import Game, MainUser
 from .serializers import MainUserSerializer, MessageSerializer
 from .services import (
     is_authenticated,
@@ -21,6 +21,7 @@ from .services import (
     get_last_messages_with_every_user,
     search_messages,
     UsersMixin,
+    get_context_for_profile_view
 )
 
 
@@ -59,39 +60,7 @@ class ProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        print(kwargs)
-
-        if self.object is not None:
-            context['mainuser'] = self.object
-
-            if is_authenticated(self.request):
-
-                user = get_user_by_token(self.request.COOKIES['access'])
-
-                if self.object != user:
-                    try:
-                        MainUserView.objects.get(view_from=user, view_to=self.object)
-                    except MainUserView.DoesNotExist:
-                        MainUserView.objects.create(view_from=user, view_to=self.object)
-
-                try:
-                    context['friend_request'] = FriendRequest.objects.get(
-                        request_from=get_user_by_token(self.request.COOKIES['access']),
-                        request_to=context['mainuser'])
-                except FriendRequest.DoesNotExist:
-                    try:
-                        context['friend_request'] = FriendRequest.objects.get(
-                            request_from=context['mainuser'],
-                            request_to=get_user_by_token(self.request.COOKIES['access'])
-                        )
-                    except FriendRequest.DoesNotExist:
-                        pass
-                except KeyError:
-                    context['friend_request'] = None
-        else:
-            context['mainuser'] = get_user_by_token(self.request.COOKIES['access'])
-
-        return context
+        return get_context_for_profile_view(self.object, self.request, context)
 
 
 class EditProfileView(UpdateView):
@@ -179,11 +148,7 @@ class LogoutView(View):
         if is_authenticated(request):
             messages.add_message(request, messages.SUCCESS, 'Вы успешно вышли из аккаунта.')
 
-            response = redirect('/')
-            response.delete_cookie('access')
-            response.delete_cookie('refresh')
-            response.delete_cookie('id')
-            return response
+            return logout_mainuser('/')
 
         messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
 

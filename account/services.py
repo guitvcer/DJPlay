@@ -8,7 +8,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
 from chess.models import Party as ChessParty
 from gomoku.models import Party as GomokuParty
-from .models import MainUser, FriendRequest, Message, Queue, Game
+from .models import MainUser, FriendRequest, Message, Queue, Game, MainUserView
 
 
 def is_authenticated(request: ASGIRequest) -> bool:
@@ -231,7 +231,43 @@ def update_queue(game: Game, token: str) -> (ChessParty, GomokuParty):
         return party
 
 
+def get_context_for_profile_view(visited_user: MainUser, request: ASGIRequest, context: dict) -> dict:
+    if visited_user is not None:
+        context['mainuser'] = visited_user
+
+        if is_authenticated(request):
+
+            user = get_user_by_token(request.COOKIES['access'])
+
+            if visited_user != user:
+                try:
+                    MainUserView.objects.get(view_from=user, view_to=visited_user)
+                except MainUserView.DoesNotExist:
+                    MainUserView.objects.create(view_from=user, view_to=visited_user)
+
+            try:
+                context['friend_request'] = FriendRequest.objects.get(
+                    request_from=get_user_by_token(request.COOKIES['access']),
+                    request_to=context['mainuser'])
+            except FriendRequest.DoesNotExist:
+                try:
+                    context['friend_request'] = FriendRequest.objects.get(
+                        request_from=context['mainuser'],
+                        request_to=get_user_by_token(request.COOKIES['access'])
+                    )
+                except FriendRequest.DoesNotExist:
+                    pass
+            except KeyError:
+                context['friend_request'] = None
+    else:
+        context['mainuser'] = get_user_by_token(request.COOKIES['access'])
+
+    return context
+
+
 class UsersMixin:
+    """Mixin для views.UsersView, views.UsersFriendView, views.UsersViewsView"""
+
     model = MainUser
     template_name = 'account/users.html'
     context_object_name = 'active_users'
