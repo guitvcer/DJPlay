@@ -53,7 +53,7 @@ class ProfileView(DetailView):
         username = self.kwargs.get('username')
 
         if username is None:
-            return get_user_by_token(self.kwargs['access'])
+            return get_user_by_token(self.request.COOKIES['access'])
 
         return get_object_or_404(MainUser, username=username)
 
@@ -119,7 +119,7 @@ class AuthorizationView(FormView):
 
     model = MainUser
     template_name = 'account/authorization.html'
-    form_class = forms.AuthorizationForm
+    form_class = forms.AuthorizationOrProfileDeleteForm
 
     def get(self, request, *args, **kwargs):
         if is_authenticated(request):
@@ -159,7 +159,7 @@ class DeleteProfileView(FormView):
     model = MainUser
     template_name = 'account/delete_profile.html'
     success_url = '/'
-    form_class = forms.AuthorizationForm
+    form_class = forms.AuthorizationOrProfileDeleteForm
 
     def get(self, request, *args, **kwargs):
         if is_authenticated(request):

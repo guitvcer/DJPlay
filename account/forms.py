@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from django.db.models import Q
 
 from . import models
 from .services import generate_tokens
@@ -71,8 +70,8 @@ class RegistrationForm(forms.ModelForm):
         fields = ('username', 'password1', 'password2', 'email')
 
 
-class AuthorizationForm(forms.Form):
-    """Форма входа в аккаунт пользователя"""
+class AuthorizationOrProfileDeleteForm(forms.Form):
+    """Форма удаления аккаунта пользователя или вход в него"""
 
     username = forms.CharField(label="", max_length=32, label_suffix="",
                                widget=forms.TextInput(attrs={'placeholder': 'Имя пользователя'}))
@@ -103,6 +102,8 @@ class AuthorizationForm(forms.Form):
         raise ValidationError("Неверные имя пользователя и/или пароль.")
 
     def authorize(self, response):
+        """Авторизовать пользователя"""
+
         mainuser = models.MainUser.objects.get(username=self.cleaned_data['username'])
         tokens = generate_tokens(mainuser)
 
@@ -113,6 +114,8 @@ class AuthorizationForm(forms.Form):
         return response
 
     def delete(self):
+        """Удалить профиль"""
+
         print(self)  # без print, self.cleaned_data пропадает почему-то
         username = self.cleaned_data['username']
         mainuser = models.MainUser.objects.get(username=username)
@@ -162,6 +165,10 @@ class MainUserUpdateForm(forms.ModelForm):
 
         try:
             models.MainUser.objects.get(email=email)
+
+            if self.instance.email == email:
+                return email
+
             raise ValidationError("Пользователь с таким email уже существует.")
         except models.MainUser.DoesNotExist:
             return email
@@ -233,14 +240,3 @@ class SearchMainUserForm(forms.Form):
                                      widget=forms.TextInput(attrs={'placeholder': 'Поиск'}))
     is_online = forms.BooleanField(label="Онлайн", required=False)
     is_friend = forms.BooleanField(label="В друзьях", required=False)
-
-    def search(self, queryset):
-        search_keyword = self.cleaned_data['search_keyword']
-        is_online = self.cleaned_data['is_online']
-        is_friend = self.cleaned_data['is_friend']
-        active_users = models.MainUser.objects.filter(is_active=True)
-
-        if search_keyword is not None:
-            r = Q(username__icontains=search_keyword) | Q(first_name__icontains=search_keyword) | \
-                Q(last_name__icontains=search_keyword) | Q(email__icontains=search_keyword)
-            active_users = active_users.filter(r)
