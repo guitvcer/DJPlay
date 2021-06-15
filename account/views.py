@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView, ListView, FormView, CreateView, UpdateView, DetailView, View
+from django.views.generic import ListView, FormView, CreateView, UpdateView, DetailView, View
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -25,15 +25,12 @@ from .services import (
 )
 
 
-class HomeView(TemplateView):
+class HomeView(ListView):
     """Главная страница"""
 
     template_name = 'account/home.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['all_games'] = Game.objects.all()
-        return context
+    model = Game
+    context_object_name = 'all_games'
 
 
 class ProfileView(DetailView):
