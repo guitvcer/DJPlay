@@ -6,6 +6,6 @@ from . import views
 app_name = 'gomoku'
 
 urlpatterns = [
-    path('<int:id>/', views.watch_party, name='watch_party'),
-    path('', views.play_gomoku, name='play'),
+    path('<int:id>/', views.WatchPartyView.as_view(), name='watch_party'),
+    path('', views.PlayGomokuView.as_view(), name='play'),
 ]

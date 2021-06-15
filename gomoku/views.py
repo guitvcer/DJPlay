@@ -1,25 +1,27 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 
 from account.models import Game
 from .models import Party
 
 
-def play_gomoku(request):
+class PlayGomokuView(TemplateView):
     """Главная страница Гомоку"""
 
-    context = {
-        'game': Game.objects.get(name='Гомоку'),
-    }
+    template_name = 'gomoku/gomoku.html'
 
-    return render(request, "gomoku/gomoku.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['game'] = Game.objects.get(name='Гомоку')
+        return context
 
 
-def watch_party(request, id):
+class WatchPartyView(TemplateView):
     """Посмотреть сыгранную партию"""
 
-    context = {
-        'game': Game.objects.get(name='Гомоку'),
-        'party': Party.objects.get(id=id),
-    }
+    template_name = 'gomoku/watch_party.html'
 
-    return render(request, 'gomoku/watch_party.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['game'] = Game.objects.get(name='Гомоку')
+        context['party'] = Party.objects.get(id=kwargs['id'])
+        return context
