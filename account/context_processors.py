@@ -13,6 +13,9 @@ def base_context_processor(request):
         'debug': settings.DEBUG,
     }
 
+    app_name = request.path.split("/")[1]
+    context['app_name'] = "account" if app_name == '' else app_name
+
     try:
         if context['is_logged_in']:
             current_user = get_user_by_token(request.COOKIES['access'])

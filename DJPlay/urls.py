@@ -1,17 +1,17 @@
-from account.views import HomeView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from account.views import HomeView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('account/', include('account.urls')),
-    path('gomoku/', include('gomoku.urls')),
-    path('chess/', include('chess.urls')),
+    path('account/', include('account.urls', namespace='account')),
+    path('gomoku/', include('gomoku.urls', namespace='gomoku')),
+    path('chess/', include('chess.urls', namespace='chess')),
 
-    # path('', home, name='home'),
     path('', HomeView.as_view(), name='home'),
 ]
 

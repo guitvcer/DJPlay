@@ -12,8 +12,6 @@ class FindOpponentConsumer(WebsocketConsumer):
     """Consumer поиска соперника"""
 
     def connect(self):
-        print(game)
-
         self.room_name = 'chess_party'
         self.room_group_name = 'find_%s' % self.room_name
 
