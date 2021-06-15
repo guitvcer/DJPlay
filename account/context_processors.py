@@ -1,6 +1,7 @@
 from django.conf import settings
 from rest_framework_simplejwt.tokens import TokenError
 
+from .models import Game
 from .services import get_user_by_token, is_authenticated
 
 
@@ -15,6 +16,9 @@ def base_context_processor(request):
 
     app_name = request.path.split("/")[1]
     context['app_name'] = "account" if app_name == '' else app_name
+
+    if app_name == 'gomoku' or app_name == 'chess':
+        context['game'] = Game.objects.get(app_name=app_name)
 
     try:
         if context['is_logged_in']:
