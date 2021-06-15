@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 
 from .models import Party
 
@@ -9,12 +9,12 @@ class PlayGomokuView(TemplateView):
     template_name = 'gomoku/gomoku.html'
 
 
-class WatchPartyView(TemplateView):
+class WatchPartyView(DetailView):
     """Посмотреть сыгранную партию"""
 
+    model = Party
     template_name = 'gomoku/watch_party.html'
+    context_object_name = 'party'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['party'] = Party.objects.get(id=kwargs['id'])
-        return context
+    def get_object(self, queryset=None):
+        return Party.objects.get(id=self.kwargs['id'])
