@@ -1,4 +1,6 @@
+from captcha.fields import ReCaptchaField, ReCaptchaV3
 from django import forms
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -23,6 +25,9 @@ class RegistrationForm(forms.ModelForm):
 
     email = forms.EmailField(label="", label_suffix="",
                              widget=forms.EmailInput(attrs={'placeholder': 'Эл. почта'}))
+
+    captcha = ReCaptchaField(public_key=settings.RECAPTCHA_PUBLIC_KEY, private_key=settings.RECAPTCHA_PRIVATE_KEY,
+                             widget=ReCaptchaV3, label="", label_suffix="")
 
     def clean_password1(self):
         password1 = self.cleaned_data['password1']
@@ -78,6 +83,9 @@ class AuthorizationOrProfileDeleteForm(forms.Form):
     password = forms.CharField(label="", label_suffix="", widget=forms.PasswordInput(attrs={
         'placeholder': 'Пароль',
         'autocomplete': 'current-password'}))
+
+    captcha = ReCaptchaField(public_key=settings.RECAPTCHA_PUBLIC_KEY, private_key=settings.RECAPTCHA_PRIVATE_KEY,
+                             widget=ReCaptchaV3, label="", label_suffix="")
 
     def clean_username(self):
         try:

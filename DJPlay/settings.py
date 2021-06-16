@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'channels',
+    'captcha',
 
     'account',
     'chess',
@@ -157,3 +158,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=14),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
+
+
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
