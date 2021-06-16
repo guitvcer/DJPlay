@@ -9,6 +9,7 @@
             {% csrf_token %}
             {{ form.username }}
             {{ form.password }}
+            {{ form.captcha }}
             <button type="submit" class="play_button delete_account">Удалить</button>
             <a href="/" class="link">На главную страницу</a>
         </form>
