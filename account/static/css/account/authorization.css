@@ -85,6 +85,25 @@ a {
 }
 a:hover {
     text-decoration: underline;
+}.or {
+    text-align: center;
+}
+
+.social-auth {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.social-auth a {
+    border-radius: 5px;
+    margin-top: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.social-auth a:hover {
+    background: white;
 }
 
 @media (max-width: 900px) {

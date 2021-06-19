@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from social_core.backends.vk import VKOAuth2
 
 from . import models
 from .services import generate_tokens
@@ -248,3 +249,31 @@ class SearchMainUserForm(forms.Form):
                                      widget=forms.TextInput(attrs={'placeholder': 'Поиск'}))
     is_online = forms.BooleanField(label="Онлайн", required=False)
     is_friend = forms.BooleanField(label="В друзьях", required=False)
+
+
+class SocialAuthForm(forms.Form):
+    """Форма для получения от авторизации по соц.сети"""
+
+    access_token = forms.CharField(label="", label_suffix="", widget=forms.HiddenInput)
+
+    def authorize(self, response):
+        access_token = self.cleaned_data['access_token']
+        mainuser_data = VKOAuth2().user_data(access_token=access_token)
+
+        try:
+            mainuser = models.MainUser.objects.get(username=mainuser_data['screen_name'])
+        except models.MainUser.DoesNotExist:
+            mainuser = models.MainUser.objects.create(
+                username=mainuser_data['screen_name'],
+                first_name=mainuser_data['first_name'],
+                last_name=mainuser_data['last_name'],
+            )
+
+        tokens = generate_tokens(mainuser)
+        access, refresh = tokens['access'], tokens['refresh']
+
+        response.set_cookie('access', access)
+        response.set_cookie('refresh', refresh)
+        response.set_cookie('id', mainuser.id)
+
+        return response

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'channels',
     'captcha',
+    'social_django',
 
     'account',
     'chess',
@@ -162,3 +163,13 @@ SIMPLE_JWT = {
 
 RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+
+
+SOCIAL_AUTH_VK_OAUTH_KEY = os.getenv("SOCIAL_AUTH_VK_OAUTH_KEY")
+SOCIAL_AUTH_VK_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH_SECRET")
+SOCIAL_AUTH_VK_OAUTH_SCOPE = ['email']
+
+AUTHENTICATION_BACKENDS = {
+    'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+}

@@ -20,6 +20,11 @@ def base_context_processor(request):
     if app_name == 'gomoku' or app_name == 'chess':
         context['game'] = Game.objects.get(app_name=app_name)
 
+    if settings.ALLOWED_HOSTS[0] == '127.0.0.1':
+        context['domain'] = settings.ALLOWED_HOSTS[0] + ':8000'
+    else:
+        context['domain'] = settings.ALLOWED_HOSTS[0]
+
     try:
         if context['is_logged_in']:
             current_user = get_user_by_token(request.COOKIES['access'])

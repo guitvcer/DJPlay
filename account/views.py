@@ -1,4 +1,5 @@
 import json
+from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
@@ -125,6 +126,13 @@ class AuthorizationView(FormView):
 
         return self.render_to_response(self.get_context_data())
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['vk_client_id'] = settings.SOCIAL_AUTH_VK_OAUTH_KEY
+        context['social_form'] = forms.SocialAuthForm
+        return context
+
+
     def get_success_url(self):
         return self.kwargs.get('next', '/')
 
@@ -148,6 +156,26 @@ class LogoutView(View):
             return logout_mainuser('/')
 
         messages.add_message(request, messages.WARNING, 'Вы не авторизованы.')
+
+
+class SocialAuthView(FormView):
+    """Страница для авторизации по social access token"""
+
+    form_class = forms.SocialAuthForm
+    success_url = '/'
+
+    def get(self, request, *args, **kwargs):
+        return redirect('/')
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Вы успешно вошли в аккаунт.')
+        return form.authorize(redirect(self.success_url))
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return redirect('/')
+
+
 
 
 class DeleteProfileView(FormView):
@@ -252,8 +280,6 @@ class UsersView(UsersMixin, FormView, ListView):
     form_class = forms.SearchMainUserForm
 
     def get(self, request, *args, **kwargs):
-        self.mainuser = get_user_by_token(request.COOKIES['access'])
-
         return super(ListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
