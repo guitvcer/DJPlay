@@ -16,17 +16,19 @@
                title="Войти через ВК">
                 <img src="/media/icons/vk.png" alt="Войти через ВК">
             </a>
+            <a href="https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://{{ domain }}/account/authorization/&prompt=consent&response_type=code&client_id={{ google_client_id }}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline"
+               title="Войти через Google">
+                <img src="/media/icons/google.png" alt="Войти через Google">
+            </a>
         </div>
         <input type="submit" value="Войти" class="submit">
     </form>
     <a href="{% url 'account:registration' %}">Нету аккаунта? Зарегистрируйтесь!</a><br>
     <a href="/">Главная страница</a>
     <script src="{% static 'js/tools.js' %}"></script>
-    {% if not is_logged_in %}
-        <form action="{% url 'account:social_auth' %}" method="POST" id="socialAuthForm" style="display: none;">
-            {% csrf_token %}
-            {{ social_form.as_p }}
-        </form>
-        <script src="{% static 'js/account/social-auth.js' %}"></script>
-    {% endif %}
+    <form action="{% url 'account:social_auth' %}" method="POST" id="socialAuthForm" style="display: none;">
+        {% csrf_token %}
+        {{ social_form.as_p }}
+    </form>
+    <script src="{% static 'js/account/social-auth.js' %}"></script>
 {% endblock %}

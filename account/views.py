@@ -124,14 +124,28 @@ class AuthorizationView(FormView):
             messages.add_message(self.request, messages.WARNING, 'Вы уже авторизованы')
             return redirect('/')
 
+        google_access_token = request.GET.get('code')
+
+        if google_access_token is not None:
+            data = {
+                'access_token': google_access_token,
+                'backend': 'GoogleOAuth2',
+            }
+            form = forms.SocialAuthForm(data)
+
+            if form.is_valid():
+                return self.form_valid(form)
+
+            return self.form_invalid(form)
+
         return self.render_to_response(self.get_context_data())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['vk_client_id'] = settings.SOCIAL_AUTH_VK_OAUTH_KEY
+        context['google_client_id'] = settings.SOCIAL_AUTH_GOOGLE_OAUTH_KEY
         context['social_form'] = forms.SocialAuthForm
         return context
-
 
     def get_success_url(self):
         return self.kwargs.get('next', '/')

@@ -11,6 +11,7 @@ class MainUser(AbstractUser):
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=(('M', 'Мужской'), ('F', 'Женский')),
                               verbose_name="Пол")
+    provider = models.CharField(default="DJPlay", max_length=64, verbose_name="Соц. сеть через которую вошел")
     last_online = models.DateTimeField(null=True, blank=True, verbose_name="Был онлайн в")
     is_online = models.BooleanField(default=False, verbose_name="Онлайн?")
     is_private = models.BooleanField(default=False, verbose_name="Приватный аккаунт?")

@@ -1,4 +1,5 @@
 import random
+from django.conf import settings
 from django.core.handlers.asgi import ASGIRequest
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -290,3 +291,10 @@ class UsersMixin:
     def form_valid(self, form):
         self.get_queryset()
         return self.render_to_response(self.get_context_data())
+
+
+def get_domain():
+    """Получить домен"""
+
+    return settings.ALLOWED_HOSTS[0] + ':8000' if settings.ALLOWED_HOSTS[0] == '127.0.0.1'\
+        else settings.ALLOWED_HOSTS[0]

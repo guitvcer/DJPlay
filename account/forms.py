@@ -1,3 +1,4 @@
+import requests
 from captcha.fields import ReCaptchaField, ReCaptchaV3
 from django import forms
 from django.conf import settings
@@ -7,7 +8,7 @@ from django.core.validators import validate_email
 from social_core.backends.vk import VKOAuth2
 
 from . import models
-from .services import generate_tokens
+from .services import generate_tokens, get_domain
 
 
 class RegistrationForm(forms.ModelForm):
@@ -190,7 +191,7 @@ class MainUserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = models.MainUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'avatar',  'birthday', 'gender', 'is_private')
+        fields = ('username', 'first_name', 'last_name', 'email', 'avatar', 'birthday', 'gender', 'is_private')
 
 
 class MainUserChangePasswordForm(forms.ModelForm):
@@ -200,10 +201,10 @@ class MainUserChangePasswordForm(forms.ModelForm):
                                    widget=forms.PasswordInput(attrs={'placeholder': 'Старый пароль'}))
 
     password1 = forms.CharField(label="", label_suffix="",
-                                   widget=forms.PasswordInput(attrs={'placeholder': 'Новый пароль'}))
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Новый пароль'}))
 
     password2 = forms.CharField(label="", label_suffix="",
-                                   widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль'}))
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль'}))
 
     def clean_old_password(self):
         old_password = self.cleaned_data['old_password']
@@ -255,18 +256,56 @@ class SocialAuthForm(forms.Form):
     """Форма для получения от авторизации по соц.сети"""
 
     access_token = forms.CharField(label="", label_suffix="", widget=forms.HiddenInput)
+    backend = forms.CharField(label="", label_suffix="", widget=forms.HiddenInput)
 
     def authorize(self, response):
         access_token = self.cleaned_data['access_token']
-        mainuser_data = VKOAuth2().user_data(access_token=access_token)
+        backend = self.cleaned_data['backend']
+        mainuser_data = None
+
+        if backend == 'VKOAuth2':
+            vk_user_data = VKOAuth2().user_data(access_token=access_token)
+            mainuser_data = {
+                'username': vk_user_data['screen_name'],
+                'first_name': vk_user_data['first_name'],
+                'last_name': vk_user_data['last_name'],
+                'email': vk_user_data.get('email'),
+                'avatar': vk_user_data['photo'],
+                'provider': backend,
+            }
+
+        elif backend == 'GoogleOAuth2':
+            google_tokens = requests.post('https://www.googleapis.com/oauth2/v4/token', headers={
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }, data={
+                'code': access_token,
+                'redirect_uri': f'http://{get_domain()}/account/authorization/',
+                'client_id': settings.SOCIAL_AUTH_GOOGLE_OAUTH_KEY,
+                'client_secret': settings.SOCIAL_AUTH_GOOGLE_OAUTH_SECRET,
+                'scope': '',
+                'grant_type': 'authorization_code',
+            })
+            google_user_data = requests.get(
+                'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + google_tokens.json()['access_token']
+            ).json()
+            mainuser_data = {
+                'username': google_user_data['name'],
+                'first_name': google_user_data['given_name'],
+                'last_name': google_user_data['family_name'],
+                'email': google_user_data['email'],
+                'avatar': google_user_data['picture'],
+                'provider': backend,
+            }
 
         try:
-            mainuser = models.MainUser.objects.get(username=mainuser_data['screen_name'])
+            mainuser = models.MainUser.objects.get(username=mainuser_data['username'])
         except models.MainUser.DoesNotExist:
             mainuser = models.MainUser.objects.create(
-                username=mainuser_data['screen_name'],
+                username=mainuser_data['username'],
                 first_name=mainuser_data['first_name'],
                 last_name=mainuser_data['last_name'],
+                email=mainuser_data['email'],
+                provider=mainuser_data['provider'],
             )
 
         tokens = generate_tokens(mainuser)

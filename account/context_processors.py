@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework_simplejwt.tokens import TokenError
 
 from .models import Game
-from .services import get_user_by_token, is_authenticated
+from .services import get_user_by_token, is_authenticated, get_domain
 
 
 def base_context_processor(request):
@@ -20,10 +20,7 @@ def base_context_processor(request):
     if app_name == 'gomoku' or app_name == 'chess':
         context['game'] = Game.objects.get(app_name=app_name)
 
-    if settings.ALLOWED_HOSTS[0] == '127.0.0.1':
-        context['domain'] = settings.ALLOWED_HOSTS[0] + ':8000'
-    else:
-        context['domain'] = settings.ALLOWED_HOSTS[0]
+    context['domain'] = get_domain()
 
     try:
         if context['is_logged_in']:
