@@ -92,7 +92,6 @@ def get_active_users_by_filter(request: ASGIRequest, active_users=MainUser.objec
         except KeyError:
             pass
 
-    print(active_users)
     return active_users
 
 

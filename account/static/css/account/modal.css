@@ -1,8 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 .button {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
   background: #16a34a;
   border-radius: 0.25em;
   color: white;
