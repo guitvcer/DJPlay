@@ -225,13 +225,22 @@ function createFindOpponentButton() {
 
         return_move.onclick = function() {
             if (statusGomokuPartySocket) {
-                let moves = document.querySelectorAll('.' + color),
-                    coordinate = moves[moves.length-1].id;
+                let moves = document.querySelectorAll('.' + color), move = moves[0];
+
+                for (let i of moves) {
+                    if (Number(move.innerHTML) < Number(i.innerHTML))
+                        move = i;
+                }
+
+                if (move.classList.contains('new_move')) {
+                    if (move.classList.contains('blue-dot')) color = 'white-dot';
+                    else color = 'blue-dot';
+                }
 
                 gomokuChatSocket.send(text_data=JSON.stringify({
                     'party_id': party_id,
                     'text': '/return_move',
-                    'coordinate': coordinate,
+                    'coordinate': move.id,
                 }));
             }
         }
