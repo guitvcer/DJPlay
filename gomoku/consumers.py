@@ -182,7 +182,7 @@ class GomokuChatConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'send_message',
-                    'username': message.player,
+                    'username': message.player.username,
                     'text': message.text,
                     'removable_moves': removable_moves,
                 }
@@ -192,7 +192,7 @@ class GomokuChatConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'send_message',
-                    'username': message.player,
+                    'username': message.player.username,
                     'text': message.text,
                 }
             )
@@ -201,7 +201,7 @@ class GomokuChatConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'send_message',
-                    'username': message.player,
+                    'username': message.player.username,
                     'text': message.text,
                     'date': message.date,
                     'coordinate': text_data['coordinate'],
@@ -221,7 +221,7 @@ class GomokuChatConsumer(WebsocketConsumer):
     # отправить сообщение
     def send_message(self, event):
         message = {
-            'username': event['username'].username,
+            'username': event['username'],
             'text': event['text'],
         }
 
