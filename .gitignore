@@ -1,8 +1,4 @@
-.env
-__pycache__
-db.sqlite3
-migrations
-/media
-/venv
-/.idea
-ngrok.exe
+.idea/
+frontend/.gitignore
+backend/.gitignore
+.gitignore
