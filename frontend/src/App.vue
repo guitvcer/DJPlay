@@ -3,7 +3,7 @@
     <the-header />
 
     <!-- Content -->
-    <main class="bg-gray-100 dark:bg-main-dark2 min-h-screen py-8">
+    <main class="bg-gray-100 dark:bg-main-dark2 px-4 py-8">
       <router-view />
     </main>
   </div>
