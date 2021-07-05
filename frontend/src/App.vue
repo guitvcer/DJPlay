@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <!-- Header -->
-    <header class="bg-gray-50 dark:bg-black border-b-2 border-main-light">
+    <header class="bg-gray-50 dark:bg-main-dark border-b-2 border-main-light">
       <div class="container mx-auto flex justify-between items-center h-full py-3 px-6 md:px-10 lg:px-20" style="max-width: 1750px;">
         <!-- Logo -->
         <div class="h-full">
           <a href="/">
-            <h1 class="bg-main text-white text-4xl px-8 py-3 font-monoton rounded">DJPLAY</h1>
+            <h1 class="bg-main text-white text-4xl px-8 py-3 font-monoton rounded border">DJPLAY</h1>
           </a>
         </div>
 
@@ -21,7 +21,7 @@
     </header>
 
     <!-- Content -->
-    <main class="bg-gray-100 min-h-screen py-8">
+    <main class="bg-gray-100 dark:bg-main-dark2 min-h-screen py-8">
       <router-view :host="host" />
     </main>
   </div>
@@ -32,8 +32,8 @@ export default {
   name: 'App',
   data() {
     return {
-      protocol: 'http',
-      domain: '127.0.0.1:8000'
+      protocol: 'https',
+      domain: 'djplay.space'
     }
   },
   components: {
