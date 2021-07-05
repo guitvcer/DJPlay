@@ -8,19 +8,34 @@ const routes = [
         component: Home
     },
     {
-        path: '/:username/',
+        path: '/account/:username/',
         name: 'profile',
         component: import('./views/Profile.vue')
     },
     {
-        path: '/:username/friend_request',
+        path: '/account/:username/friend_request',
         name: 'friend_request',
         redirect: '/:username/'
     },
     {
-        path: '/:username/chat',
+        path: '/account/:username/chat',
         name: 'user_chat',
-        redirect: '/username/'
+        redirect: '/:username/'
+    },
+    {
+        path: '/account/:username/parties/',
+        name: 'user_parties',
+        redirect: '/'
+    },
+    {
+        path: '/account/users/',
+        name: 'users',
+        component: import('./views/UsersList.vue')
+    },
+    {
+        path: '/account/edit/',
+        name: 'edit_profile',
+        redirect: '/'
     },
     {
         path: '/gomoku/',

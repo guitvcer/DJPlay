@@ -4,10 +4,27 @@
     <h2 class="text-3xl font-semibold mb-3 text-center lg:text-left" style="word-break: break-word;">{{ user.username }}</h2>
     <hr>
     <div class="flex justify-center mt-3">
-      <profile-button :buttonName="'friend_request_button'" :friendsCount="user.friends" :title="'Добавить в друзья'" />
-      <profile-button :buttonName="'user_chat_button'" :title="'Написать сообщение'" />
-      <profile-button :buttonName="'edit_profile_button'" :title="'Изменить профиль'" />
-      <profile-button :buttonName="'user_parties_button'" :title="'Посмотреть сыгранные партии'" />
+      <profile-button
+          :buttonName="'friend_request_button'"
+          :friendsCount="user.friends"
+          :title="'Добавить в друзья'"
+          :url="{ name: 'friend_request', params: { username: user.username } }"
+      />
+      <profile-button
+          :buttonName="'user_chat_button'"
+          :title="'Написать сообщение'"
+          :url="{ name: 'user_chat', params: { username: user.username } }"
+      />
+      <profile-button
+          :buttonName="'edit_profile_button'"
+          :title="'Изменить профиль'"
+          :url="{ name: 'edit_profile', params: { username: user.username } }"
+      />
+      <profile-button
+          :buttonName="'user_parties_button'"
+          :title="'Посмотреть сыгранные партии'"
+          :url="{ name: 'user_parties', params: { username: user.username } }"
+      />
     </div>
   </div>
 </template>
