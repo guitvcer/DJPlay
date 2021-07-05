@@ -1,24 +1,36 @@
 <template>
   <section class="flex justify-center flex-wrap">
-    <div class="bg-gray-50 dark:bg-main-dark dark:hover:bg-main-dark rounded hover:bg-white pt-8 pb-24 px-16 flex flex-col items-center mx-5 my-4">
-      <img :src="host + '/media/gomoku.png'" alt="Гомоку" class="w-60 mb-10">
-      <h3 class="font-bold text-3xl mb-4">Гомоку</h3>
-      <a href="#" class="border-main border px-3 py-2 rounded text-center hover:bg-main hover:text-white dark:bg-main-dark2">Играть</a>
-    </div>
-    <div class="bg-gray-50 dark:bg-main-dark dark:hover:bg-main-dark rounded hover:bg-white pt-8 pb-24 px-16 flex flex-col items-center mx-5 my-4">
-      <img :src="host + '/media/chess.png'" alt="Шахматы" class="w-60 mb-10">
-      <h3 class="font-bold text-3xl mb-4">Шахматы</h3>
-      <a href="#" class="border-main border px-3 py-2 rounded text-center hover:bg-main hover:text-white dark:bg-main-dark2">Играть</a>
-    </div>
+    <home-game-item v-for="(game, index) in games" :key="index" :game="game" />
   </section>
 </template>
 
 <script>
+import HomeGameItem from '@/components/HomeGameItem'
+
 export default {
-  props: {
-    host: {
-      type: String,
-      required: true
+  components: {
+    HomeGameItem
+  },
+  data() {
+    return {
+      games: [
+        {
+          id: 1,
+          name: 'Гомоку',
+          app_name: 'gomoku',
+          rules: 'Гомоку — настольная логическая игра для двух игроков. На квадратной доске размером 15×15 пунктов игроки поочерёдно выставляют камни двух цветов. Выигрывает тот, кто первым построит непрерывный ряд из пяти камней своего цвета по вертикали, горизонтали или диагонали.',
+          image: this.host + '/media/gomoku.png',
+          is_released: true
+        },
+        {
+          id: 2,
+          name: 'Шахматы',
+          app_name: 'chess',
+          rules: 'Шахматная партия ведётся между двумя соперниками на шахматной доске путём передвижения шахматных фигур. Соперником в шахматной партии может быть один человек, коллектив из нескольких человек или компьютер.<ul><li>Партия считается выигранной шахматистом, который дал мат королю соперника.</li><li>Партия считается выигранной тем из партнёров, противник которого признал себя побеждённым.</li><li>Партия считается выигранной, если у одного из шахматистов закончилось время на ходы.</li></ul>',
+          image: this.host + '/media/chess.png',
+          is_released: true
+        }
+      ]
     }
   }
 }
