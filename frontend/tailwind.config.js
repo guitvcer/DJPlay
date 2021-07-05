@@ -1,8 +1,19 @@
 module.exports = {
   purge: { content: ['./public/**/*.html', './src/**/*.vue'] },
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        monoton: ['Monoton'],
+        raleway: ['Raleway']
+      },
+      colors: {
+        main: {
+          light: '#929aab',
+          DEFAULT: '#393e46'
+        }
+      }
+    }
   },
   variants: {
     extend: {},
