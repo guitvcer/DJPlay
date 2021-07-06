@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-gray-50 dark:bg-main-dark block lg:flex justify-around mx-auto px-0 lg:px-12 py-16" style="max-width: 1400px;">
+  <section class="bg-gray-50 dark:bg-main-dark block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8" style="max-width: 1400px;">
     <profile-avatar :user="user" />
     <profile-table :user="user" />
   </section>

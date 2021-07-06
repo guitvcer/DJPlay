@@ -8,6 +8,10 @@ const routes = [
         component: Home
     },
     {
+        path: '/modal/',
+        component: import('./components/Modal')
+    },
+    {
         path: '/account/:username/',
         name: 'profile',
         component: import('./views/Profile.vue')

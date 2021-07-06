@@ -9,12 +9,24 @@
       </div>
 
       <!-- User -->
-      <button type="button" class="flex justify-end items-center" id="user-dropdown" aria-expanded="true" aria-haspopup="true">
-        <div class="font-semibold hidden md:block">Гость</div>
-        <div class="flex items-center h-full">
-          <img :src="host + '/media/user.png'" alt="Фото пользователя" class="rounded-full w-12 md:w-14 h-12 md:h-14 ml-2">
-        </div>
-      </button>
+<!--      <button type="button" class="flex justify-end items-center" id="user-dropdown" aria-expanded="true" aria-haspopup="true">-->
+<!--        <div class="font-semibold hidden md:block">Гость</div>-->
+<!--        <div class="flex items-center h-full">-->
+<!--          <img :src="host + '/media/user.png'" alt="Фото пользователя" class="rounded-full w-12 md:w-14 h-12 md:h-14 ml-2">-->
+<!--        </div>-->
+<!--      </button>-->
+
+      <dropdown :userAvatarUrl="host + '/media/user.png'" />
     </div>
   </header>
 </template>
+
+<script>
+import Dropdown from '@/components/Dropdown'
+
+export default {
+  components: {
+    Dropdown
+  }
+}
+</script>

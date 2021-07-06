@@ -48,7 +48,7 @@ export default {
           fieldValue: this.user.username
         },
         {
-          fieldName: 'Эл.почта',
+          fieldName: 'Эл. почта',
           fieldValue: this.user.email
         },
         {
