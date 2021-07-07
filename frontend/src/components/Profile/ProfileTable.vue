@@ -41,48 +41,51 @@ export default {
       mainInformation: [
         {
           fieldName: 'Был(-а) онлайн',
-          fieldValue: this.user.last_online
+          fieldValue: this.$props.user.lastOnline
         },
         {
           fieldName: 'Имя пользователя',
-          fieldValue: this.user.username
+          fieldValue: this.$props.user.username
         },
         {
           fieldName: 'Эл. почта',
-          fieldValue: this.user.email
+          fieldValue: this.$props.user.email
         },
         {
           fieldName: 'Друзья',
-          fieldValue: this.user.friends
+          fieldValue: this.$props.user.friends
         }
       ],
       additionalInformation: [
         {
           fieldName: 'Просмотры',
-          fieldValue: this.user.views
+          fieldValue: this.$props.user.views
         },
         {
           fieldName: 'Пол',
-          fieldValue: this.user.gender
+          fieldValue: (this.$props.user.gender === 'M') ? 'Мужской' : 'Женский'
         },
         {
           fieldName: 'Дата рождения',
-          fieldValue: this.user.birthday
+          fieldValue: this.$props.user.birthday
         },
         {
           fieldName: 'Дата регистрации',
-          fieldValue: this.user.date_joined.toLocaleString()
+          fieldValue: this.$props.user.dateJoined
         },
         {
           fieldName: 'Настоящее имя',
-          fieldValue: this.user.firstName
+          fieldValue: this.$props.user.firstName
         },
         {
           fieldName: 'Настоящяя фамилия',
-          fieldValue: this.user.lastName
+          fieldValue: this.$props.user.lastName
         }
       ]
     }
+  },
+  mounted() {
+    console.log(this.$props.user)
   }
 }
 </script>

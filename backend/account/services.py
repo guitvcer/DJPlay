@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenErro
 from chess.models import Party as ChessParty
 from gomoku.models import Party as GomokuParty
 from .models import MainUser, FriendRequest, Message, Queue, Game, MainUserView
+from .schemas import MainUserSchema
 
 
 def is_authenticated(request: ASGIRequest) -> bool:
@@ -297,3 +298,23 @@ def get_domain():
 
     return settings.ALLOWED_HOSTS[0] + ':8000' if settings.ALLOWED_HOSTS[0] == '127.0.0.1'\
         else settings.ALLOWED_HOSTS[0]
+
+
+def get_user_data_json(mainuser):
+    return MainUserSchema.parse_obj({
+        'username': mainuser.username,
+        'firstName': mainuser.first_name,
+        'lastName': mainuser.last_name,
+        'email': mainuser.email,
+        'avatar': mainuser.avatar.url,
+        'birthday': str(mainuser.birthday),
+        'gender': mainuser.gender,
+        'dateJoined': str(mainuser.date_joined),
+        'lastOnline': str(mainuser.last_online),
+        'isOnline': mainuser.is_online,
+        'isActive': mainuser.is_active,
+        'isSuperuser': mainuser.is_superuser,
+        'isPrivate': mainuser.is_private,
+        'views': mainuser.get_views().count(),
+        'friends': mainuser.get_friends().count()
+    }).json(by_alias=True)
