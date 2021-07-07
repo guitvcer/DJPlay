@@ -6,24 +6,24 @@
     <div class="flex justify-center mt-3">
       <profile-button
           :buttonName="'friend_request_button'"
-          :friendsCount="user.friends"
+          :friendsCount="$props.user.friends"
           :title="'Добавить в друзья'"
-          :url="{ name: 'friend_request', params: { username: user.username } }"
+          :url="{ name: 'friend_request', params: { username: $props.user.username } }"
       />
       <profile-button
           :buttonName="'user_chat_button'"
           :title="'Написать сообщение'"
-          :url="{ name: 'user_chat', params: { username: user.username } }"
+          :url="{ name: 'user_chat', params: { username: $props.user.username } }"
       />
       <profile-button
           :buttonName="'edit_profile_button'"
           :title="'Изменить профиль'"
-          :url="{ name: 'edit_profile', params: { username: user.username } }"
+          :url="{ name: 'edit_profile', params: { username: $props.user.username } }"
       />
       <profile-button
           :buttonName="'user_parties_button'"
           :title="'Посмотреть сыгранные партии'"
-          :url="{ name: 'user_parties', params: { username: user.username } }"
+          :url="{ name: 'user_parties', params: { username: $props.user.username } }"
       />
     </div>
   </div>
@@ -44,7 +44,7 @@ export default {
   },
   computed: {
     userAvatarUrl() {
-      return this.host + '/media/' + this.user.avatar
+      return this.host + this.$props.user.avatar
     }
   }
 }
