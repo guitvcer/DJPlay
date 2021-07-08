@@ -27,18 +27,28 @@ const routes = [
         component: import('./views/Profile.vue')
     },
     {
+        path: '/account/:username/views/',
+        name: 'usersViewers',
+        component: import('./views/UsersList.vue')
+    },
+    {
+        path: '/account/:username/friends/',
+        name: 'usersFriends',
+        component: import('./views/UsersList.vue')
+    },
+    {
         path: '/account/:username/friend_request',
-        name: 'friend_request',
+        name: 'friendRequest',
         redirect: '/:username/'
     },
     {
         path: '/account/:username/chat',
-        name: 'user_chat',
+        name: 'userChat',
         redirect: '/:username/'
     },
     {
         path: '/account/:username/parties/',
-        name: 'user_parties',
+        name: 'userParties',
         redirect: '/'
     },
     {
@@ -48,7 +58,7 @@ const routes = [
     },
     {
         path: '/account/edit/',
-        name: 'edit_profile',
+        name: 'editProfile',
         redirect: '/'
     }
 ]

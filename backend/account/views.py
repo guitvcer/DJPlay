@@ -1,5 +1,5 @@
-import json
 from django.conf import settings
+from django.urls import resolve
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,11 +7,31 @@ from .models import MainUser, Game
 from . import serializers
 
 
-class MainUsersListAPIView(generics.ListAPIView):
+class MainUsersListAPIView(APIView):
     """Список пользователей"""
 
-    serializer_class = serializers.MainUsersListSerializer
-    queryset = MainUser.objects.filter(is_active=True)
+    def get(self, request, username=None):
+        urlname = resolve(self.request.path_info).url_name
+
+        if urlname == 'users_friends' or urlname == 'users_views':
+            try:
+                mainuser = MainUser.objects.get(username=username)
+            except MainUser.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                if mainuser.is_private:
+                    return Response(status=status.HTTP_403_FORBIDDEN)
+
+                if urlname == 'users_friends':
+                    users_list = mainuser.get_friends()
+                elif urlname == 'users_views':
+                    users_list = mainuser.get_views()
+        else:
+            users_list = MainUser.objects.filter(is_active=True)
+
+        serializer = serializers.MainUsersListSerializer(users_list, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MainUserProfileAPIView(APIView):
@@ -25,14 +45,22 @@ class MainUserProfileAPIView(APIView):
         except MainUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            serializer = serializers.MainUserProfileSerializer(mainuser)
-            extra_data = {
-                'friends': mainuser.get_friends().count(),
-                'views': mainuser.get_views().count()
-            }
-            extra_data.update(serializer.data)
+            if mainuser.is_private:
+                data = {
+                    'username': mainuser.username,
+                    'is_private': mainuser.is_private,
+                    'avatar': str(mainuser.avatar)
+                }
+            else:
+                serializer = serializers.MainUserProfileSerializer(mainuser)
+                data = {
+                    'friends': mainuser.get_friends().count(),
+                    'views': mainuser.get_views().count()
+                }
+                data.update(serializer.data)
+
             return Response(
-                extra_data,
+                data,
                 status=status.HTTP_200_OK
             )
 

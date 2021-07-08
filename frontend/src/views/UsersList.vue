@@ -24,11 +24,19 @@ export default {
     }
   },
   mounted() {
-    fetch(this.host + '/account/users/')
-      .then(response => response.json())
-      .then(json => {
-        this.usersList = json
-      })
+    if (this.$route.name === 'usersFriends' || this.$route.name === 'usersViewers') {
+      fetch(this.host + this.$route.path)
+        .then(response => response.json())
+        .then(json => {
+          this.usersList = json
+        })
+    } else {
+      fetch(this.host + '/account/users/')
+        .then(response => response.json())
+        .then(json => {
+          this.usersList = json
+        })
+    }
   }
 }
 </script>

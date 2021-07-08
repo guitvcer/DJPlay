@@ -1,7 +1,8 @@
 <template>
   <section class="bg-gray-50 dark:bg-main-dark block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8" style="max-width: 1400px;">
     <profile-avatar :user="user" v-if="!loading" />
-    <profile-table :user="user" v-if="!loading" />
+    <profile-table :user="user" v-if="!loading && !user.is_private" />
+    <p v-else-if="user.is_private" class="px-4">Приватный аккаунт. Информация скрыта.</p>
   </section>
 </template>
 
