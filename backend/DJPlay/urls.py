@@ -6,6 +6,7 @@ from django.urls import path, include
 urlpatterns = [
     path('account/', include('account.urls', namespace='account')),
     path('gomoku/', include('gomoku.urls')),
+    path('chess/', include('chess.urls')),
     path('api/', include('rest_framework.urls'))
 ]
 

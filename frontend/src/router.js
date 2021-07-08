@@ -13,8 +13,13 @@ const routes = [
     },
     {
         path: '/gomoku/',
-        component: import('./views/Gomoku.vue'),
-        name: 'gomoku',
+        component: import('./views/Game.vue'),
+        name: 'gomoku'
+    },
+    {
+        path: '/chess/',
+        component: import('./views/Game.vue'),
+        name: 'chess'
     },
     {
         path: '/account/:username/',
@@ -44,11 +49,6 @@ const routes = [
     {
         path: '/account/edit/',
         name: 'edit_profile',
-        redirect: '/'
-    },
-    {
-        path: '/chess/',
-        name: 'chess',
         redirect: '/'
     }
 ]
