@@ -18,8 +18,10 @@ export default {
   },
   computed: {
     getFieldValue() {
+      if (this.fieldValue === null) return 'Не указано'
+
       if (typeof this.fieldValue === 'string')
-        return (this.fieldValue === 'None') ? 'Не указано' : this.fieldValue.substr(0, 48)
+        return (this.fieldValue === '') ? 'Не указано' : this.fieldValue.substr(0, 48)
 
       return this.fieldValue
     }

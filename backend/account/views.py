@@ -1,9 +1,9 @@
+import json
 from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import MainUser, Game
-from .services import get_user_data_json
 from . import serializers
 
 
@@ -19,12 +19,22 @@ class MainUserProfileAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         username = kwargs.get('username')
-        mainuser = MainUser.objects.get(username=username)
-        user_data_json = get_user_data_json(mainuser)
-        return Response(
-            user_data_json,
-            status=status.HTTP_200_OK
-        )
+
+        try:
+            mainuser = MainUser.objects.get(username=username)
+        except MainUser.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            serializer = serializers.MainUserProfileSerializer(mainuser)
+            extra_data = {
+                'friends': mainuser.get_friends().count(),
+                'views': mainuser.get_views().count()
+            }
+            extra_data.update(serializer.data)
+            return Response(
+                extra_data,
+                status=status.HTTP_200_OK
+            )
 
 
 class AuthorizationAPIView(APIView):

@@ -23,7 +23,7 @@ export default {
     fetch(this.host + '/account/' + this.$route.params.username + '/')
       .then(response => response.json())
       .then(json => {
-        this.user = JSON.parse(json)
+        this.user = json
         this.loading = false
       })
   }

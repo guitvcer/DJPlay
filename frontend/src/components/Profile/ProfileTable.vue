@@ -41,7 +41,7 @@ export default {
       mainInformation: [
         {
           fieldName: 'Был(-а) онлайн',
-          fieldValue: this.$props.user.lastOnline
+          fieldValue: this.$props.user.last_online
         },
         {
           fieldName: 'Имя пользователя',
@@ -63,7 +63,9 @@ export default {
         },
         {
           fieldName: 'Пол',
-          fieldValue: (this.$props.user.gender === 'M') ? 'Мужской' : 'Женский'
+          fieldValue: (this.$props.user.gender === null) ? 'Не указано' : (
+              this.$props.user.gender === 'M' ? 'Мужской' : 'Женский'
+          )
         },
         {
           fieldName: 'Дата рождения',
@@ -71,21 +73,18 @@ export default {
         },
         {
           fieldName: 'Дата регистрации',
-          fieldValue: this.$props.user.dateJoined
+          fieldValue: this.$props.user.date_joined
         },
         {
           fieldName: 'Настоящее имя',
-          fieldValue: this.$props.user.firstName
+          fieldValue: this.$props.user.first_name
         },
         {
           fieldName: 'Настоящяя фамилия',
-          fieldValue: this.$props.user.lastName
+          fieldValue: this.$props.user.last_name
         }
       ]
     }
-  },
-  mounted() {
-    console.log(this.$props.user)
   }
 }
 </script>

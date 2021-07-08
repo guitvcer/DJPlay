@@ -38,3 +38,11 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = ('name', 'app_name', 'rules', 'image', 'is_released')
+
+
+class MainUserProfileSerializer(serializers.ModelSerializer):
+    """Serializer профиля пользователя"""
+
+    class Meta:
+        model = MainUser
+        exclude = ('password', 'groups', 'user_permissions', 'is_staff')
