@@ -12,6 +12,11 @@ const routes = [
         component: import('./components/Modal')
     },
     {
+        path: '/gomoku/',
+        component: import('./views/Gomoku.vue'),
+        name: 'gomoku',
+    },
+    {
         path: '/account/:username/',
         name: 'profile',
         component: import('./views/Profile.vue')
@@ -39,11 +44,6 @@ const routes = [
     {
         path: '/account/edit/',
         name: 'edit_profile',
-        redirect: '/'
-    },
-    {
-        path: '/gomoku/',
-        name: 'gomoku',
         redirect: '/'
     },
     {
