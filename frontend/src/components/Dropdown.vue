@@ -3,65 +3,93 @@
     <div>
       <MenuButton
           class="inline-flex items-center justify-center w-full rounded-md px-4 py-2 font-semibold">
-        <span class="hidden md:inline">admin</span>
-        <img :src="userAvatarUrl" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
+        <span class="hidden md:inline">{{ userInfo.username }}</span>
+        <img :src="host + userInfo.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
       </MenuButton>
     </div>
 
     <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-      <MenuItems class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border">
+      <MenuItems
+          class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
+          v-if="getCookie('access')"
+      >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
             <router-link
                 :to="{ name: 'profile', params: { username: 'admin' } }"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']"
             >
               Профиль
             </router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']">Сообщения</a>
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Сообщения</a>
           </MenuItem>
+          <MenuItem v-slot="{ active }">
+            <router-link
+                :to="{ name: 'users' }"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50  dark:hover:bg-main']"
+            >
+              Пользователи
+            </router-link>
+          </MenuItem>
+          <MenuItem v-slot="{ active }">
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Изменить профиль</a>
+          </MenuItem>
+        </div>
+        <div class="py-1">
+          <MenuItem v-slot="{ active }">
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Админ-панель</a>
+          </MenuItem>
+        </div>
+        <div class="py-1">
+          <MenuItem v-slot="{ active }">
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Выйти</a>
+          </MenuItem>
+        </div>
+      </MenuItems>
+      <MenuItems
+        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
+        v-else
+      >
+        <div class="py-1">
           <MenuItem v-slot="{ active }">
             <a
                 href="#"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']"
                 @click="open = true; showAuthorizationModal = true"
             >Войти</a>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <a
                 href="#"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']"
                 @click="open = true; showRegistrationModal = true"
             >Регистрация</a>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
                 :to="{ name: 'users' }"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50  dark:hover:bg-main']"
             >
               Пользователи
             </router-link>
           </MenuItem>
-          <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']">Изменить профиль</a>
-          </MenuItem>
-        </div>
-        <div class="py-1">
-          <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']">Админ-панель</a>
-          </MenuItem>
-        </div>
-        <div class="py-1">
-          <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50']">Выйти</a>
-          </MenuItem>
         </div>
       </MenuItems>
     </transition>
-    <modal :action="'authorization'" :open="open" v-if="showAuthorizationModal" @close-form="showAuthorizationModal = false" />
-    <modal :action="'registration'" :open="open" v-if="showRegistrationModal" @close-form="showRegistrationModal = false" />
+    <modal
+        :action="'authorization'"
+        :open="open"
+        v-if="showAuthorizationModal"
+        @close-form="closeAuthorizationForm"
+    />
+    <modal
+        :action="'registration'"
+        :open="open"
+        v-if="showRegistrationModal"
+        @close-form="showRegistrationModal = false"
+    />
   </Menu>
 </template>
 
@@ -71,17 +99,15 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import Modal from '@/components/Modal'
 
 export default {
-  props: {
-    userAvatarUrl: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       open: ref(false),
       showAuthorizationModal: false,
-      showRegistrationModal: false
+      showRegistrationModal: false,
+      userInfo: {
+        username: 'Гость',
+        avatar: '/media/user.png'
+      }
     }
   },
   components: {
@@ -91,5 +117,29 @@ export default {
     MenuItems,
     Modal
   },
+  methods: {
+    closeAuthorizationForm(alert) {
+      this.$emit('create-alert', alert)
+      this.showAuthorizationModal = false
+    },
+    getCookie(name) {
+      for (let i of document.cookie.split('; ')) {
+        let j = i.split('=');
+        if (j[0] === name) return j[1];
+      }
+    }
+  },
+  mounted() {
+    let access_token = this.getCookie('access')
+    if (access_token) {
+      fetch(this.host + '/account/', {
+        headers: {
+          'Authorization': 'Bearer ' + access_token
+        }
+      })
+        .then(response => response.json())
+        .then(json => this.userInfo = json)
+    }
+  }
 }
 </script>

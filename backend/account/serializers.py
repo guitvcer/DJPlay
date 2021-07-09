@@ -3,7 +3,7 @@ from .models import MainUser, Game
 from .services import generate_tokens
 
 
-class MainUsersListSerializer(serializers.ModelSerializer):
+class MainUserInfoSerializer(serializers.ModelSerializer):
     """Serializer cписка пользователей"""
 
     class Meta:
@@ -19,11 +19,11 @@ class AuthorizationSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         try:
-            mainuser = MainUser.objects.get(username=attrs['username'])
+            self.mainuser = MainUser.objects.get(username=attrs['username'])
         except MainUser.DoesNotExist:
             raise serializers.ValidationError('Неверные имя пользователя и/или пароль.')
 
-        if mainuser.check_password(attrs['password']):
+        if self.mainuser.check_password(attrs['password']):
             return attrs
 
         raise serializers.ValidationError('Неверные имя пользователя и/или пароль.')

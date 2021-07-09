@@ -4,6 +4,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import MainUser, Game
+from .services import get_user_by_token
 from . import serializers
 
 
@@ -29,7 +30,7 @@ class MainUsersListAPIView(APIView):
         else:
             users_list = MainUser.objects.filter(is_active=True)
 
-        serializer = serializers.MainUsersListSerializer(users_list, many=True)
+        serializer = serializers.MainUserInfoSerializer(users_list, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -85,3 +86,14 @@ class GamesListAPIView(generics.ListAPIView):
             return Game.objects.all()
 
         return Game.objects.filter(is_released=True)
+
+
+class CurrentMainUserInfoAPIView(APIView):
+    """Информация о текущем пользователе"""
+
+    def get(self, request, *args, **kwargs):
+        access_token = request.headers['Authorization'].split(' ')[1]
+        mainuser = get_user_by_token(access_token)
+        serializer = serializers.MainUserInfoSerializer(mainuser)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

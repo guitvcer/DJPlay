@@ -2,3 +2,4 @@
 frontend/.gitignore
 backend/.gitignore
 .gitignore
+ngrok

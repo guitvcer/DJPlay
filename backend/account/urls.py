@@ -11,5 +11,6 @@ urlpatterns = [
     path('users/', views.MainUsersListAPIView.as_view(), name='users_list'),
     path('<str:username>/friends/', views.MainUsersListAPIView.as_view(), name='users_friends'),
     path('<str:username>/views/', views.MainUsersListAPIView.as_view(), name='users_views'),
-    path('<str:username>/', views.MainUserProfileAPIView.as_view(), name='profile')
+    path('<str:username>/', views.MainUserProfileAPIView.as_view(), name='profile'),
+    path('', views.CurrentMainUserInfoAPIView.as_view(), name='me')
 ]

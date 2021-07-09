@@ -14,6 +14,7 @@
           <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
+        <alert :alerts="alerts" class="z-index-50" />
         <span class="hidden inline-block align-middle h-screen" aria-hidden="true">&#8203;</span>
         <TransitionChild
             as="template"
@@ -27,8 +28,15 @@
           <div
               class="inline-block bg-white dark:bg-main-dark2 rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 max-w-lg w-full relative bottom-10 mx-4"
           >
-            <authorization-form v-if="action === 'authorization'" @close-modal="open = false; $emit('close-form')" />
-            <registration-form v-if="action === 'registration'" @close-modal="open = false; $emit('close-form')" />
+            <authorization-form
+                v-if="action === 'authorization'"
+                @close-modal="open = false; $emit('close-form')"
+                @sent="createAlert"
+            />
+            <registration-form
+                v-if="action === 'registration'"
+                @close-modal="open = false; $emit('close-form')"
+            />
           </div>
         </TransitionChild>
       </div>
@@ -37,10 +45,10 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import Alert from '@/components/Alert'
 import AuthorizationForm from '@/components/Auth/AuthorizationForm'
-import RegistrationForm from "@/components/Auth/RegistrationForm"
+import RegistrationForm from '@/components/Auth/RegistrationForm'
 
 export default {
   components: {
@@ -51,6 +59,7 @@ export default {
     TransitionRoot,
     AuthorizationForm,
     RegistrationForm,
+    Alert
   },
   props: {
     action: {
@@ -60,6 +69,20 @@ export default {
     open: {
       type: Boolean,
       required: true
+    }
+  },
+  data() {
+    return {
+      alerts: []
+    }
+  },
+  methods: {
+    createAlert(alerts) {
+      for (let alert of alerts) {
+        if (alert.level === 'success') {
+          this.$emit('close-form', alert)
+        } else this.alerts.push(alert)
+      }
     }
   }
 }
