@@ -3,7 +3,7 @@
     <div>
       <MenuButton
           class="inline-flex items-center justify-center w-full rounded-md px-4 py-2 font-semibold">
-        <span class="hidden md:inline">{{ userInfo.username }}</span>
+        <span class="hidden md:inline" v-text="userInfo.username" />
         <img :src="host + userInfo.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
       </MenuButton>
     </div>
@@ -17,34 +17,34 @@
           <MenuItem v-slot="{ active }">
             <router-link
                 :to="{ name: 'profile', params: { username: 'admin' } }"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']"
             >
               Профиль
             </router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Сообщения</a>
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']">Сообщения</a>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
                 :to="{ name: 'users' }"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50  dark:hover:bg-main']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']"
             >
               Пользователи
             </router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Изменить профиль</a>
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']">Изменить профиль</a>
           </MenuItem>
         </div>
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Админ-панель</a>
+            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']">Админ-панель</a>
           </MenuItem>
         </div>
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']">Выйти</a>
+            <button @click="logout" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']">Выйти</button>
           </MenuItem>
         </div>
       </MenuItems>
@@ -56,21 +56,21 @@
           <MenuItem v-slot="{ active }">
             <a
                 href="#"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']"
                 @click="open = true; showAuthorizationModal = true"
             >Войти</a>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <a
                 href="#"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']"
                 @click="open = true; showRegistrationModal = true"
             >Регистрация</a>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
                 :to="{ name: 'users' }"
-                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50  dark:hover:bg-main']"
+                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']"
             >
               Пользователи
             </router-link>
@@ -118,28 +118,45 @@ export default {
     Modal
   },
   methods: {
-    closeAuthorizationForm(alert) {
-      this.$emit('create-alert', alert)
-      this.showAuthorizationModal = false
-    },
-    getCookie(name) {
-      for (let i of document.cookie.split('; ')) {
-        let j = i.split('=');
-        if (j[0] === name) return j[1];
+    getUserInfo() {
+      let access_token = this.getCookie('access')
+
+      if (access_token) {
+        fetch(this.host + '/account/', {
+          headers: {
+            'Authorization': 'Bearer ' + access_token
+          }
+        })
+            .then(response => response.json())
+            .then(json => {
+              this.userInfo = json
+            })
+      } else this.userInfo = {
+          username: 'Гость',
+          avatar: '/media/user.png'
       }
+    },
+    logout() {
+      document.cookie = 'access=; Max-Age=0'
+      document.cookie = 'refresh=; Max-Age=0'
+
+      this.getUserInfo()
+      this.$emit('create-alert', {
+        title: 'Вы успешно вышли из аккаунта.',
+        level: 'success'
+      })
+    },
+    closeAuthorizationForm(alert) {
+      if (alert) {
+        this.$emit('create-alert', alert)
+        setTimeout(this.getUserInfo, 1000)
+      }
+
+      this.showAuthorizationModal = false
     }
   },
   mounted() {
-    let access_token = this.getCookie('access')
-    if (access_token) {
-      fetch(this.host + '/account/', {
-        headers: {
-          'Authorization': 'Bearer ' + access_token
-        }
-      })
-        .then(response => response.json())
-        .then(json => this.userInfo = json)
-    }
+    this.getUserInfo()
   }
 }
 </script>

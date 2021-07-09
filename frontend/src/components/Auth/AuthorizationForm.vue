@@ -32,8 +32,8 @@
       <button
           type="button"
           class="inline-flex justify-center rounded-md border border-main shadow-sm px-4 py-2 bg-white text-base text-gray-700 hover:bg-gray-50 mt-0 ml-3 w-auto text-sm dark:bg-red-500 dark:text-gray-50"
-          @click="$emit('close-modal')"
           ref="cancelButtonRef"
+          @click="$emit('close-modal')"
       >Отмена</button>
     </div>
   </form>
@@ -69,7 +69,7 @@ export default {
           return response.json().then(data => {
             this.$emit('sent', [
               {
-                title: 'Вы успешно авторизовались.',
+                title: 'Вы успешно вошли в аккаунт.',
                 level: 'success'
               }
             ])

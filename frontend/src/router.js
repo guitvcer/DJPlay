@@ -8,10 +8,6 @@ const routes = [
         component: Home
     },
     {
-        path: '/modal/',
-        component: import('./components/Modal')
-    },
-    {
         path: '/gomoku/',
         component: import('./views/Game.vue'),
         name: 'gomoku'
