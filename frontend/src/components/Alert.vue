@@ -4,7 +4,7 @@
         role="alert"
         v-for="(alert, index) in alerts"
         :key="index"
-        :class="'py-4 px-4 leading-normal rounded border-l-4 w-full flex justify-between my-1 ' + alert.level"
+        :class="'py-4 px-4 leading-normal rounded border-l-4 w-full flex justify-between my-1 dark:text-black ' + alert.level"
     >
       <div class="flex items-center w-full">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="alert.level === 'simple'">

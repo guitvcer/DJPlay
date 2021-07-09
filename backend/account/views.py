@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import MainUser, Game
-from .services import get_user_by_token
+from .services import get_user_by_token, generate_tokens
 from . import serializers
 
 
@@ -84,7 +84,10 @@ class RegistrationAPIView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(status=status.HTTP_200_OK)
+            username = serializer.data.get('username')
+            mainuser = MainUser.objects.get(username=username)
+            tokens = generate_tokens(mainuser)
+            return Response(tokens, status=status.HTTP_200_OK)
 
 
 class GamesListAPIView(generics.ListAPIView):

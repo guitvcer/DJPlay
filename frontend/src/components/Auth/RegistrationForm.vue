@@ -51,12 +51,17 @@ export default {
         }
       }).then(response => {
         if (response.ok) {
-          this.$emit('sent', [
-            {
-              title: 'Вы успешно зарегистрировались.',
-              level: 'success'
-            }
-          ])
+          return response.json().then(data => {
+            this.$emit('sent', [
+              {
+                title: 'Вы успешно зарегистрировались.',
+                level: 'success'
+              }
+            ])
+
+            document.cookie = `access=${data.access}`
+            document.cookie = `refresh=${data.refresh}`
+          })
         } else return response.json().then(error => {
           this.$emit('sent', [
             {
