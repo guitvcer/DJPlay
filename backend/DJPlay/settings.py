@@ -11,7 +11,7 @@ SECRET_KEY = '^bll0r6(epnd9il893d409-j7^j0#0^9)srjc$4h@msh3vd9gh'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'fdb7faec7d76.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 CORS_ORIGIN_ALLOW_ALL = True
 

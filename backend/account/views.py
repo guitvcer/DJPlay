@@ -67,13 +67,24 @@ class MainUserProfileAPIView(APIView):
 
 
 class AuthorizationAPIView(APIView):
-    """Авторизация"""
+    """Авторизация пользователя"""
 
     def post(self, request, *args, **kwargs):
         serializer = serializers.AuthorizationSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
             return Response(serializer.get_tokens(), status=status.HTTP_200_OK)
+
+
+class RegistrationAPIView(APIView):
+    """Регистрация пользователя"""
+
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.RegistrationSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
 
 
 class GamesListAPIView(generics.ListAPIView):

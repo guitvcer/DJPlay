@@ -7,6 +7,7 @@ app_name = 'account'
 
 urlpatterns = [
     path('authorization', views.AuthorizationAPIView.as_view(), name='authorization'),
+    path('registration', views.RegistrationAPIView.as_view(), name='registration'),
     path('games/', views.GamesListAPIView.as_view(), name='games'),
     path('users/', views.MainUsersListAPIView.as_view(), name='users_list'),
     path('<str:username>/friends/', views.MainUsersListAPIView.as_view(), name='users_friends'),

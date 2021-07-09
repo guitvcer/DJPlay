@@ -1,6 +1,5 @@
 <template>
   <form :action="this.action" method="post" @submit.prevent="submitForm">
-    <alert :alerts="alerts" v-if="alerts.length" />
     <div class="px-4 py-12">
       <h3 class="text-center text-4xl font-semibold">Вход в аккаунт</h3>
       <div class="flex flex-col mt-12">
@@ -52,8 +51,7 @@ export default {
         username: '',
         password: ''
       },
-      action: this.host + '/account/authorization',
-      alerts: []
+      action: this.host + '/account/authorization'
     }
   },
   methods: {

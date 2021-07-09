@@ -16,7 +16,7 @@
         <div class="py-1">
           <MenuItem v-slot="{ active }">
             <router-link
-                :to="{ name: 'profile', params: { username: 'admin' } }"
+                :to="{ name: 'profile', params: { username: userInfo.username } }"
                 :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 dark:text-gray-50 dark:hover:bg-main w-full text-left']"
             >
               Профиль
@@ -79,16 +79,16 @@
       </MenuItems>
     </transition>
     <modal
-        :action="'authorization'"
+        action="authorization"
         :open="open"
         v-if="showAuthorizationModal"
         @close-form="closeAuthorizationForm"
     />
     <modal
-        :action="'registration'"
+        action="registration"
         :open="open"
         v-if="showRegistrationModal"
-        @close-form="showRegistrationModal = false"
+        @close-form="closeRegistrationForm"
     />
   </Menu>
 </template>
@@ -146,13 +146,19 @@ export default {
         level: 'success'
       })
     },
-    closeAuthorizationForm(alert) {
+    closeForm(alert) {
       if (alert) {
         this.$emit('create-alert', alert)
         setTimeout(this.getUserInfo, 1000)
       }
-
+    },
+    closeAuthorizationForm(alert) {
+      this.closeForm(alert)
       this.showAuthorizationModal = false
+    },
+    closeRegistrationForm(alert) {
+      this.closeForm(alert)
+      this.showRegistrationModal = false
     }
   },
   mounted() {

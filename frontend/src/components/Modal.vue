@@ -14,7 +14,7 @@
           <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
-        <alert :alerts="alerts" class="z-index-50" />
+        <alert :alerts="alerts" v-if="alerts.length" class="z-index-50" />
         <span class="hidden inline-block align-middle h-screen" aria-hidden="true">&#8203;</span>
         <TransitionChild
             as="template"
@@ -36,6 +36,7 @@
             <registration-form
                 v-if="action === 'registration'"
                 @close-modal="open = false; $emit('close-form')"
+                @sent="createAlert"
             />
           </div>
         </TransitionChild>

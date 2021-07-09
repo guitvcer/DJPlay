@@ -11,9 +11,7 @@ function getCookie(name) {
 }
 
 const app = createApp(App)
-app.config.globalProperties.host = 'http://fdb7faec7d76.ngrok.io'
-// app.config.globalProperties.access = getCookie('access')
-// app.config.globalProperties.refresh = getCookie('refresh')
+app.config.globalProperties.host = 'http://127.0.0.1:8000'
 app.config.globalProperties.getCookie = getCookie
 
 app.use(router).mount('#app')
