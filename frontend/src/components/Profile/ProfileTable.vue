@@ -1,6 +1,7 @@
 <template>
-  <div class="mx-4 lg:mx-12">
-    <div class="mb-5">
+  <div class="mx-4 lg:mx-12 select-text">
+    <p v-if="extraText">{{ extraText }}</p>
+    <div class="mb-5" v-if="user">
       <h3 class="font-bold text-xl">Основная информация</h3>
       <hr class="mb-2">
       <profile-field
@@ -10,7 +11,7 @@
           :fieldValue="field.fieldValue"
       />
     </div>
-    <div class="mb-5">
+    <div class="mb-5" v-if="user">
       <h3 class="font-bold text-xl">Дополнительная информация</h3>
       <hr class="mb-2">
       <profile-field
@@ -28,17 +29,21 @@ import ProfileField from '@/components/Profile/ProfileField'
 
 export default {
   props: {
-    user: {
-      type: Object,
-      required: true
-    }
+    user: Object,
+    extraText: String
   },
   components: {
     ProfileField
   },
   data() {
     return {
-      mainInformation: [
+      mainInformation: [],
+      additionalInformation: []
+    }
+  },
+  mounted() {
+    if (this.user) {
+      this.mainInformation = [
         {
           fieldName: 'Был(-а) онлайн',
           fieldValue: this.$props.user.last_online
@@ -55,8 +60,8 @@ export default {
           fieldName: 'Друзья',
           fieldValue: this.$props.user.friends
         }
-      ],
-      additionalInformation: [
+      ]
+      this.additionalInformation = [
         {
           fieldName: 'Просмотры',
           fieldValue: this.$props.user.views

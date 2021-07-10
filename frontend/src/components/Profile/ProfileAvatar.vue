@@ -1,9 +1,9 @@
 <template>
-  <div class="mx-2 lg:mx-12 mb-12">
-    <img :src="userAvatarUrl" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">
-    <h2 class="text-3xl font-semibold mb-3 text-center lg:text-left" style="word-break: break-word;">{{ user.username }}</h2>
-    <hr v-if="!user.is_private">
-    <div class="flex justify-center mt-3" v-if="!user.is_private">
+  <div class="mx-2 lg:mx-12 mb-12 flex-shrink-0">
+    <img :src="host + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">
+    <h2 class="text-3xl font-semibold mb-3 text-center lg:text-left select-text" style="word-break: break-word;">{{ user.username }}</h2>
+    <hr v-if="profileViewAccess">
+    <div class="flex justify-center mt-3" v-if="profileViewAccess">
       <profile-button
           :buttonName="'friend_request_button'"
           :friendsCount="$props.user.friends"
@@ -36,19 +36,15 @@ export default {
   props: {
     user: {
       type: Object,
-      required: true,
+      required: true
+    },
+    profileViewAccess: {
+      type: Boolean,
+      required: true
     }
   },
   components: {
     ProfileButton
-  },
-  computed: {
-    userAvatarUrl() {
-      if (this.$props.user.is_private)
-        return this.host + '/media/' + this.$props.user.avatar
-
-      return this.host + this.$props.user.avatar
-    }
   }
 }
 </script>

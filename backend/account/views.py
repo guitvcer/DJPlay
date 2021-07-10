@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.urls import resolve
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import MainUser, Game
-from .services import get_user_by_token, generate_tokens
+from .services import (
+    get_user_by_token,
+    generate_tokens,
+    has_user_access_to_view_data_of_another_user,
+    get_access_token,
+    is_authenticated
+)
 from . import serializers
 
 
@@ -13,6 +19,7 @@ class MainUsersListAPIView(APIView):
 
     def get(self, request, username=None):
         urlname = resolve(self.request.path_info).url_name
+        users_list = None
 
         if urlname == 'users_friends' or urlname == 'users_views':
             try:
@@ -38,6 +45,8 @@ class MainUsersListAPIView(APIView):
 class MainUserProfileAPIView(APIView):
     """Профиль пользователя"""
 
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         username = kwargs.get('username')
 
@@ -46,19 +55,30 @@ class MainUserProfileAPIView(APIView):
         except MainUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            if mainuser.is_private:
+            if is_authenticated(request):
+                viewers_username = request.GET.get('username')
+                viewer = MainUser.objects.get(username=viewers_username)
+
+                if has_user_access_to_view_data_of_another_user(mainuser, viewer):
+                    serializer = serializers.MainUserProfileSerializer(mainuser)
+                    data = {
+                        'friends': mainuser.get_friends().count(),
+                        'views': mainuser.get_views().count(),
+                        'is_friend': True
+                    }
+                    data.update(serializer.data)
+                else:
+                    data = {
+                        'username': mainuser.username,
+                        'is_private': mainuser.is_private,
+                        'avatar': '/media' + str(mainuser.avatar)
+                    }
+            else:
                 data = {
                     'username': mainuser.username,
                     'is_private': mainuser.is_private,
-                    'avatar': str(mainuser.avatar)
+                    'avatar': '/media' + str(mainuser.avatar)
                 }
-            else:
-                serializer = serializers.MainUserProfileSerializer(mainuser)
-                data = {
-                    'friends': mainuser.get_friends().count(),
-                    'views': mainuser.get_views().count()
-                }
-                data.update(serializer.data)
 
             return Response(
                 data,
@@ -106,8 +126,12 @@ class CurrentMainUserInfoAPIView(APIView):
     """Информация о текущем пользователе"""
 
     def get(self, request, *args, **kwargs):
-        access_token = request.headers['Authorization'].split(' ')[1]
-        mainuser = get_user_by_token(access_token)
-        serializer = serializers.MainUserInfoSerializer(mainuser)
+        access_token = get_access_token(request)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if access_token:
+            mainuser = get_user_by_token(access_token)
+            serializer = serializers.MainUserInfoSerializer(mainuser)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
