@@ -49,15 +49,13 @@ export default {
               .then(json => {
                 this.user = json
 
-                console.log(this.user)
-
-                if (is_authorized) {
-                  if (this.user.username === viewer.username) {
-                    this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
-                    this.profileViewAccess = true
-                  } else if (this.user.is_friend) this.profileViewAccess = true
-                } else if (this.user.is_private) {
-                  this.extraText = 'Приватный профиль. Информация скрыта.'
+                if (this.user.username === viewer.username) {
+                  this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
+                  this.profileViewAccess = true
+                } else if (this.user.is_friend) this.profileViewAccess = true
+                else {
+                  this.extraText = 'Приватный аккаунт. Информация скрыта.'
+                  this.profileViewAccess = false
                 }
 
                 this.loading = false
@@ -68,7 +66,7 @@ export default {
           .then(response => response.json())
           .then(json => {
             this.user = json
-            
+
             if (this.user.is_private) {
               this.extraText = 'Приватный профиль. Информация скрыта.'
             }

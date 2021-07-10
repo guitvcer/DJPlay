@@ -1,6 +1,6 @@
 <template>
   <div class="mx-4 lg:mx-12 select-text">
-    <p v-if="extraText">{{ extraText }}</p>
+    <p v-if="extraText" class="mb-5">{{ extraText }}</p>
     <div class="mb-5" v-if="user">
       <h3 class="font-bold text-xl">Основная информация</h3>
       <hr class="mb-2">

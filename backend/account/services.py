@@ -24,8 +24,6 @@ def get_access_token(request: ASGIRequest) -> (str, bool):
 def is_authenticated(request: ASGIRequest) -> bool:
     """Авторизован ли пользователь"""
 
-    print(request.headers)
-
     try:
         request.headers['Authorization'].split(' ')[1]
     except KeyError:
