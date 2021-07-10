@@ -1,6 +1,6 @@
 import datetime
 from django.db import models
-from account.models import MainUser
+from account.models import User
 
 
 class Move(models.Model):
@@ -21,7 +21,7 @@ class Move(models.Model):
     ]
 
     party = models.ForeignKey('Party', on_delete=models.CASCADE, verbose_name="Партия")
-    player = models.ForeignKey(MainUser, on_delete=models.CASCADE,
+    player = models.ForeignKey(User, on_delete=models.CASCADE,
                                verbose_name="Игрок", related_name="chess_move_player")
     castling = models.CharField(null=True, blank=True, max_length=1, choices=CASTLING)
     piece = models.CharField(null=True, blank=True, max_length=1, choices=PIECES, verbose_name="Фигура")
@@ -48,12 +48,12 @@ class Move(models.Model):
 class Party(models.Model):
     """Модель партии Шахмат"""
 
-    white = models.ForeignKey(MainUser, on_delete=models.PROTECT,
+    white = models.ForeignKey(User, on_delete=models.PROTECT,
                               verbose_name="Белый", related_name="chess_white_player")
-    black = models.ForeignKey(MainUser, on_delete=models.PROTECT,
+    black = models.ForeignKey(User, on_delete=models.PROTECT,
                               verbose_name="Черный", related_name="chess_black_player")
     time = models.TimeField(default=datetime.time(minute=10), verbose_name="Время")
-    result = models.ForeignKey(MainUser, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Результат")
+    result = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Результат")
 
     def __str__(self):
         return f'{self.id} партия'

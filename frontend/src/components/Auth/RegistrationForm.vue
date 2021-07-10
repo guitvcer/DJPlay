@@ -12,11 +12,11 @@
     <div class="bg-gray-50 dark:bg-main-dark py-3 px-6 flex flex-row-reverse">
       <button
           type="submit"
-          class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-main text-base text-white hover:bg-main-dark ml-3 w-auto text-sm dark:bg-gray-100 dark:text-black"
-          @click="submitForm">Зарегистрироваться</button>
+          class="inline-flex justify-center rounded-md border font-semibold border-transparent shadow-sm cursor-pointer px-4 py-2 bg-main text-base text-white hover:bg-main-dark ml-3 w-auto text-sm dark:bg-gray-100 dark:text-black dark:hover:bg-gray-300"
+      >Зарегистрироваться</button>
       <button
           type="button"
-          class="inline-flex justify-center rounded-md border border-main shadow-sm px-4 py-2 bg-white text-base text-gray-700 hover:bg-gray-50 mt-0 ml-3 w-auto text-sm dark:bg-red-500 dark:text-gray-50"
+          class="inline-flex justify-center rounded-md border font-semibold border-main shadow-sm cursor-pointer px-4 py-2 bg-white text-base text-gray-700 hover:bg-gray-50 mt-0 ml-3 w-auto text-sm dark:bg-red-500 dark:text-gray-50 dark:hover:bg-red-600"
           @click="$emit('close-modal')"
           ref="cancelButtonRef">Отмена</button>
     </div>
@@ -43,33 +43,20 @@ export default {
   },
   methods: {
     submitForm() {
-      fetch(this.action, {
-        method: 'POST',
-        body: JSON.stringify(this.body),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(response => {
-        if (response.ok) {
-          return response.json().then(data => {
-            this.$emit('sent', [
-              {
-                title: 'Вы успешно зарегистрировались.',
-                level: 'success'
-              }
-            ])
-
-            document.cookie = `access=${data.access}`
-            document.cookie = `refresh=${data.refresh}`
-          })
-        } else return response.json().then(error => {
+      this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
+        if (json.type === 'alert') {
+          this.$emit('sent', [json])
+        } else {
           this.$emit('sent', [
             {
-              title: error.non_field_errors[0],
-              level: 'danger'
+              title: 'Вы успешно вошли в аккаунт.',
+              level: 'success'
             }
           ])
-        })
+
+          document.cookie = `access=${json.access}`
+          document.cookie = `refresh=${json.refresh}`
+        }
       })
 
       this.body.username = ''

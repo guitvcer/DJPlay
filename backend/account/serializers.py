@@ -1,37 +1,37 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
 from rest_framework import serializers
-from .models import MainUser, Game
+from .models import User, Game
 from .services import generate_tokens
 
 
-class MainUserInfoSerializer(serializers.ModelSerializer):
+class UserInfoSerializer(serializers.ModelSerializer):
     """Serializer cписка пользователей"""
 
     class Meta:
-        model = MainUser
+        model = User
         fields = ('username', 'avatar')
 
 
 class AuthorizationSerializer(serializers.Serializer):
-    """Serializer авторизации пользоватлея"""
+    """Serializer авторизации пользователя"""
 
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
 
     def validate(self, attrs):
         try:
-            self.mainuser = MainUser.objects.get(username=attrs['username'])
-        except MainUser.DoesNotExist:
+            self.user = User.objects.get(username=attrs['username'])
+        except User.DoesNotExist:
             raise serializers.ValidationError('Неверные имя пользователя и/или пароль.')
 
-        if self.mainuser.check_password(attrs['password']):
+        if self.user.check_password(attrs['password']):
             return attrs
 
         raise serializers.ValidationError('Неверные имя пользователя и/или пароль.')
 
     def get_tokens(self):
-        return generate_tokens(self.mainuser)
+        return generate_tokens(self.user)
 
 
 class RegistrationSerializer(serializers.Serializer):
@@ -44,9 +44,9 @@ class RegistrationSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         try:
-            MainUser.objects.get(username=attrs['username'])
+            User.objects.get(username=attrs['username'])
             raise serializers.ValidationError('Пользователь с таким именем уже существует.')
-        except MainUser.DoesNotExist:
+        except User.DoesNotExist:
             validate_password(attrs['password1'])
 
             if attrs['password1'] != attrs['password2']:
@@ -55,20 +55,20 @@ class RegistrationSerializer(serializers.Serializer):
             validate_email(attrs['email'])
 
             try:
-                MainUser.objects.get(email=attrs['email'])
+                User.objects.get(email=attrs['email'])
                 raise serializers.ValidationError('Пользователь с такой эл. почтой уже существует.')
-            except MainUser.DoesNotExist:
+            except User.DoesNotExist:
                 return attrs
 
     def save(self):
-        mainuser = MainUser.objects.create(
+        user = User.objects.create(
             username=self.validated_data['username'],
             email=self.validated_data['email']
         )
-        mainuser.set_password(self.validated_data['password1'])
-        mainuser.save()
+        user.set_password(self.validated_data['password1'])
+        user.save()
 
-        return mainuser
+        return generate_tokens(user)
 
 
 class GameSerializer(serializers.ModelSerializer):
@@ -79,9 +79,9 @@ class GameSerializer(serializers.ModelSerializer):
         fields = ('name', 'app_name', 'rules', 'image', 'is_released')
 
 
-class MainUserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer профиля пользователя"""
 
     class Meta:
-        model = MainUser
+        model = User
         exclude = ('password', 'groups', 'user_permissions', 'is_staff')

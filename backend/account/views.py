@@ -1,20 +1,29 @@
 from django.conf import settings
 from django.urls import resolve
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import MainUser, Game
+from .models import User, Game
 from .services import (
-    get_user_by_token,
-    generate_tokens,
     has_user_access_to_view_data_of_another_user,
-    get_access_token,
-    is_authenticated
+    get_user_profile_info
 )
 from . import serializers
 
 
-class MainUsersListAPIView(APIView):
+class GamesListAPIView(generics.ListAPIView):
+    """Список игр"""
+
+    serializer_class = serializers.GameSerializer
+
+    def get_queryset(self):
+        if settings.DEBUG:
+            return Game.objects.all()
+
+        return Game.objects.filter(is_released=True)
+
+
+class UsersListAPIView(APIView):
     """Список пользователей"""
 
     def get(self, request, username=None):
@@ -23,72 +32,40 @@ class MainUsersListAPIView(APIView):
 
         if urlname == 'users_friends' or urlname == 'users_views':
             try:
-                mainuser = MainUser.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
-            except MainUser.DoesNotExist:
+                user = User.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
+            except User.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
+            if has_user_access_to_view_data_of_another_user(user, request):
+                if urlname == 'users_friends':
+                    users_list = user.get_friends()
+                elif urlname == 'users_views':
+                    users_list = user.get_views()
             else:
-                if is_authenticated(request):
-                    viewer_access_token = get_access_token(request)
-                    viewer = get_user_by_token(viewer_access_token)  # посетитель
-
-                    if has_user_access_to_view_data_of_another_user(mainuser, viewer):
-                        if urlname == 'users_friends':
-                            users_list = mainuser.get_friends()
-                        elif urlname == 'users_views':
-                            users_list = mainuser.get_views()
-                    else:
-                        return Response(status=status.HTTP_403_FORBIDDEN)
-                else:
-                    if mainuser.is_private:
-                        return Response(status=status.HTTP_403_FORBIDDEN)
+                return Response(status=status.HTTP_403_FORBIDDEN)
         else:
-            users_list = MainUser.objects.filter(is_active=True)
+            users_list = User.objects.filter(is_active=True)
 
-        serializer = serializers.MainUserInfoSerializer(users_list, many=True)
+        serializer = serializers.UserInfoSerializer(users_list, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class MainUserProfileAPIView(APIView):
+class UserProfileAPIView(APIView):
     """Профиль пользователя"""
-
-    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         username = kwargs.get('username')
 
         try:
-            mainuser = MainUser.objects.get(username=username)
-        except MainUser.DoesNotExist:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            general_data = {
-                'username': mainuser.username,
-                'is_private': mainuser.is_private,
-                'avatar': '/media' + str(mainuser.avatar)
-            }
 
-            if is_authenticated(request):
-                viewers_username = request.GET.get('username')
-                viewer = MainUser.objects.get(username=viewers_username)
-
-                if has_user_access_to_view_data_of_another_user(mainuser, viewer):
-                    serializer = serializers.MainUserProfileSerializer(mainuser)
-                    data = {
-                        'friends': mainuser.get_friends().count(),
-                        'views': mainuser.get_views().count(),
-                        'is_friend': True
-                    }
-                    data.update(serializer.data)
-                else:
-                    data = general_data
-            else:
-                data = general_data
-
-            return Response(
-                data,
-                status=status.HTTP_200_OK
-            )
+        return Response(
+            get_user_profile_info(user, request, serializers.UserProfileSerializer),
+            status=status.HTTP_200_OK
+        )
 
 
 class AuthorizationAPIView(APIView):
@@ -108,35 +85,15 @@ class RegistrationAPIView(APIView):
         serializer = serializers.RegistrationSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            username = serializer.data.get('username')
-            mainuser = MainUser.objects.get(username=username)
-            tokens = generate_tokens(mainuser)
-            return Response(tokens, status=status.HTTP_200_OK)
+            return Response(serializer.save(), status=status.HTTP_200_OK)
 
 
-class GamesListAPIView(generics.ListAPIView):
-    """Список игр"""
-
-    serializer_class = serializers.GameSerializer
-
-    def get_queryset(self):
-        if settings.DEBUG:
-            return Game.objects.all()
-
-        return Game.objects.filter(is_released=True)
-
-
-class CurrentMainUserInfoAPIView(APIView):
+class CurrentUserInfoAPIView(APIView):
     """Информация о текущем пользователе"""
 
     def get(self, request, *args, **kwargs):
-        access_token = get_access_token(request)
-
-        if access_token:
-            mainuser = get_user_by_token(access_token)
-            serializer = serializers.MainUserInfoSerializer(mainuser)
+        if request.user.is_authenticated:
+            serializer = serializers.UserInfoSerializer(request.user)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
-
         return Response(status=status.HTTP_401_UNAUTHORIZED)

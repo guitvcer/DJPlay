@@ -3,8 +3,8 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 from account.models import Game
-from account.services import get_user_by_token, update_queue
-from .services import register_move, create_message, get_and_delete_moves_after_returnable_move
+from account.services import update_queue
+from .services import register_move, get_and_delete_moves_after_returnable_move
 
 game = Game.objects.get(name='Гомоку')
 

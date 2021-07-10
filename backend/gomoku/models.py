@@ -1,4 +1,4 @@
-from account.models import MainUser
+from account.models import User
 from django.db import models
 
 
@@ -7,7 +7,7 @@ class Move(models.Model):
 
     id = models.AutoField(primary_key=True)
     coordinate = models.CharField(max_length=3, verbose_name="Координата хода")
-    player = models.ForeignKey(MainUser, on_delete=models.PROTECT,
+    player = models.ForeignKey(User, on_delete=models.PROTECT,
                                verbose_name="Игрок", related_name="gomoku_move_player")
     party = models.ForeignKey('Party', on_delete=models.CASCADE, verbose_name="Партия")
 
@@ -24,9 +24,9 @@ class Party(models.Model):
     """Модель партии Гомоку"""
 
     id = models.AutoField(primary_key=True)
-    player1 = models.ForeignKey(MainUser, on_delete=models.PROTECT,
+    player1 = models.ForeignKey(User, on_delete=models.PROTECT,
                                 verbose_name="Игрок 1", related_name="gomokus_first_player")
-    player2 = models.ForeignKey(MainUser, on_delete=models.PROTECT,
+    player2 = models.ForeignKey(User, on_delete=models.PROTECT,
                                 verbose_name="Игрок 2", related_name="gomokus_second_player")
     winner = models.CharField(max_length=64, null=True, verbose_name="Победивший игрок")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата начала")
@@ -53,7 +53,7 @@ class Message(models.Model):
     id = models.AutoField(primary_key=True)
     party = models.ForeignKey(Party, on_delete=models.CASCADE, verbose_name="Партия")
     text = models.TextField(verbose_name="Сообщение")
-    player = models.ForeignKey(MainUser, on_delete=models.PROTECT, verbose_name="Отправитель")
+    player = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Отправитель")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время")
 
     def __str__(self):

@@ -3,101 +3,72 @@ from django.conf import settings
 from django.core.handlers.asgi import ASGIRequest
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from chess.models import Party as ChessParty
 from gomoku.models import Party as GomokuParty
-from .models import MainUser, FriendRequest, Message, Queue, Game
+from .models import User, FriendRequest, Message, Queue, Game
 
 
-def get_access_token(request: ASGIRequest) -> (str, bool):
-    """Получить access токен или False"""
-
-    authorization = request.headers.get('Authorization')
-
-    if authorization:
-        return authorization.split(' ')[1]
-
-    return False
-
-
-def is_authenticated(request: ASGIRequest) -> bool:
-    """Авторизован ли пользователь"""
-
-    try:
-        request.headers['Authorization'].split(' ')[1]
-    except KeyError:
-        return False
-    else:
-        return True
-
-
-def get_user_by_token(access_token: str) -> MainUser:
+def get_user_by_token(access_token: str) -> User:
     """Получить пользователя по токену"""
 
     access = AccessToken(access_token)
-    user = MainUser.objects.get(id=access['user_id'])
+    user = User.objects.get(id=access['user_id'])
 
     return user
 
 
-def generate_tokens(mainuser: MainUser) -> dict:
-    refresh = RefreshToken.for_user(mainuser)
+def generate_tokens(user: User) -> dict:
+    refresh = RefreshToken.for_user(user)
 
     return {'access': str(refresh.access_token), 'refresh': str(refresh)}
 
 
-def get_active_users_by_filter(request: ASGIRequest, active_users=MainUser.objects.filter(is_active=True),
+def get_active_users_by_filter(request: ASGIRequest, active_users=User.objects.filter(is_active=True),
                                show_me=False) -> QuerySet:
     """Получить всех активных пользователей по фильтру"""
 
-    mainuser = None
+    user = None
 
-    if is_authenticated(request):
-        mainuser = get_user_by_token(request.COOKIES['access'])
+    if request.user.is_authenticated:
+        user = request.user
+
         if show_me is False:
-            active_users = active_users.exclude(id=mainuser.id)
+            active_users = active_users.exclude(id=user.id)
 
     if request.method == 'POST':
         data = request.POST
-        search_keyword = data['search_keyword']
+        search_keyword = data.get('search_keyword')
 
         if search_keyword is not None:
             r = Q(username__icontains=search_keyword) | Q(first_name__icontains=search_keyword) | \
                 Q(last_name__icontains=search_keyword) | Q(email__icontains=search_keyword)
             active_users = active_users.filter(r)
 
-        try:
-            if data['is_online']:
-                active_users = active_users.filter(is_online=True)
+        if data.get('is_online'):
+            active_users = active_users.filter(is_online=True)
 
-            if mainuser is None:
-                return active_users
-        except MultiValueDictKeyError:
-            pass
+        if user is None:
+            return active_users
 
-        try:
-            if data['is_friend'] == 'on':
-                friends = mainuser.get_friends()
-                ids_filtered_users = []
-                for friend in friends:
-                    for active_user in active_users:
-                        if friend == active_user:
-                            ids_filtered_users.append(friend.id)
-                return MainUser.objects.filter(id__in=ids_filtered_users)
+        if data.get('is_friend') == 'on':
+            friends = user.get_friends()
+            ids_filtered_users = []
 
-        except MultiValueDictKeyError:
-            pass
-        except KeyError:
-            pass
+            for friend in friends:
+                for active_user in active_users:
+                    if friend == active_user:
+                        ids_filtered_users.append(friend.id)
+
+            return User.objects.filter(id__in=ids_filtered_users)
 
     return active_users
 
 
-def create_or_delete_or_accept_friend_request(request_from: MainUser, username_of_request_to: MainUser) -> str:
+def create_or_delete_or_accept_friend_request(request_from: User, username_of_request_to: User) -> str:
     """Создать|удалить|принять запрос на дружбу"""
 
-    request_to = MainUser.objects.get(username=username_of_request_to)
+    request_to = User.objects.get(username=username_of_request_to)
 
     try:
         try:
@@ -130,34 +101,16 @@ def create_or_delete_or_accept_friend_request(request_from: MainUser, username_o
         return "Вы отправили запрос на дружбу."
 
 
-def has_user_access_to_view_data_of_another_user(mainuser: MainUser, viewer: MainUser) -> bool:
-    """Имеет ли пользователь просматривать данные mainuser"""
+def has_user_access_to_view_data_of_another_user(user: User, request: ASGIRequest) -> bool:
+    """Имеет ли постетитель права просматривать данные пользователя"""
 
-    if mainuser == viewer:
-        return True
-
-    if mainuser.is_private and viewer not in mainuser.get_friends():
-        return False
-
-    return True
+    return (user == request.user) or (request.user in user.get_friends()) or not user.is_private
 
 
-def create_message(sent_from: MainUser, interlocutor: str, message: str) -> (Message, str):
-    """Создать сообщение"""
-
-    sent_to = MainUser.objects.get(username=interlocutor)
-
-    if len(message) < 256:
-        message = Message.objects.create(text=message, sent_from=sent_from, sent_to=sent_to)
-        return message
-    else:
-        return 'Максимальное количество знаков - 256'
-
-
-def get_last_messages_with_every_user(current_user: MainUser) -> QuerySet:
+def get_last_messages_with_every_user(current_user: User) -> QuerySet:
     """Получить последние сообщения с каждым пользователем"""
 
-    all_users = MainUser.objects.all()
+    all_users = User.objects.all()
     list_of_ids = []
 
     for user in all_users:
@@ -219,3 +172,21 @@ def get_domain():
 
     return settings.ALLOWED_HOSTS[0] + ':8000' if settings.ALLOWED_HOSTS[0] == '127.0.0.1'\
         else settings.ALLOWED_HOSTS[0]
+
+
+def get_user_profile_info(user: User, request: ASGIRequest, serializer) -> dict:
+    if has_user_access_to_view_data_of_another_user(user, request):
+        data = {
+            'friends': user.get_friends().count(),
+            'views': user.get_views().count(),
+            'is_friend': True
+        }
+        data.update(serializer(user).data)
+    else:
+        data = {
+            'username': user.username,
+            'is_private': user.is_private,
+            'avatar': user.avatar.url
+        }
+
+    return data

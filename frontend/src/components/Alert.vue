@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute px-2 right-0 top-5 w-full md:w-auto md:min-w-96" style="z-index: 999999;">
+  <div class="absolute px-2 right-0 top-5 w-full md:w-auto" style="z-index: 999999; min-width: 300px;">
     <div
         role="alert"
         v-for="(alert, index) in alerts"

@@ -3,11 +3,9 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
-from account.services import get_user_by_token, create_message
-
 
 class ConnectingConsumer(WebsocketConsumer):
-    """Consumer изменяющий поле is_online пользователя MainUser"""
+    """Consumer изменяющий поле is_online пользователя"""
 
     def connect(self):
         """При подключении, изменить поле is_online на True"""
