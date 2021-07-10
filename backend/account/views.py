@@ -23,17 +23,24 @@ class MainUsersListAPIView(APIView):
 
         if urlname == 'users_friends' or urlname == 'users_views':
             try:
-                mainuser = MainUser.objects.get(username=username)
+                mainuser = MainUser.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
             except MainUser.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             else:
-                if mainuser.is_private:
-                    return Response(status=status.HTTP_403_FORBIDDEN)
+                if is_authenticated(request):
+                    viewer_access_token = get_access_token(request)
+                    viewer = get_user_by_token(viewer_access_token)  # посетитель
 
-                if urlname == 'users_friends':
-                    users_list = mainuser.get_friends()
-                elif urlname == 'users_views':
-                    users_list = mainuser.get_views()
+                    if has_user_access_to_view_data_of_another_user(mainuser, viewer):
+                        if urlname == 'users_friends':
+                            users_list = mainuser.get_friends()
+                        elif urlname == 'users_views':
+                            users_list = mainuser.get_views()
+                    else:
+                        return Response(status=status.HTTP_403_FORBIDDEN)
+                else:
+                    if mainuser.is_private:
+                        return Response(status=status.HTTP_403_FORBIDDEN)
         else:
             users_list = MainUser.objects.filter(is_active=True)
 
@@ -55,6 +62,12 @@ class MainUserProfileAPIView(APIView):
         except MainUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
+            general_data = {
+                'username': mainuser.username,
+                'is_private': mainuser.is_private,
+                'avatar': '/media' + str(mainuser.avatar)
+            }
+
             if is_authenticated(request):
                 viewers_username = request.GET.get('username')
                 viewer = MainUser.objects.get(username=viewers_username)
@@ -68,17 +81,9 @@ class MainUserProfileAPIView(APIView):
                     }
                     data.update(serializer.data)
                 else:
-                    data = {
-                        'username': mainuser.username,
-                        'is_private': mainuser.is_private,
-                        'avatar': '/media' + str(mainuser.avatar)
-                    }
+                    data = general_data
             else:
-                data = {
-                    'username': mainuser.username,
-                    'is_private': mainuser.is_private,
-                    'avatar': '/media' + str(mainuser.avatar)
-                }
+                data = general_data
 
             return Response(
                 data,

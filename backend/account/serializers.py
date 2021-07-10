@@ -44,7 +44,7 @@ class RegistrationSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         try:
-            mainuser = MainUser.objects.get(username=attrs['username'])
+            MainUser.objects.get(username=attrs['username'])
             raise serializers.ValidationError('Пользователь с таким именем уже существует.')
         except MainUser.DoesNotExist:
             validate_password(attrs['password1'])
@@ -55,7 +55,7 @@ class RegistrationSerializer(serializers.Serializer):
             validate_email(attrs['email'])
 
             try:
-                mainuser = MainUser.objects.get(email=attrs['email'])
+                MainUser.objects.get(email=attrs['email'])
                 raise serializers.ValidationError('Пользователь с такой эл. почтой уже существует.')
             except MainUser.DoesNotExist:
                 return attrs

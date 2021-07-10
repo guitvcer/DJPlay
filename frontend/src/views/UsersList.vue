@@ -24,14 +24,25 @@ export default {
     }
   },
   mounted() {
+    let access_token = this.getCookie('access'),
+        init
+
+    if (access_token) {
+      init = {
+        headers: {
+          Authorization: 'Bearer ' + access_token
+        }
+      }
+    }
+
     if (this.$route.name === 'usersFriends' || this.$route.name === 'usersViewers') {
-      fetch(this.host + this.$route.path)
+      fetch(this.host + this.$route.path, init)
         .then(response => response.json())
         .then(json => {
           this.usersList = json
         })
     } else {
-      fetch(this.host + '/account/users/')
+      fetch(this.host + '/account/users/', init)
         .then(response => response.json())
         .then(json => {
           this.usersList = json
