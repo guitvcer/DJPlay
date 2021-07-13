@@ -81,6 +81,8 @@ class UserProfileAPIView(APIView):
 class UserProfileEditAPIView(APIView):
     """Изменить профиль пользователя"""
 
+    permission_classes = [IsAuthenticated]
+
     def patch(self, request, *args, **kwargs):
         serializer = serializers.UserProfileEditSerializer(request.user, data=request.data, partial=True)
 
@@ -88,6 +90,21 @@ class UserProfileEditAPIView(APIView):
             serializer.save()
             return Response({
                 'title': 'Вы успешно обновили профиль.'
+            }, status=status.HTTP_200_OK)
+
+
+class UserChangePasswordAPIView(APIView):
+    """Смена пароля пользователя"""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.UserChangePasswordSerializer(data=request.data, context={'user': request.user})
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({
+                'title': 'Вы успешно сменили пароль.'
             }, status=status.HTTP_200_OK)
 
 

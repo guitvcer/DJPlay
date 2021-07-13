@@ -95,3 +95,37 @@ class UserProfileEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'avatar', 'gender', 'is_private')
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    """Serializer смены пароль пользователя"""
+
+    oldpassword = serializers.CharField(required=True)
+    password1 = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        self.user = self.context.get('user')
+        oldpassword = attrs['oldpassword']
+        password1 = attrs['password1']
+        password2 = attrs['password2']
+
+        if not self.user.check_password(oldpassword):
+            raise serializers.ValidationError('Введен неверный старый пароль.')
+
+        if oldpassword == password1:
+            raise serializers.ValidationError('Вы ввели старый пароль.')
+
+        validate_password(password1)
+
+        if password1 != password2:
+            raise serializers.ValidationError('Пароли не совпадают.')
+
+        self.user.set_password(password1)
+        self.user.save()
+
+        return attrs
+
+    def save(self):
+        self.user.set_password(self.validated_data['password1'])
+        self.user.save()

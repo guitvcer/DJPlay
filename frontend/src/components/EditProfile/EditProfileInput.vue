@@ -31,7 +31,7 @@
         :placeholder="field.placeholder"
         :maxlength="field.max_length"
         :value="field.value"
-        class="'py-0.5 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
+        class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
         v-else
     >
   </div>

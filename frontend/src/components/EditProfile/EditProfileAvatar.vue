@@ -17,7 +17,7 @@
       <profile-button
           buttonName="user_profile_edit_change_password"
           title="Сменить пароль"
-          url="/"
+          :url="{ name: 'changePassword' }"
       />
       <profile-button
           buttonName="user_profile_edit_delete"

@@ -52,7 +52,7 @@ export default {
         is_private: event.target.is_private.value
       }
 
-      this.sendRequest(this.action, 'PATCH', body).then(json => {
+      this.sendRequest(this.action, 'PATCH', JSON.stringify(body)).then(json => {
         if (json.type === 'alert') this.alerts.push(json)
         else this.alerts.push({
           title: json.title,
