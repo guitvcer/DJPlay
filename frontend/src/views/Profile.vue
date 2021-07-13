@@ -55,7 +55,8 @@ export default {
               this.user = json
 
               if (this.user.username === viewer.username) {
-                this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
+                if (this.user.is_private)
+                  this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
                 this.profileViewAccess = true
               } else if (this.user.is_friend) this.profileViewAccess = true
               else {

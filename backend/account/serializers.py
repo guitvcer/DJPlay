@@ -34,13 +34,15 @@ class AuthorizationSerializer(serializers.Serializer):
         return generate_tokens(self.user)
 
 
-class RegistrationSerializer(serializers.Serializer):
+class RegistrationSerializer(serializers.ModelSerializer):
     """Serializer регистрациия пользователя"""
 
-    username = serializers.CharField(required=True)
     password1 = serializers.CharField(required=True)
     password2 = serializers.CharField(required=True)
-    email = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
 
     def validate(self, attrs):
         try:
@@ -85,3 +87,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password', 'groups', 'user_permissions', 'is_staff')
+
+
+class UserProfileEditSerializer(serializers.ModelSerializer):
+    """Serializer редактирования провиля пользователя"""
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'avatar', 'gender', 'is_private')

@@ -21,33 +21,42 @@
             <router-link
                 :to="{ name: 'profile', params: { username: userInfo.username } }"
                 :class="dropdownItemClass"
-            >
-              Профиль
-            </router-link>
+            >Профиль</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="dropdownItemClass">Сообщения</a>
+            <router-link
+              to="/"
+              :class="dropdownItemClass"
+            >Сообщения</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
                 :to="{ name: 'users' }"
                 :class="dropdownItemClass"
-            >
-              Пользователи
+            >Пользователи
             </router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="dropdownItemClass">Изменить профиль</a>
+            <router-link
+              :to="{ name: 'editProfile' }"
+              :class="dropdownItemClass"
+            >Изменить профиль</router-link>
           </MenuItem>
         </div>
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <a href="#" :class="dropdownItemClass">Админ-панель</a>
+            <router-link
+              to="/"
+              :class="dropdownItemClass"
+            >Админ-панель</router-link>
           </MenuItem>
         </div>
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <button @click="logout" :class="dropdownItemClass">Выйти</button>
+            <button
+                @click="logout"
+                :class="dropdownItemClass"
+            >Выйти</button>
           </MenuItem>
         </div>
       </MenuItems>
@@ -59,18 +68,18 @@
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <a
-                href="#"
+            <router-link
+                to="/"
                 :class="dropdownItemClass"
                 @click="open = true; showAuthorizationModal = true"
-            >Войти</a>
+            >Войти</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <a
-                href="#"
+            <router-link
+                to="/"
                 :class="dropdownItemClass"
                 @click="open = true; showRegistrationModal = true"
-            >Регистрация</a>
+            >Регистрация</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link

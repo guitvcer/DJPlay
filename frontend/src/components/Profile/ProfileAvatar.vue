@@ -5,24 +5,24 @@
     <hr v-if="profileViewAccess">
     <div class="flex justify-center mt-3" v-if="profileViewAccess">
       <profile-button
-          :buttonName="'friend_request_button'"
+          buttonName="friend_request_button"
           :friendsCount="$props.user.friends"
-          :title="'Добавить в друзья'"
+          title="Добавить в друзья"
           :url="{ name: 'friendRequest', params: { username: $props.user.username } }"
       />
       <profile-button
-          :buttonName="'user_chat_button'"
-          :title="'Написать сообщение'"
+          buttonName="user_chat_button"
+          title="Написать сообщение"
           :url="{ name: 'userChat', params: { username: $props.user.username } }"
       />
       <profile-button
-          :buttonName="'edit_profile_button'"
-          :title="'Изменить профиль'"
+          buttonName="edit_profile_button"
+          title="Изменить профиль"
           :url="{ name: 'editProfile', params: { username: $props.user.username } }"
       />
       <profile-button
-          :buttonName="'user_parties_button'"
-          :title="'Посмотреть сыгранные партии'"
+          buttonName="user_parties_button"
+          title="Посмотреть сыгранные партии"
           :url="{ name: 'userParties', params: { username: $props.user.username } }"
       />
     </div>

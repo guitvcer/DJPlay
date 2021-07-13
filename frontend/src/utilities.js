@@ -16,7 +16,7 @@ function sendRequest(url, method='GET', body=null) {
     }
     return fetch(url, {
         method: method,
-        body: body,
+        body: (body != null) ? JSON.stringify(body) : body,
         headers: headers
     }).then(response => {
         if (response.ok) return response.json()
@@ -28,10 +28,8 @@ function sendRequest(url, method='GET', body=null) {
                 status: response.status
             }
 
-            console.log(response.status)
-
             if (response.status === 400) {
-                alert.title = JSON.parse(error).non_field_errors[0]
+                alert.title = JSON.parse(error)
             } else if (response.status === 401) {
                 alert.title = 'Вы не авторизованы.'
             } else if (response.status === 403) {

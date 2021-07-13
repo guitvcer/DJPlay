@@ -67,8 +67,8 @@ export default {
             }
           ])
 
-          document.cookie = `access=${data.access}`
-          document.cookie = `refresh=${data.refresh}`
+          document.cookie = `access=${json.access}`
+          document.cookie = `refresh=${json.refresh}`
         }
       })
 

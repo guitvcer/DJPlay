@@ -55,7 +55,7 @@ const routes = [
     {
         path: '/account/edit/',
         name: 'editProfile',
-        redirect: '/'
+        component: import('./views/EditProfile.vue')
     }
 ]
 

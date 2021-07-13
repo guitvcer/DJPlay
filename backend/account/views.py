@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.urls import resolve
 from rest_framework import generics, status
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import User, Game
 from .services import (
     has_user_access_to_view_data_of_another_user,
@@ -57,15 +58,37 @@ class UserProfileAPIView(APIView):
     def get(self, request, *args, **kwargs):
         username = kwargs.get('username')
 
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        # получить информацию определенного пользователя
+        if username:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return Response(
-            get_user_profile_info(user, request, serializers.UserProfileSerializer),
-            status=status.HTTP_200_OK
-        )
+            return Response(
+                get_user_profile_info(user, request, serializers.UserProfileSerializer),
+                status=status.HTTP_200_OK
+            )
+
+        # получить информацию о текущем пользователе
+        if request.user.is_authenticated:
+            serializer = serializers.UserProfileEditSerializer(request.user)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class UserProfileEditAPIView(APIView):
+    """Изменить профиль пользователя"""
+
+    def patch(self, request, *args, **kwargs):
+        serializer = serializers.UserProfileEditSerializer(request.user, data=request.data, partial=True)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({
+                'title': 'Вы успешно обновили профиль.'
+            }, status=status.HTTP_200_OK)
 
 
 class AuthorizationAPIView(APIView):
@@ -85,15 +108,4 @@ class RegistrationAPIView(APIView):
         serializer = serializers.RegistrationSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
-            return Response(serializer.save(), status=status.HTTP_200_OK)
-
-
-class CurrentUserInfoAPIView(APIView):
-    """Информация о текущем пользователе"""
-
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            serializer = serializers.UserInfoSerializer(request.user)
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.save(), status=status.HTTP_201_CREATED)
