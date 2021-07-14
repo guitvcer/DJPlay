@@ -4,8 +4,8 @@
     <div>
       <MenuButton
           class="inline-flex items-center justify-center w-full rounded-md px-4 py-2 font-semibold">
-        <span class="hidden md:inline" v-text="userInfo.username" />
-        <img :src="host + userInfo.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
+        <span class="hidden md:inline" v-text="user.username" />
+        <img :src="host + user.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
       </MenuButton>
     </div>
 
@@ -14,12 +14,12 @@
       <!-- Dropdown items is user is authorized -->
       <MenuItems
           class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
-          v-if="getCookie('access')"
+          v-if="isAuthenticated()"
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
             <router-link
-                :to="{ name: 'profile', params: { username: userInfo.username } }"
+                :to="{ name: 'userProfile' }"
                 :class="dropdownItemClass"
             >Профиль</router-link>
           </MenuItem>
@@ -96,13 +96,17 @@
         action="authorization"
         :open="open"
         v-if="showAuthorizationModal"
-        @close-form="closeForm"
+        @close-modal="closeModal"
+        @create-alert="createAlert"
+        @load-user="$emit('load-user')"
     />
     <modal
         action="registration"
         :open="open"
         v-if="showRegistrationModal"
-        @close-form="closeForm"
+        @close-modal="closeModal"
+        @create-alert="createAlert"
+        @load-user="$emit('load-user')"
     />
   </Menu>
 </template>
@@ -117,11 +121,13 @@ export default {
     return {
       open: ref(false),
       showAuthorizationModal: false,
-      showRegistrationModal: false,
-      userInfo: {
-        username: 'Гость',
-        avatar: '/media/user.png'
-      }
+      showRegistrationModal: false
+    }
+  },
+  props: {
+    user: {
+      type: Object,
+      required: true
     }
   },
   components: {
@@ -135,24 +141,23 @@ export default {
     logout() {
       document.cookie = 'access=; Max-Age=0; path=/'
       document.cookie = 'refresh=; Max-Age=0; path=/'
-      this.getUserInfo()
+      this.$emit('load-user')
       this.$emit('create-alert', {
         title: 'Вы успешно вышли из аккаунта.',
         level: 'success'
       })
+      this.$router.push('/')
     },
-    closeForm(alert) {
-      if (alert) {
-        this.$emit('create-alert', alert)
-        setTimeout(this.getUserInfo, 1000)
-      }
-
+    closeModal() {
       this.showAuthorizationModal = false
       this.showRegistrationModal = false
+    },
+    createAlert(alert) {
+      this.$emit('create-alert', alert)
+    },
+    check() {
+      console.log(this.user)
     }
-  },
-  mounted() {
-    this.getUserInfo()
   },
   computed: {
     dropdownItemClass() {

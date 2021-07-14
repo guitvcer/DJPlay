@@ -72,12 +72,17 @@ export default {
   methods: {
     submitForm() {
       this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
-        if (json.type === 'alert') this.alerts.push(json)
+        if (json.type === 'alert') this.$emit('create-alert', json)
         else {
-          this.alerts.push({
+          document.cookie = 'access=; Max-Age=0; path=/'
+          document.cookie = 'refresh=; Max-Age=0; path=/'
+
+          this.$emit('load-user')
+          this.$emit('create-alert', {
             level: 'success',
             title: json.title
           })
+          this.$router.push('/')
         }
 
         this.body = {}

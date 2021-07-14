@@ -58,17 +58,18 @@ export default {
     submitForm() {
       this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
         if (json.type === 'alert') {
-          this.$emit('sent', [json])
+          this.$emit('create-alert', json)
         } else {
-          this.$emit('sent', [
-            {
+          this.$emit('create-alert', {
               title: 'Вы успешно вошли в аккаунт.',
               level: 'success'
-            }
-          ])
+          })
+          this.$emit('close-modal')
 
-          document.cookie = `access=${json.access}`
-          document.cookie = `refresh=${json.refresh}`
+          document.cookie = `access=${json.access}; path=/`
+          document.cookie = `refresh=${json.refresh}; path=/`
+
+          this.$emit('load-user')
         }
       })
 

@@ -1,6 +1,5 @@
 <template>
   <header class="bg-gray-50 dark:bg-main-dark border-b-2 border-main-light dark:border-main">
-    <alert v-if="alerts.length" :alerts="alerts" />
     <div class="container mx-auto flex justify-between items-center h-full py-3 px-6 md:px-10 lg:px-20" style="max-width: 1750px;">
       <!-- Logo -->
       <div class="h-full">
@@ -10,18 +9,23 @@
       </div>
 
       <!-- User Dropdown -->
-      <dropdown @create-alert="createAlert" />
+      <dropdown @create-alert="createAlert" :user="user" @load-user="$emit('load-user')" />
     </div>
   </header>
 </template>
 
 <script>
-import Alert from '@/components/Alert'
 import Dropdown from '@/components/Dropdown'
 
 export default {
+  props: {
+    user: {
+      type: Object,
+      required: true
+    }
+  },
   components: {
-    Alert, Dropdown
+    Dropdown
   },
   data() {
     return {
@@ -30,7 +34,7 @@ export default {
   },
   methods: {
     createAlert(alert) {
-      this.alerts.push(alert)
+      this.$emit('create-alert', alert)
     }
   }
 }

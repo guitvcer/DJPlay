@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.http import JsonResponse
 from django.urls import resolve
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -36,7 +35,9 @@ class UsersListAPIView(APIView):
             try:
                 user = User.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
             except User.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response({
+                    'title': 'Страница не найдена.'
+                }, status=status.HTTP_404_NOT_FOUND)
 
             if has_user_access_to_view_data_of_another_user(user, request):
                 if urlname == 'users_friends':
@@ -44,7 +45,9 @@ class UsersListAPIView(APIView):
                 elif urlname == 'users_views':
                     users_list = user.get_views()
             else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+                return Response({
+                    'title': 'Страница недоступна.'
+                }, status=status.HTTP_403_FORBIDDEN)
         else:
             users_list = User.objects.filter(is_active=True)
 
@@ -64,7 +67,9 @@ class UserProfileAPIView(APIView):
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response({
+                    'title': 'Страница не найдена.'
+                }, status=status.HTTP_404_NOT_FOUND)
 
             return Response(
                 get_user_profile_info(user, request, serializers.UserProfileSerializer),
@@ -76,7 +81,9 @@ class UserProfileAPIView(APIView):
             serializer = serializers.UserProfileEditSerializer(request.user)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({
+            'title': 'Вы не авторизованы.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserProfileEditAPIView(APIView):
@@ -119,7 +126,7 @@ class UserDeleteAPIView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             serializer.delete()
-            return JsonResponse({
+            return Response({
                 'title': 'Вы успешно удалили свой аккаунт.'
             }, status=status.HTTP_200_OK)
 

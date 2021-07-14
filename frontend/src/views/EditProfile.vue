@@ -4,7 +4,6 @@
       style="max-width: 1400px;"
       v-if="!loading"
   >
-    <alert v-if="alerts.length" :alerts="alerts" />
     <form :action="action" class="block lg:flex justify-around" @submit.prevent="submitForm">
       <edit-profile-avatar :user="user" @submit="submitForm" />
       <edit-profile-table :user="user" />
@@ -13,7 +12,6 @@
 </template>
 
 <script>
-import Alert from '@/components/Alert'
 import EditProfileAvatar from '@/components/EditProfile/EditProfileAvatar'
 import EditProfileTable from '@/components/EditProfile/EditProfileTable'
 
@@ -27,14 +25,13 @@ export default {
     }
   },
   components: {
-    Alert,
     EditProfileAvatar,
     EditProfileTable
   },
   methods: {
     setUserProfileInfo() {
       this.sendRequest(this.host + '/account/').then(json => {
-        if (json.type === 'alert') this.alerts.push(json)
+        if (json.type === 'alert') this.$emit('create-alert', json)
         else {
           this.user = json
           this.loading = false
@@ -53,12 +50,17 @@ export default {
       }
 
       this.sendRequest(this.action, 'PATCH', JSON.stringify(body)).then(json => {
-        if (json.type === 'alert') this.alerts.push(json)
-        else this.alerts.push({
-          title: json.title,
-          level: 'success'
-        })
-        this.$router.push('/')
+        if (json.type === 'alert') {
+          json.title = json.title['username'][0]
+          this.$emit('create-alert', json)
+        } else {
+          this.$emit('create-alert', {
+            title: json.title,
+            level: 'success'
+          })
+          this.$emit('load-user')
+          this.$router.push('/account/')
+        }
       })
     }
   },

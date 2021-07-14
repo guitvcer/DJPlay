@@ -5,6 +5,14 @@ function getCookie(name) {
     }
 }
 
+function isAuthenticated() {
+    let accessToken = getCookie('access')
+
+    if (!accessToken || accessToken === '') return false
+
+    return true
+}
+
 function sendRequest(url, method='GET', body=null) {
     let accessToken = getCookie('access'),
         headers = {
@@ -29,7 +37,11 @@ function sendRequest(url, method='GET', body=null) {
             }
 
             if (response.status === 400) {
-                alert.title = JSON.parse(error).non_field_errors[0]
+                try {
+                    alert.title = JSON.parse(error).non_field_errors[0]
+                } catch (e) {
+                    alert.title = JSON.parse(error)
+                }
             } else if (response.status === 401) {
                 alert.title = 'Вы не авторизованы.'
             } else if (response.status === 403) {
@@ -48,17 +60,16 @@ function sendRequest(url, method='GET', body=null) {
 }
 
 function getUserInfo() {
-    sendRequest(this.host + '/account/')
-        .then(json => {
-            if (json.type === 'alert') {
-                if (json.status === 401) {
-                    this.userInfo.username = 'Гость'
-                    this.userInfo.avatar = '/media/user.png'
-                } else this.$emit('create-alert', json)
-            } else {
-                this.userInfo = json
-            }
-        })
+    let accessToken = getCookie('access')
+
+    if (accessToken) {
+        return sendRequest(this.host + '/account/')
+    } else {
+        return {
+            username: 'Гость',
+            avatar: '/media/user.png'
+        }
+    }
 }
 
-export { getCookie, sendRequest, getUserInfo }
+export { getCookie, isAuthenticated, sendRequest, getUserInfo }

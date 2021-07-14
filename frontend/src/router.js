@@ -18,6 +18,21 @@ const routes = [
         name: 'chess'
     },
     {
+        path: '/account/',
+        component: import('./views/Profile'),
+        name: 'userProfile'
+    },
+    {
+        path: '/account/friends/',
+        component: import('./views/UsersList'),
+        name: 'friends'
+    },
+    {
+        path: '/account/views/',
+        component: import('./views/UsersList'),
+        name: 'views'
+    },
+    {
         path: '/account/:username/',
         name: 'profile',
         component: import('./views/Profile.vue')

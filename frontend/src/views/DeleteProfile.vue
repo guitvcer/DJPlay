@@ -56,13 +56,15 @@ export default {
       })).then(json => {
         if (json.type === 'alert') this.alerts.push(json)
         else {
-          this.alerts.push({
+          this.$emit('create-alert', {
             level: 'success',
             title: 'Вы успешно удалили свой аккаунт.'
           })
+
           document.cookie = 'access=; Max-Age=0; path=/'
           document.cookie = 'refresh=; Max-Age=0; path=/'
-          this.getUserInfo()
+
+          this.$emit('load-user')
           this.$router.push('/')
         }
 

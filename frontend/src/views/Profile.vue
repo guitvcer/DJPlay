@@ -27,7 +27,10 @@ export default {
   },
   methods: {
     setUserProfileInfo() {
-      let url = this.host + '/account/' + this.$route.params.username
+      let url = this.host + '/account/'
+
+      if (this.$route.params.username)
+        url += this.$route.params.username
 
       this.sendRequest(this.host + '/account/').then(json => {
         if (json.type === 'alert') {

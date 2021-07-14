@@ -14,7 +14,6 @@
           <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
-        <alert :alerts="alerts" v-if="alerts.length" class="z-index-50" />
         <span class="hidden inline-block align-middle h-screen" aria-hidden="true">&#8203;</span>
         <TransitionChild
             as="template"
@@ -30,13 +29,15 @@
           >
             <authorization-form
                 v-if="action === 'authorization'"
-                @close-modal="open = false; $emit('close-form')"
-                @sent="createAlert"
+                @close-modal="open = false; $emit('close-modal')"
+                @create-alert="createAlert"
+                @load-user="$emit('load-user')"
             />
             <registration-form
                 v-if="action === 'registration'"
-                @close-modal="open = false; $emit('close-form')"
-                @sent="createAlert"
+                @close-modal="open = false; $emit('close-modal')"
+                @create-alert="createAlert"
+                @load-user="$emit('load-user')"
             />
           </div>
         </TransitionChild>
@@ -47,7 +48,6 @@
 
 <script>
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import Alert from '@/components/Alert'
 import AuthorizationForm from '@/components/Auth/AuthorizationForm'
 import RegistrationForm from '@/components/Auth/RegistrationForm'
 
@@ -59,8 +59,7 @@ export default {
     TransitionChild,
     TransitionRoot,
     AuthorizationForm,
-    RegistrationForm,
-    Alert
+    RegistrationForm
   },
   props: {
     action: {
@@ -78,12 +77,8 @@ export default {
     }
   },
   methods: {
-    createAlert(alerts) {
-      for (let alert of alerts) {
-        if (alert.level === 'success') {
-          this.$emit('close-form', alert)
-        } else this.alerts.push(alert)
-      }
+    createAlert(alert) {
+      this.$emit('create-alert', alert)
     }
   }
 }
