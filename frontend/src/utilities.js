@@ -11,7 +11,7 @@ function sendRequest(url, method='GET', body=null) {
             'Content-Type': 'application/json'
         }
 
-    if (accessToken) {
+    if (accessToken !== '' && accessToken) {
         headers['Authorization'] = 'Bearer ' + accessToken
     }
     return fetch(url, {
@@ -47,4 +47,18 @@ function sendRequest(url, method='GET', body=null) {
     })
 }
 
-export { getCookie, sendRequest }
+function getUserInfo() {
+    sendRequest(this.host + '/account/')
+        .then(json => {
+            if (json.type === 'alert') {
+                if (json.status === 401) {
+                    this.userInfo.username = 'Гость'
+                    this.userInfo.avatar = '/media/user.png'
+                } else this.$emit('create-alert', json)
+            } else {
+                this.userInfo = json
+            }
+        })
+}
+
+export { getCookie, sendRequest, getUserInfo }

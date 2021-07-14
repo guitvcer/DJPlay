@@ -20,15 +20,20 @@ class AuthorizationSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
     def validate(self, attrs):
+        error_text = 'Неверные имя пользователя и/или пароль.'
+
         try:
             self.user = User.objects.get(username=attrs['username'])
+
+            if not self.user.is_active:
+                raise serializers.ValidationError(error_text)
         except User.DoesNotExist:
-            raise serializers.ValidationError('Неверные имя пользователя и/или пароль.')
+            raise serializers.ValidationError(error_text)
 
-        if self.user.check_password(attrs['password']):
-            return attrs
+        if not self.user.check_password(attrs['password']):
+            raise serializers.ValidationError(error_text)
 
-        raise serializers.ValidationError('Неверные имя пользователя и/или пароль.')
+        return attrs
 
     def get_tokens(self):
         return generate_tokens(self.user)
@@ -129,3 +134,19 @@ class UserChangePasswordSerializer(serializers.Serializer):
     def save(self):
         self.user.set_password(self.validated_data['password1'])
         self.user.save()
+
+
+class UserDeleteSerializer(serializers.Serializer):
+    """Serializer для удаления аккаунта пользователя"""
+
+    password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        if self.context.get('user').check_password(attrs['password']):
+            return attrs
+
+        raise serializers.ValidationError('Введен неверный пароль.')
+
+    def delete(self):
+        self.context.get('user').is_active = False
+        self.context.get('user').save()

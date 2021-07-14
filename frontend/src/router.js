@@ -61,6 +61,11 @@ const routes = [
         path: '/account/change-password/',
         name: 'changePassword',
         component: import('./views/ChangePassword')
+    },
+    {
+        path: '/account/delete/',
+        name: 'deleteProfile',
+        component: import('./views/DeleteProfile')
     }
 ]
 

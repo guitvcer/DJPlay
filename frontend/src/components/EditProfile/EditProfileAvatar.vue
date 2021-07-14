@@ -22,7 +22,7 @@
       <profile-button
           buttonName="user_profile_edit_delete"
           title="Удалить аккаунт"
-          url="/"
+          :url="{ name: 'deleteProfile' }"
       />
     </div>
   </div>

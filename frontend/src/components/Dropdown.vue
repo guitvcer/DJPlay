@@ -132,22 +132,9 @@ export default {
     Modal
   },
   methods: {
-    getUserInfo() {
-      this.sendRequest(this.host + '/account/')
-        .then(json => {
-          if (json.type === 'alert') {
-            if (json.status === 401) {
-              this.userInfo.username = 'Гость'
-              this.userInfo.avatar = '/media/user.png'
-            } else this.$emit('create-alert', json)
-          } else {
-            this.userInfo = json
-          }
-        })
-    },
     logout() {
-      document.cookie = 'access=; Max-Age=0'
-      document.cookie = 'refresh=; Max-Age=0'
+      document.cookie = 'access=; Max-Age=0; path=/'
+      document.cookie = 'refresh=; Max-Age=0; path=/'
       this.getUserInfo()
       this.$emit('create-alert', {
         title: 'Вы успешно вышли из аккаунта.',

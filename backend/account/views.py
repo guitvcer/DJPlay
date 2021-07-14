@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import JsonResponse
 from django.urls import resolve
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -105,6 +106,21 @@ class UserChangePasswordAPIView(APIView):
             serializer.save()
             return Response({
                 'title': 'Вы успешно сменили пароль.'
+            }, status=status.HTTP_200_OK)
+
+
+class UserDeleteAPIView(APIView):
+    """Удаление аккаунта пользователя"""
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        serializer = serializers.UserDeleteSerializer(data=request.data, context={'user': request.user})
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.delete()
+            return JsonResponse({
+                'title': 'Вы успешно удалили свой аккаунт.'
             }, status=status.HTTP_200_OK)
 
 

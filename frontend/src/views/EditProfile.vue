@@ -58,6 +58,7 @@ export default {
           title: json.title,
           level: 'success'
         })
+        this.$router.push('/')
       })
     }
   },
