@@ -30,7 +30,7 @@ const routes = [
     {
         path: '/account/views/',
         component: import('./views/UsersList'),
-        name: 'views'
+        name: 'viewers'
     },
     {
         path: '/account/:username/',

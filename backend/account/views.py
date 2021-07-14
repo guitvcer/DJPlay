@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 from .models import User, Game
 from .services import (
     has_user_access_to_view_data_of_another_user,
-    get_user_profile_info
+    get_user_profile_info,
+    get_active_users_by_filter
 )
 from . import serializers
 
@@ -31,26 +32,35 @@ class UsersListAPIView(APIView):
         urlname = resolve(self.request.path_info).url_name
         users_list = None
 
-        if urlname == 'users_friends' or urlname == 'users_views':
-            try:
-                user = User.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
-            except User.DoesNotExist:
-                return Response({
-                    'title': 'Страница не найдена.'
-                }, status=status.HTTP_404_NOT_FOUND)
+        if urlname == 'users_friends' or urlname == 'users_views' or urlname == 'friends' or urlname == 'views':
+            if username is None:
+                user = request.user
+            else:
+                try:
+                    user = User.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
+                except User.DoesNotExist:
+                    return Response({
+                        'title': 'Страница не найдена.'
+                    }, status=status.HTTP_404_NOT_FOUND)
 
             if has_user_access_to_view_data_of_another_user(user, request):
-                if urlname == 'users_friends':
+                if urlname == 'users_friends' or urlname == 'friends':
                     users_list = user.get_friends()
-                elif urlname == 'users_views':
+                elif urlname == 'users_views' or urlname == 'views':
                     users_list = user.get_views()
             else:
                 return Response({
                     'title': 'Страница недоступна.'
                 }, status=status.HTTP_403_FORBIDDEN)
         else:
-            users_list = User.objects.filter(is_active=True)
+            users_list = get_active_users_by_filter(request)
 
+        serializer = serializers.UserInfoSerializer(users_list, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        users_list = get_active_users_by_filter(request)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -78,9 +88,10 @@ class UserProfileAPIView(APIView):
 
         # получить информацию о текущем пользователе
         if request.user.is_authenticated:
-            serializer = serializers.UserProfileEditSerializer(request.user)
+            user_data = get_user_profile_info(request.user, request, serializers.UserProfileSerializer)
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(user_data, status=status.HTTP_200_OK)
+
         return Response({
             'title': 'Вы не авторизованы.'
         }, status=status.HTTP_401_UNAUTHORIZED)

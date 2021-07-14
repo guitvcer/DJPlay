@@ -68,11 +68,10 @@
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <router-link
-                to="/"
+            <button
                 :class="dropdownItemClass"
                 @click="open = true; showAuthorizationModal = true"
-            >Войти</router-link>
+            >Войти</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link

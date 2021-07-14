@@ -1,8 +1,8 @@
 import random
 from django.conf import settings
-from django.core.handlers.asgi import ASGIRequest
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from rest_framework.request import Request
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from chess.models import Party as ChessParty
 from gomoku.models import Party as GomokuParty
@@ -24,35 +24,27 @@ def generate_tokens(user: User) -> dict:
     return {'access': str(refresh.access_token), 'refresh': str(refresh)}
 
 
-def get_active_users_by_filter(request: ASGIRequest, active_users=User.objects.filter(is_active=True),
-                               show_me=False) -> QuerySet:
+def get_active_users_by_filter(
+        request: Request,
+        active_users=User.objects.filter(is_active=True)
+    ) -> QuerySet:
     """Получить всех активных пользователей по фильтру"""
 
-    user = None
+    query = request.data.get('query')
+
+    if query is not None:
+        r = Q(username__icontains=query) | Q(first_name__icontains=query) | \
+            Q(last_name__icontains=query) | Q(email__icontains=query)
+        active_users = active_users.filter(r)
+
+    if request.data.get('is_online'):
+        active_users = active_users.filter(is_online=True)
 
     if request.user.is_authenticated:
-        user = request.user
+        active_users = active_users.exclude(id=request.user.id)
 
-        if show_me is False:
-            active_users = active_users.exclude(id=user.id)
-
-    if request.method == 'POST':
-        data = request.POST
-        search_keyword = data.get('search_keyword')
-
-        if search_keyword is not None:
-            r = Q(username__icontains=search_keyword) | Q(first_name__icontains=search_keyword) | \
-                Q(last_name__icontains=search_keyword) | Q(email__icontains=search_keyword)
-            active_users = active_users.filter(r)
-
-        if data.get('is_online'):
-            active_users = active_users.filter(is_online=True)
-
-        if user is None:
-            return active_users
-
-        if data.get('is_friend') == 'on':
-            friends = user.get_friends()
+        if request.data.get('is_friend'):
+            friends = request.user.get_friends()
             ids_filtered_users = []
 
             for friend in friends:
@@ -101,7 +93,7 @@ def create_or_delete_or_accept_friend_request(request_from: User, username_of_re
         return "Вы отправили запрос на дружбу."
 
 
-def has_user_access_to_view_data_of_another_user(user: User, request: ASGIRequest) -> bool:
+def has_user_access_to_view_data_of_another_user(user: User, request: Request) -> bool:
     """Имеет ли постетитель права просматривать данные пользователя"""
 
     return (user == request.user) or (request.user in user.get_friends()) or not user.is_private
@@ -174,7 +166,7 @@ def get_domain():
         else settings.ALLOWED_HOSTS[0]
 
 
-def get_user_profile_info(user: User, request: ASGIRequest, serializer) -> dict:
+def get_user_profile_info(user: User, request: Request, serializer) -> dict:
     if has_user_access_to_view_data_of_another_user(user, request):
         data = {
             'friends': user.get_friends().count(),

@@ -2,7 +2,7 @@
   <section class="bg-gray-50 dark:bg-main-dark mx-auto px-4 md:px-12 py-8 md:py-16" style="max-width: 1200px;">
     <alert v-if="alerts.length" :alerts="alerts" />
     <div class="md:flex justify-between">
-      <the-search />
+      <the-search @sent="loadList" />
       <h2 class="text-3xl font-semibold">Найдено: {{ usersList.length }}</h2>
     </div>
     <div class="md:flex flex-wrap mt-8" v-if="usersList.length">
@@ -26,10 +26,20 @@ export default {
       alerts: []
     }
   },
+  methods: {
+    loadList(usersList) {
+      this.usersList = usersList
+    }
+  },
   mounted() {
     let url = this.host
 
-    if (this.$route.name === 'usersFriends' || this.$route.name === 'usersViewers') {
+    if (
+        this.$route.name === 'usersFriends' ||
+        this.$route.name === 'usersViewers' ||
+        this.$route.name === 'friends' ||
+        this.$route.name === 'viewers'
+    ) {
       url += this.$route.path
     } else {
       url += '/account/users'
