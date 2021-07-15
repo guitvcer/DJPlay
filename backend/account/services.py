@@ -81,10 +81,16 @@ def create_or_delete_or_accept_friend_request(request_from: User, username_of_re
             request = FriendRequest.objects.get(
                 request_from=request_to,
                 request_to=request_from)
-            request.is_active = True
+
+            if request.is_active:
+                message = "Вы удалили пользователя из друзей."
+            else:
+                message = "Вы приняли запрос на дружбу."
+
+            request.is_active = not request.is_active
             request.save()
 
-            return "Вы приняли запрос на дружбу."
+            return message
     except FriendRequest.DoesNotExist:
         # Отправить запрос на дружбу
 
