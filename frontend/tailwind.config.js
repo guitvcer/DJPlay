@@ -13,6 +13,10 @@ module.exports = {
           DEFAULT: '#393e46',
           dark: '#2d333b',
           dark2: '#22272e',
+        },
+        friend: {
+          add: '#74cf74',
+          remove: '#e37878'
         }
       }
     }

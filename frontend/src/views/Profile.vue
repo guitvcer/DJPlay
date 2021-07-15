@@ -1,7 +1,13 @@
 <template>
   <section class="bg-gray-50 dark:bg-main-dark block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8" style="max-width: 1400px;">
     <alert v-if="alerts.length" :alerts="alerts" />
-    <profile-avatar :user="user" :profileViewAccess="profileViewAccess" v-if="!loading" />
+    <profile-avatar
+        :user="user"
+        :profileViewAccess="profileViewAccess"
+        v-if="!loading"
+        @create-alert="createAlert"
+        @load-profile="setUserProfileInfo"
+    />
     <profile-table v-if="profileViewAccess" :user="user" :extraText="extraText" />
     <profile-table v-else :extraText="extraText" />
   </section>
@@ -61,17 +67,22 @@ export default {
                 if (this.user.is_private)
                   this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
                 this.profileViewAccess = true
-              } else if (this.user.is_friend) this.profileViewAccess = true
-              else {
-                this.extraText = 'Приватный аккаунт. Информация скрыта.'
-                this.profileViewAccess = false
-              }
+              } else if (this.user.is_private) {
+                if (this.user.friend_request === 'accepted') this.profileViewAccess = true
+                else {
+                  this.extraText = 'Приватный аккаунт. Информация скрыта.'
+                  this.profileViewAccess = false
+                }
+              } else this.profileViewAccess = true
 
               this.loading = false
             }
           })
         }
       })
+    },
+    createAlert(alert) {
+      this.$emit('create-alert', alert)
     }
   },
   mounted() {

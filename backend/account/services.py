@@ -57,7 +57,7 @@ def get_active_users_by_filter(
     return active_users
 
 
-def create_or_delete_or_accept_friend_request(request_from: User, username_of_request_to: User) -> str:
+def create_or_delete_or_accept_friend_request(request_from: User, username_of_request_to: str) -> str:
     """Создать|удалить|принять запрос на дружбу"""
 
     request_to = User.objects.get(username=username_of_request_to)
@@ -169,16 +169,39 @@ def get_domain():
 def get_user_profile_info(user: User, request: Request, serializer) -> dict:
     if has_user_access_to_view_data_of_another_user(user, request):
         data = {
-            'friends': user.get_friends().count(),
-            'views': user.get_views().count(),
-            'is_friend': True
+            'views': user.get_views().count()
         }
         data.update(serializer(user).data)
+
+        if request.user == user:
+            data['is_me'] = True
     else:
         data = {
             'username': user.username,
             'is_private': user.is_private,
             'avatar': user.avatar.url
         }
+
+    if data.get('is_me') is None:
+        if request.user.is_authenticated:
+            try:
+                friend_request = FriendRequest.objects.get(request_from=user, request_to=request.user)
+
+                if friend_request.is_active:
+                    data['friend_request'] = 'accepted'
+                else:
+                    data['friend_request'] = 'got'
+            except FriendRequest.DoesNotExist:
+                try:
+                    friend_request = FriendRequest.objects.get(request_from=request.user, request_to=user)
+
+                    if friend_request.is_active:
+                        data['friend_request'] = 'accepted'
+                    else:
+                        data['friend_request'] = 'sent'
+                except FriendRequest.DoesNotExist:
+                    data['friend_request'] = False
+
+    data['friends'] = user.get_friends().count()
 
     return data

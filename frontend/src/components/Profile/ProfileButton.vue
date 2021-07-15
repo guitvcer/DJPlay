@@ -9,6 +9,26 @@
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
     </svg>
   </button>
+  <button
+    type="button"
+    :title="friendRequest === 'sent' ? 'Отменить запрос на дружбу' : (
+        friendRequest === 'got' ? 'Принять запрос на дружбу' : (
+            friendRequest === 'accepted' ? 'Удалить из друзей' : 'Добавить в друзья'
+        )
+    )"
+    :class="[
+        'flex border px-3 py-2 rounded mx-px sm:mx-1 hover:bg-gray-100 dark:hover:bg-main',
+         friendRequest === 'accepted' || friendRequest === 'sent' ? ' border-friend-remove' : (
+             friendRequest === 'got' ? ' border-friend-add': ' dark:border-gray-600'
+         )
+    ]"
+    v-else-if="type === 'button'"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="buttonName === 'friend_request_button'">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+    </svg>
+    <span class="block relative -top-0.5" v-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
+  </button>
   <router-link :to="url" class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600" :title="title" v-else>
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" v-if="buttonName === 'friend_request_button'">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -51,7 +71,8 @@ export default {
     },
     friendsCount: Number,
     url: Object,
-    type: String
+    type: String,
+    friendRequest: String
   },
   computed: {
     title() {

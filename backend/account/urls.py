@@ -15,6 +15,7 @@ urlpatterns = [
     path('delete/', views.UserDeleteAPIView.as_view(), name='delete_profile'),
     path('friends/', views.UsersListAPIView.as_view(), name='friends'),
     path('views/', views.UsersListAPIView.as_view(), name='views'),
+    path('<str:username>/friend_request', views.UserFriendRequest.as_view(), name='friend_request'),
     path('<str:username>/friends/', views.UsersListAPIView.as_view(), name='users_friends'),
     path('<str:username>/views/', views.UsersListAPIView.as_view(), name='users_views'),
     path('<str:username>/', views.UserProfileAPIView.as_view(), name='profile'),

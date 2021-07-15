@@ -8,7 +8,8 @@ from .models import User, Game
 from .services import (
     has_user_access_to_view_data_of_another_user,
     get_user_profile_info,
-    get_active_users_by_filter
+    get_active_users_by_filter,
+    create_or_delete_or_accept_friend_request
 )
 from . import serializers
 
@@ -140,6 +141,21 @@ class UserDeleteAPIView(APIView):
             return Response({
                 'title': 'Вы успешно удалили свой аккаунт.'
             }, status=status.HTTP_200_OK)
+
+
+class UserFriendRequest(APIView):
+    """Запрос на дружбу"""
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            data = {
+                'title': create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
+            }
+            return Response(data, status=status.HTTP_200_OK)
+
+        return Response({
+            'title': 'Вы не авторизованы.'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class AuthorizationAPIView(APIView):

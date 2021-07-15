@@ -65,7 +65,14 @@ export default {
     }
   },
   mounted() {
-    this.setUserProfileInfo()
+    if (this.isAuthenticated()) this.setUserProfileInfo()
+    else {
+      this.$emit('create-alert', {
+        level: 'danger',
+        title: 'Вы не авторизованы.'
+      })
+      this.$router.push('/')
+    }
   }
 }
 </script>

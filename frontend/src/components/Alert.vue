@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed px-2 right-0 top-4 w-full md:w-auto" style="z-index: 999999; min-width: 300px;">
+  <div class="fixed px-2 right-0 top-5 w-full md:w-auto alert-wrapper" style="z-index: 999999; min-width: 300px;">
     <div
         role="alert"
         v-for="(alert, index) in alerts"
@@ -62,5 +62,11 @@ export default {
 .warning {
   background-color: #ffd48a;
   border-color: #8a5700;
+}
+
+@media screen and (min-width: 1024px) {
+  .alert-wrapper {
+    top: 100px;
+  }
 }
 </style>
