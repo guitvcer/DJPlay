@@ -9,12 +9,12 @@ const routes = [
     },
     {
         path: '/gomoku/',
-        component: import('./views/Game.vue'),
+        component: import('./views/Gomoku.vue'),
         name: 'gomoku'
     },
     {
         path: '/chess/',
-        component: import('./views/Game.vue'),
+        component: import('./views/Chess.vue'),
         name: 'chess'
     },
     {

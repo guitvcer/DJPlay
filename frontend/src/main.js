@@ -6,6 +6,7 @@ import { getCookie, isAuthenticated, sendRequest, getUserInfo } from './utilitie
 
 const app = createApp(App)
 app.config.globalProperties.host = 'http://127.0.0.1:8000'
+app.config.globalProperties.webSocketHost = 'ws://127.0.0.1:8000'
 app.config.globalProperties.getCookie = getCookie
 app.config.globalProperties.isAuthenticated = isAuthenticated
 app.config.globalProperties.sendRequest = sendRequest

@@ -1,9 +1,10 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from rest_framework_simplejwt.exceptions import TokenError
 
 from account.models import Game
-from account.services import update_queue
+from account.services import update_queue, get_user_by_token
 from .services import register_move, get_and_delete_moves_after_returnable_move
 
 game = Game.objects.get(name='Гомоку')
@@ -36,7 +37,7 @@ class FindOpponentConsumer(WebsocketConsumer):
     # получение сообщений от участника группы
     def receive(self, text_data):
         text_data = json.loads(text_data)
-        token = text_data['message']
+        token = text_data.get('access_token')
         new_party = update_queue(game, token)
 
         if new_party is not None:
@@ -44,18 +45,18 @@ class FindOpponentConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'notify_room',
-                    'message': new_party.id,
-                    'player1': new_party.player1.username,
-                    'player2': new_party.player2.username,
+                    'party_id': new_party.id,
+                    'player_1': new_party.player1.username,
+                    'player_2': new_party.player2.username,
                 }
             )
 
     # отправка сообщений участникам группы
     def notify_room(self, event):
         self.send(text_data=json.dumps({
-            'message': event['message'],
-            'player1': event['player1'],
-            'player2': event['player2'],
+            'party_id': event['party_id'],
+            'player_1': event['player_1'],
+            'player_2': event['player_2'],
         }))
 
 
@@ -65,8 +66,8 @@ class GomokuPartyConsumer(WebsocketConsumer):
     # подключение
     def connect(self):
         self.room_name = 'party'
-        self.room_group_name = 'gomoku_%s' % self.room_name
-        self.user_token = self.scope['cookies']['access']
+        self.party_id = self.scope['url_route']['kwargs']['id']
+        self.room_group_name = 'gomoku_%s' % self.party_id
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -77,14 +78,13 @@ class GomokuPartyConsumer(WebsocketConsumer):
 
     # отключение
     def disconnect(self, close_code):
-        player = get_user_by_token(self.user_token)
-        register_move('give_up', self.party_id, player)
+        register_move('give_up', self.party_id, self.player)
 
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'send_move',
-                'username': player.username,
+                'username': self.player.username,
                 'move': 'exit',
             }
         )
@@ -98,12 +98,15 @@ class GomokuPartyConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data = json.loads(text_data)
 
-        self.party_id = text_data['party_id']
-        player = get_user_by_token(self.user_token)
+        try:
+            self.player
+        except AttributeError:
+            access_token = text_data.get('access_token')
+            self.player = get_user_by_token(access_token)
 
         try:
             move = text_data['move']
-            result = register_move(move, self.party_id, player)
+            result = register_move(move, self.party_id, self.player)
 
             if type(result) == list:
                 # игрок побеждает, его последний ход сделал непрерывную линию из 5 точек
@@ -111,7 +114,7 @@ class GomokuPartyConsumer(WebsocketConsumer):
                     self.room_group_name,
                     {
                         'type': 'send_move',
-                        'username': player.username,
+                        'username': self.player.username,
                         'move': move,
                         'win': True,
                         'row_moves': json.dumps(result),
@@ -123,7 +126,7 @@ class GomokuPartyConsumer(WebsocketConsumer):
                     self.room_group_name,
                     {
                         'type': 'send_move',
-                        'username': player.username,
+                        'username': self.player.username,
                         'move': move,
                     }
                 )
