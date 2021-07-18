@@ -7,7 +7,7 @@
     >
       <div class="flex flex-col justify-between" id="dotsWrapper">
         <div v-for="(number, index) in numbers" :key="index" class="flex justify-between relative row">
-          <div v-for="(letter, index) in letters" :key="index" :id="letter + number" class="dot rounded-full pointer border-main" @click="registerMove($event.target)">
+          <div v-for="(letter, index) in letters" :key="index" :id="letter + number" class="dot rounded-full pointer border-main text-center text-xs sm:text-base flex items-center justify-center" @click="registerMove($event.target)">
 
           </div>
         </div>
@@ -36,8 +36,8 @@
         >Сдаться</button>
       </div>
     </div>
-    <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1">
-      <button title="Сбросить доску" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200" @click="resetBoard">
+    <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
+      <button title="Сбросить доску" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2" @click="resetBoard">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
@@ -63,6 +63,8 @@ export default {
       myMove: true,
       numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
       letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p'],
+      data: null,
+      moves: [],
     }
   },
   components: {
@@ -97,25 +99,15 @@ export default {
       this.gameStatus = 'finding'
 
       this.findOpponentSocket = new WebSocket(this.webSocketHost + '/gomoku/ws/find')
-
       this.findOpponentSocket.onopen = this.findOpponentSocketOnOpen
-
       this.findOpponentSocket.onmessage = this.findOpponentSocketOnMessage
+      this.findOpponentSocket.onclose = this.findOpponentSocketOnClose
     },
     cancelFinding() {
-      this.gameStatus = false
       this.findOpponentSocket.close()
     },
     giveUp() {
-      this.gameStatus = false
       this.gomokuPartySocket.close()
-      this.partyID = null
-      this.opponent = null
-      this.myMove = true
-      this.$emit('create-alert', {
-        level: 'danger',
-        title: 'Вы проиграли.'
-      })
     },
     findOpponentSocketOnMessage(e) {
       let data = JSON.parse(e.data)
@@ -127,44 +119,98 @@ export default {
 
       this.findOpponentSocket.close()
 
-      this.resetBoard()
-      this.gameStatus = 'playing'
-
-      this.gomokuPartySocket = new WebSocket(this.webSocketHost + '/gomoku/ws/play/' + data.party_id)
+      this.gomokuPartySocket = new WebSocket(this.webSocketHost + '/gomoku/ws/play/' + data['party_id'])
       this.gomokuPartySocket.onopen = this.gomokuPartySocketOnOpen
-
       this.gomokuPartySocket.onmessage = this.gomokuPartySocketOnMessage
+      this.gomokuPartySocket.onclose = this.gomokuPartySocketOnClose
     },
     findOpponentSocketOnOpen() {
       this.findOpponentSocket.send(JSON.stringify({
         'access_token': this.getCookie('access')
       }))
     },
-    gomokuPartySocketOnMessage(e) {
-      let data = JSON.parse(e.data)
+    findOpponentSocketOnClose(e) {
+      if (e.code === 1006) {
+        this.$emit('create-alert', {
+          level: 'danger',
+          title: 'Соединение потеряно.'
+        })
+      }
 
-      if (data.move === 'exit') {
-        if (data.username === this.opponent) {
+      this.gameStatus = false
+    },
+    gomokuPartySocketOnMessage(e) {
+      this.data = JSON.parse(e.data)
+
+      if (this.data.move === 'exit') {
+        if (this.data.username === this.opponent) {
           this.gomokuPartySocket.close()
-          this.$emit('create-alert', {
-            level: 'success',
-            title: 'Вы выиграли. Соперник сдался.'
-          })
-          this.gameStatus = false
         }
-      } else if (data.move === 'win') {
-          console.log(data)
+      } else if (this.data['win']) {
+          this.gomokuPartySocket.close()
       } else {
-        let dot = document.querySelector('#' + data.move)
+        let dot = document.querySelector('#' + this.data.move)
         this.selectDot(dot)
-        if (data.username === this.username) this.myMove = false
-        else if (data.username === this.opponent) this.myMove = true
+        if (this.data.username === this.username) this.myMove = false
+        else if (this.data.username === this.opponent) this.myMove = true
       }
     },
     gomokuPartySocketOnOpen() {
       this.gomokuPartySocket.send(JSON.stringify({
         'access_token': this.getCookie('access')
       }))
+      this.gameStatus = 'playing'
+      this.resetBoard(false)
+    },
+    gomokuPartySocketOnClose(e) {
+      if (e.code === 1000) {
+        try {
+          if (this.data.move === 'exit' && this.data.username === this.opponent) {
+            this.$emit('create-alert', {
+              level: 'success',
+              title: 'Вы выиграли. Соперник сдался.'
+            })
+          } else if (this.data['win']) {
+            for (let dotID of JSON.parse(this.data.row_moves)) {
+              const dot = document.querySelector('#' + dotID)
+              this.selectDot(dot)
+              dot.classList.add('bg-red-400')
+              dot.classList.remove('bg-main')
+              dot.classList.remove('bg-white')
+            }
+
+            if (this.data.username === this.username) {
+              this.$emit('create-alert', {
+                level: 'success',
+                title: 'Вы выиграли.'
+              })
+            } else if (this.data.username === this.opponent) {
+              this.$emit('create-alert', {
+                level: 'danger',
+                title: 'Вы проиграли.'
+              })
+            }
+          }
+        } catch (e) {
+          {
+            this.$emit('create-alert', {
+              level: 'danger',
+              title: 'Вы проиграли.'
+            })
+          }
+        }
+      } else if (e.code === 1006) {
+        this.$emit('create-alert', {
+          level: 'danger',
+          title: 'Соединение потеряно.'
+        })
+      }
+
+      this.partyID = null
+      this.opponent = null
+      this.myMove = true
+      this.data = null
+      this.gameStatus = false
     },
     resizeGomokuBoard() {
       const gomokuBoard = document.querySelector('#gomokuBoard')
@@ -184,31 +230,49 @@ export default {
       } else this.selectDot(target)
     },
     selectDot(target) {
+      if (
+          target.classList.contains('bg-white') ||
+          target.classList.contains('bg-main') ||
+          target.classList.contains('bg-red-400')
+      ) return
+
       try {
         const lastMove = document.querySelector('.lastMove')
 
         lastMove.classList.remove('lastMove')
 
-        if (lastMove.classList.contains('bg-main')) target.classList.add('bg-white')
-        else target.classList.add('bg-main')
+        if (lastMove.classList.contains('bg-main')) {
+          target.classList.add('bg-white')
+          target.classList.add('text-black')
+        } else {
+          target.classList.add('bg-main')
+          target.classList.add('text-gray-100')
+        }
       } catch (e) {
         target.classList.add('bg-white')
+        target.classList.add('text-black')
       }
 
       target.classList.add('lastMove')
       target.classList.add('border-2')
+      this.moves.push(target)
+      target.innerHTML = this.moves.length
+      target.blur()
     },
-    resetBoard() {
-      if (this.gameStatus === 'playing') {
+    resetBoard(showAlert = true) {
+      if (this.gameStatus === 'playing' && showAlert) {
         this.$emit('create-alert', {
           level: 'warning',
           title: 'Во время игры нельзя очищать поле.'
         })
       } else {
         for (let dot of document.querySelectorAll('.dot')) {
-          dot.className = 'dot rounded-full pointer border-main'
+          dot.className = 'dot rounded-full pointer border-main text-center text-xs sm:text-base flex items-center justify-center'
+          dot.innerHTML = ''
         }
       }
+
+      this.moves = []
     }
   }
 }
@@ -235,8 +299,7 @@ section {
   height: 35px;
   cursor: pointer;
 }
-.dot:hover {
-  border: 1px solid black;
+.dot:not(.bg-white, .bg-main .bg-red-400):hover {
   background: #393e46;
 }
 .lastMove {
@@ -246,20 +309,6 @@ section {
   background-color: white;
 }
 
-@media screen and (max-width: 768px) {
-  .dot {
-    width: 25px;
-    height: 25px;
-  }
-  #dotsWrapper {
-    height: calc(100% + 25px);
-  }
-  .row {
-    width: calc(100% + 25px);
-    top: -12.5px;
-    left: -12px;
-  }
-}
 
 @media screen and (max-width: 640px) {
   .dot {
