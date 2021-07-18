@@ -2,7 +2,7 @@
   <section class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16">
     <div
       v-if="!loading"
-      class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-10 md:mt-20 2xl:mt-0"
+      class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-10 md:mt-20 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
       id="gomokuBoard"
     >
       <div class="flex flex-col justify-between" id="dotsWrapper">
@@ -176,7 +176,9 @@ export default {
               this.selectDot(dot)
               dot.classList.add('bg-red-400')
               dot.classList.remove('bg-main')
+              dot.classList.remove('dark:bg-main-dark2')
               dot.classList.remove('bg-white')
+              dot.classList.remove('dark:bg-gray-300')
             }
 
             if (this.data.username === this.username) {
@@ -243,12 +245,15 @@ export default {
 
         if (lastMove.classList.contains('bg-main')) {
           target.classList.add('bg-white')
+          target.classList.add('dark:bg-gray-300')
           target.classList.add('text-black')
         } else {
           target.classList.add('bg-main')
+          target.classList.add('dark:bg-main-dark2')
           target.classList.add('text-gray-100')
         }
       } catch (e) {
+        target.classList.add('dark:bg-gray-300')
         target.classList.add('bg-white')
         target.classList.add('text-black')
       }
@@ -278,13 +283,9 @@ export default {
 }
 </script>
 
-<style scoped >
+<style scoped>
 section {
   max-width: 1800px;
-}
-#gomokuBoard {
-  background-image: url('http://127.0.0.1:8000/media/gomoku/board_background.png');
-  background-size: 100%;
 }
 #dotsWrapper {
   height: calc(100% + 33px);
@@ -304,9 +305,6 @@ section {
 }
 .lastMove {
   border: 3px solid orange;
-}
-.dot.bg-white:hover {
-  background-color: white;
 }
 
 
