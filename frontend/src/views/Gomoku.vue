@@ -7,7 +7,7 @@
     >
       <div class="flex flex-col justify-between" id="dotsWrapper">
         <div v-for="(number, index) in numbers" :key="index" class="flex justify-between relative row">
-          <div v-for="(letter, index) in letters" :key="index" :id="letter + number" class="dot rounded-full pointer border-main text-center text-xs sm:text-base flex items-center justify-center" @click="registerMove($event.target)">
+          <div v-for="(letter, index) in letters" :key="index" :id="letter + number" :class="dotClassName" @click="registerMove($event.target)">
 
           </div>
         </div>
@@ -37,7 +37,12 @@
       </div>
     </div>
     <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
-      <button title="Сбросить доску" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2" @click="resetBoard">
+      <button title="Отменить ход" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="returnMove">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+        </svg>
+      </button>
+      <button title="Сбросить доску" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="resetBoard">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
@@ -57,6 +62,7 @@ export default {
       gameStatus: false,
       findOpponentSocket: null,
       gomokuPartySocket: null,
+      returnMoveSocket: null,
       partyID: null,
       opponent: null,
       username: null,
@@ -65,6 +71,8 @@ export default {
       letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p'],
       data: null,
       moves: [],
+      dotClassName: 'dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center',
+      currentColor: 'white'
     }
   },
   components: {
@@ -123,6 +131,9 @@ export default {
       this.gomokuPartySocket.onopen = this.gomokuPartySocketOnOpen
       this.gomokuPartySocket.onmessage = this.gomokuPartySocketOnMessage
       this.gomokuPartySocket.onclose = this.gomokuPartySocketOnClose
+
+      this.returnMoveSocket = new WebSocket(this.webSocketHost + '/gomoku/ws/chat/' + data['party_id'])
+      this.returnMoveSocket.onmessage = this.returnMoveSocketOnMessage
     },
     findOpponentSocketOnOpen() {
       this.findOpponentSocket.send(JSON.stringify({
@@ -151,8 +162,13 @@ export default {
       } else {
         let dot = document.querySelector('#' + this.data.move)
         this.selectDot(dot)
+
         if (this.data.username === this.username) this.myMove = false
-        else if (this.data.username === this.opponent) this.myMove = true
+        else if (this.data.username === this.opponent) {
+          this.myMove = true
+
+          if (this.moves.length === 1) this.currentColor = 'blue'
+        }
       }
     },
     gomokuPartySocketOnOpen() {
@@ -161,6 +177,10 @@ export default {
       }))
       this.gameStatus = 'playing'
       this.resetBoard(false)
+      this.$emit('create-alert', {
+        level: 'simple',
+        title: `Вы играете против ${this.opponent}`
+      })
     },
     gomokuPartySocketOnClose(e) {
       if (e.code === 1000) {
@@ -213,6 +233,96 @@ export default {
       this.myMove = true
       this.data = null
       this.gameStatus = false
+      this.returnMoveSocket.close()
+    },
+    returnMoveSocketOnMessage(e) {
+      const data = JSON.parse(e.data)
+
+      if (data['command'] === 'return_move') {
+        let alert_title
+
+        if (data['returner'] === this.username)
+          alert_title = 'Вы отправили запрос на отмену хода.'
+        else if (data['returner'] === this.opponent)
+          alert_title = `Соперник запрашивает отмену хода.
+            <button class="acceptReturnMoveButton">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+            <button class="declineReturnMoveButton">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+        `
+
+        this.$emit('create-alert', {
+          level: 'simple',
+          title: alert_title
+        })
+
+        const _socket = this.returnMoveSocket
+        const _accessToken = this.getCookie('access')
+
+        setTimeout(function(socket = _socket, accessToken = _accessToken) {
+          const acceptOrDeclineReturnMove = function(command) {
+            socket.send(JSON.stringify({
+              command: command,
+              returner: data['returner'],
+              access_token: accessToken,
+              returnable_move: data['returnable_move']
+            }))
+          }
+
+          for (let acceptReturnMoveButton of document.querySelectorAll('button.acceptReturnMoveButton')) {
+            acceptReturnMoveButton.addEventListener('click', function() {
+              acceptOrDeclineReturnMove('return_move_accept')
+            })
+          }
+
+          for (let declineReturnMoveButton of document.querySelectorAll('button.declineReturnMoveButton')) {
+            declineReturnMoveButton.addEventListener('click', function() {
+              acceptOrDeclineReturnMove('return_move_decline')
+            })
+          }
+        }, 1000)
+      } else if (data['command'] === 'return_move_accept') {
+        const returnableMoveID = data['returnable_move']
+        const returnableMove = document.querySelector('#' + returnableMoveID)
+        const index = this.moves.indexOf(returnableMoveID)
+
+        returnableMove.className = this.dotClassName
+        returnableMove.innerHTML = ''
+        this.moves.splice(index, 1)
+
+        let alert_title
+
+        if (data['returner'] === this.username) {
+          alert_title = 'Вы отменили ход.'
+          this.myMove = true
+        } else if (data['returner'] === this.opponent) {
+          alert_title = 'Соперник отменил ход.'
+          this.myMove = false
+        }
+
+        this.$emit('create-alert', {
+          level: 'success',
+          title: alert_title
+        })
+      } else if (data['command'] === 'return_move_decline') {
+        if (data['returner'] === this.username) {
+          this.$emit('create-alert', {
+            level: 'danger',
+            title: 'Вы не отменили ход.'
+          })
+        } else if (data['returner'] === this.opponent) {
+          this.$emit('create-alert', {
+            level: 'simple',
+            title: 'Соперник не отменил ход.'
+          })
+        }
+      }
     },
     resizeGomokuBoard() {
       const gomokuBoard = document.querySelector('#gomokuBoard')
@@ -239,30 +349,44 @@ export default {
       ) return
 
       try {
-        const lastMove = document.querySelector('.lastMove')
+        const lastMove = document.querySelector('.border-yellow-500')
+        lastMove.classList.remove('border-yellow-500')
+        lastMove.classList.add('border-main')
+      } catch (e) {}
 
-        lastMove.classList.remove('lastMove')
 
-        if (lastMove.classList.contains('bg-main')) {
+      if (this.myMove) {
+        if (this.currentColor === 'white') {
           target.classList.add('bg-white')
           target.classList.add('dark:bg-gray-300')
           target.classList.add('text-black')
-        } else {
+        } else if (this.currentColor === 'blue') {
           target.classList.add('bg-main')
           target.classList.add('dark:bg-main-dark2')
           target.classList.add('text-gray-100')
         }
-      } catch (e) {
-        target.classList.add('dark:bg-gray-300')
-        target.classList.add('bg-white')
-        target.classList.add('text-black')
+      } else {
+        if (this.currentColor === 'white') {
+          target.classList.add('bg-main')
+          target.classList.add('dark:bg-main-dark2')
+          target.classList.add('text-gray-100')
+        } else if (this.currentColor === 'blue') {
+          target.classList.add('bg-white')
+          target.classList.add('dark:bg-gray-300')
+          target.classList.add('text-black')
+        }
       }
 
-      target.classList.add('lastMove')
+      if (this.gameStatus !== 'playing') {
+        if (this.currentColor === 'white') this.currentColor = 'blue'
+        else this.currentColor = 'white'
+      }
+
+
+      target.classList.add('border-yellow-500')
       target.classList.add('border-2')
       this.moves.push(target)
       target.innerHTML = this.moves.length
-      target.blur()
     },
     resetBoard(showAlert = true) {
       if (this.gameStatus === 'playing' && showAlert) {
@@ -272,12 +396,44 @@ export default {
         })
       } else {
         for (let dot of document.querySelectorAll('.dot')) {
-          dot.className = 'dot rounded-full pointer border-main text-center text-xs sm:text-base flex items-center justify-center'
+          dot.className = this.dotClassName
           dot.innerHTML = ''
         }
       }
 
       this.moves = []
+      this.currentColor = 'white'
+    },
+    returnMove() {
+      if (this.moves.length !== 0) {
+        const lastDot = this.moves[this.moves.length - 1]
+
+        if (this.gameStatus === 'playing') {
+          if (
+              (this.currentColor === 'white' && lastDot.classList.contains('bg-main')) ||
+              (this.currentColor === 'blue' && lastDot.classList.contains('bg-white'))
+          ) {
+            this.$emit('create-alert', {
+              level: 'warning',
+              title: 'Последний ход не Ваш.'
+            })
+          } else {
+            this.returnMoveSocket.send(JSON.stringify({
+              access_token: this.getCookie('access'),
+              command: 'return_move',
+              returnable_move: lastDot.id,
+              returner: this.username
+            }))
+          }
+        } else {
+          lastDot.className = this.dotClassName
+          lastDot.innerHTML = ''
+          this.moves.pop()
+
+          if (this.currentColor === 'white') this.currentColor = 'blue'
+          else this.currentColor = 'white'
+        }
+      }
     }
   }
 }
@@ -302,9 +458,6 @@ section {
 }
 .dot:not(.bg-white, .bg-main .bg-red-400):hover {
   background: #393e46;
-}
-.lastMove {
-  border: 3px solid orange;
 }
 
 

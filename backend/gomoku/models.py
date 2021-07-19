@@ -45,20 +45,3 @@ class Party(models.Model):
     class Meta:
         verbose_name = 'Партия Гомоку'
         verbose_name_plural = 'Партии Гомоку'
-
-
-class Message(models.Model):
-    """Модель сообщения чата Гомоку"""
-
-    id = models.AutoField(primary_key=True)
-    party = models.ForeignKey(Party, on_delete=models.CASCADE, verbose_name="Партия")
-    text = models.TextField(verbose_name="Сообщение")
-    player = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Отправитель")
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время")
-
-    def __str__(self):
-        return f'{self.party} партия'
-
-    class Meta:
-        verbose_name = 'Сообщение'
-        verbose_name_plural = 'Сообщения'

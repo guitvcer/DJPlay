@@ -1,4 +1,4 @@
-from .models import Party, Move, Message
+from .models import Party, Move
 
 
 def player_gives_up(party_id, loser):
@@ -116,14 +116,6 @@ def register_move(coordinate, party_id, player):
         return check_row(move, party, player)
 
 
-def create_message(party_id, text, player):
-    """Создание сообщения"""
-
-    party = Party.objects.get(id=party_id)
-    message = Message.objects.create(party=party, text=text, player=player)
-    return message
-
-
 def get_last_move_of_player(party_id, player):
     """Получить последний ход игрока определенной партии"""
 
@@ -137,16 +129,9 @@ def get_last_move_of_player(party_id, player):
     return party.get_moves().filter(player=player2).last().coordinate
 
 
-def get_and_delete_moves_after_returnable_move(party_id, coordinate):
+def delete_returnable_move(party_id, coordinate):
     """Удалить ходы после возвращаемого хода"""
 
     party = Party.objects.get(id=party_id)
     move = Move.objects.get(coordinate=coordinate, party=party)
-    moves = []
-
-    for i in range(move.id, party.get_moves().last().id + 1):
-        removable_move = Move.objects.get(id=i)
-        moves.append(removable_move.coordinate)
-        removable_move.delete()
-
-    return moves
+    move.delete()

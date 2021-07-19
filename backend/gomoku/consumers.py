@@ -1,47 +1,47 @@
 import json
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
-from rest_framework_simplejwt.exceptions import TokenError
+from asgiref.sync import sync_to_async
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from account.models import Game
 from account.services import update_queue, get_user_by_token
-from .services import register_move, get_and_delete_moves_after_returnable_move
+from .services import register_move, delete_returnable_move
 
 game = Game.objects.get(name='Гомоку')
 
 
-class FindOpponentConsumer(WebsocketConsumer):
+class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
     """Consumer поиска соперника"""
 
-    # подключение пользователя в группы
-    def connect(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.room_name = None
+        self.room_group_name = None
+
+    async def connect(self):
         self.room_name = 'party'
         self.room_group_name = 'find_%s' % self.room_name
 
-        async_to_sync(self.channel_layer.group_add)(
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name,
         )
 
-        self.accept()
+        await self.accept()
 
-    # отключение
-    def disconnect(self, close_code):
-        update_queue(game, None)
+    async def disconnect(self, close_code):
+        await sync_to_async(update_queue)(game, None)
 
-        async_to_sync(self.channel_layer.group_discard)(
+        await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name,
         )
 
-    # получение сообщений от участника группы
-    def receive(self, text_data):
-        text_data = json.loads(text_data)
-        token = text_data.get('access_token')
-        new_party = update_queue(game, token)
+    async def receive_json(self, content, **kwargs):
+        token = content.get('access_token')
+        new_party = await sync_to_async(update_queue)(game, token)
 
-        if new_party is not None:
-            async_to_sync(self.channel_layer.group_send)(
+        if new_party:
+            await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'notify_room',
@@ -51,90 +51,89 @@ class FindOpponentConsumer(WebsocketConsumer):
                 }
             )
 
-    # отправка сообщений участникам группы
-    def notify_room(self, event):
-        self.send(text_data=json.dumps({
+    async def notify_room(self, event):
+        await self.send_json({
             'party_id': event['party_id'],
             'player_1': event['player_1'],
             'player_2': event['player_2'],
-        }))
+        })
 
 
-class GomokuPartyConsumer(WebsocketConsumer):
+class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
     """Consumer партии Гомоку"""
 
-    # подключение
-    def connect(self):
-        self.room_name = 'party'
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.room = None
+        self.party_id = None
+        self.room_group_name = None
+        self.player = None
+
+    async def connect(self):
+        self.room = 'party'
         self.party_id = self.scope['url_route']['kwargs']['id']
         self.room_group_name = 'gomoku_%s' % self.party_id
 
-        async_to_sync(self.channel_layer.group_add)(
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name,
         )
 
-        self.accept()
+        await self.accept()
 
-    # отключение
-    def disconnect(self, close_code):
-        register_move('give_up', self.party_id, self.player)
+    async def disconnect(self, close_code):
+        await sync_to_async(register_move)('give_up', self.party_id, self.player)
 
-        async_to_sync(self.channel_layer.group_send)(
+        if self.player is not None:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'send_move',
+                    'username': self.player.username,
+                    'move': 'exit',
+                }
+            )
+
+        await self.channel_layer.group_discard(
             self.room_group_name,
-            {
+            self.channel_name,
+        )
+
+    async def receive_json(self, content, **kwargs):
+        if self.player is None:
+            access_token = await sync_to_async(content.get)('access_token')
+            self.player = await sync_to_async(get_user_by_token)(access_token)
+
+        move = content.get('move')
+
+        if move is None:
+            return
+
+        result = await sync_to_async(register_move)(move, self.party_id, self.player)
+
+        if type(result) == list:
+            # игрок побеждает, его последний ход сделал непрерывную линию из 5 точек
+            event = {
                 'type': 'send_move',
                 'username': self.player.username,
-                'move': 'exit',
+                'move': move,
+                'win': True,
+                'row_moves': json.dumps(result),
             }
-        )
+        else:
+            # игрок еще не побеждает, так как его последний ход не делает линию
+            event = {
+                'type': 'send_move',
+                'username': self.player.username,
+                'move': move,
+            }
 
-        async_to_sync(self.channel_layer.group_discard)(
+        await self.channel_layer.group_send(
             self.room_group_name,
-            self.channel_name,
+            event
         )
 
-    # получение сообщений
-    def receive(self, text_data):
-        text_data = json.loads(text_data)
-
-        try:
-            self.player
-        except AttributeError:
-            access_token = text_data.get('access_token')
-            self.player = get_user_by_token(access_token)
-
-        try:
-            move = text_data['move']
-            result = register_move(move, self.party_id, self.player)
-
-            if type(result) == list:
-                # игрок побеждает, его последний ход сделал непрерывную линию из 5 точек
-                async_to_sync(self.channel_layer.group_send)(
-                    self.room_group_name,
-                    {
-                        'type': 'send_move',
-                        'username': self.player.username,
-                        'move': move,
-                        'win': True,
-                        'row_moves': json.dumps(result),
-                    }
-                )
-            else:
-                # игрок еще не побеждает, так как его последний ход не делает линию
-                async_to_sync(self.channel_layer.group_send)(
-                    self.room_group_name,
-                    {
-                        'type': 'send_move',
-                        'username': self.player.username,
-                        'move': move,
-                    }
-                )
-        except KeyError:
-            pass
-
-    # отправить сообщение
-    def send_move(self, event):
+    async def send_move(self, event):
         message = {'username': event['username'],
                    'move': event['move']}
 
@@ -144,98 +143,83 @@ class GomokuPartyConsumer(WebsocketConsumer):
         except KeyError:
             pass
 
-        self.send(text_data=json.dumps(message))
+        await self.send_json(message)
 
 
-class GomokuChatConsumer(WebsocketConsumer):
-    """Consumer чата Гомоку"""
+class ReturnMoveConsumer(AsyncJsonWebsocketConsumer):
+    """Consumer отмены хода партии Гомоку"""
 
-    # подключение
-    def connect(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
         self.room_name = 'chat'
-        self.room_group_name = 'gomoku_%s' % self.room_name
-        self.user_token = self.scope['cookies']['access']
+        self.room_group_name = None
+        self.player = None
+        self.party_id = None
 
-        async_to_sync(self.channel_layer.group_add)(
+    async def connect(self):
+        self.party_id = self.scope['url_route']['kwargs']['id']
+        self.room_group_name = 'gomoku_chat_%s' % self.party_id
+
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name,
         )
 
-        self.accept()
+        await self.accept()
 
-    # отключение
-    def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name,
         )
 
-    # получение сообщений
-    def receive(self, text_data):
-        text_data = json.loads(text_data)
-        party_id = text_data['party_id']
-        text = text_data['text']
-        player = get_user_by_token(self.user_token)
-        message = create_message(party_id, text, player)
+    async def receive_json(self, content, **kwargs):
+        if self.player is None:
+            self.player = await sync_to_async(get_user_by_token)(content.get('access_token'))
 
-        if message.text == '/return_move_accept':
-            removable_moves = get_and_delete_moves_after_returnable_move(party_id, text_data['coordinate'])
+        command = content.get('command')
 
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'send_message',
-                    'username': message.player.username,
-                    'text': message.text,
-                    'removable_moves': removable_moves,
-                }
-            )
-        elif message.text == '/return_move_decline':
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'send_message',
-                    'username': message.player.username,
-                    'text': message.text,
-                }
-            )
-        elif message.text == '/return_move':
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'send_message',
-                    'username': message.player.username,
-                    'text': message.text,
-                    'date': message.date,
-                    'coordinate': text_data['coordinate'],
-                }
-            )
+        if command == 'return_move_accept':
+            await sync_to_async(delete_returnable_move)(self.party_id, content.get('returnable_move'))
+
+            event = {
+                'type': 'send_message',
+                'returner': content.get('returner'),
+                'command': command,
+                'returnable_move': content['returnable_move'],
+            }
+        elif command == 'return_move_decline':
+            event = {
+                'type': 'send_message',
+                'returner': content['returner'],
+                'command': command,
+            }
+        elif command == 'return_move':
+            event = {
+                'type': 'send_message',
+                'returner': content['returner'],
+                'command': command,
+                'returnable_move': content['returnable_move'],
+            }
         else:
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'send_message',
-                    'username': message.player,
-                    'text': message.text,
-                    'date': message.date,
-                }
-            )
+            return
 
-    # отправить сообщение
-    def send_message(self, event):
+        await self.channel_layer.group_send(
+            self.room_group_name, event
+        )
+
+    async def send_message(self, event):
         message = {
-            'username': event['username'],
-            'text': event['text'],
+            'returner': event['returner'],
+            'command': event['command'],
         }
 
-        try:
-            message['coordinate'] = event['coordinate']
-        except KeyError:
-            pass
+        returnable_move = event.get('returnable_move')
+        if returnable_move is not None:
+            message['returnable_move'] = returnable_move
 
-        try:
-            message['removable_moves'] = event['removable_moves']
-        except KeyError:
-            pass
+        returnable_moves = event.get('returnable_moves')
+        if returnable_moves is not None:
+            message['returnable_moves'] = returnable_moves
 
-        self.send(text_data=json.dumps(message))
+        await self.send_json(message)
