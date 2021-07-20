@@ -14,7 +14,6 @@ class Move(models.Model):
         ('N', 'Knight'),
         ('', ''),  # Pawn
     ]
-
     CASTLING = [
         ('S', 'O-O'),
         ('L', 'O-O-O'),
@@ -55,8 +54,7 @@ class Party(models.Model):
     time = models.TimeField(default=datetime.time(minute=10), verbose_name="Время")
     result = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, verbose_name="Результат")
 
-    def __str__(self):
-        return f'{self.id} партия'
+    def __str__(self): return f'{self.id} партия'
 
     def get_moves(self):
         return Move.objects.filter(party=self)

@@ -27,7 +27,7 @@ def generate_tokens(user: User) -> dict:
 def get_active_users_by_filter(
         request: Request,
         active_users=User.objects.filter(is_active=True)
-    ) -> QuerySet:
+) -> QuerySet:
     """Получить всех активных пользователей по фильтру"""
 
     query = request.data.get('query')
@@ -99,12 +99,6 @@ def create_or_delete_or_accept_friend_request(request_from: User, username_of_re
         return "Вы отправили запрос на дружбу."
 
 
-def has_user_access_to_view_data_of_another_user(user: User, request: Request) -> bool:
-    """Имеет ли постетитель права просматривать данные пользователя"""
-
-    return (user == request.user) or (request.user in user.get_friends()) or not user.is_private
-
-
 def get_last_messages_with_every_user(current_user: User) -> QuerySet:
     """Получить последние сообщения с каждым пользователем"""
 
@@ -168,12 +162,12 @@ def update_queue(game: Game, token: str) -> (ChessParty, GomokuParty):
 def get_domain():
     """Получить домен"""
 
-    return settings.ALLOWED_HOSTS[0] + ':8000' if settings.ALLOWED_HOSTS[0] == '127.0.0.1'\
+    return settings.ALLOWED_HOSTS[0] + ':8000' if settings.ALLOWED_HOSTS[0] == '127.0.0.1' \
         else settings.ALLOWED_HOSTS[0]
 
 
 def get_user_profile_info(user: User, request: Request, serializer) -> dict:
-    if has_user_access_to_view_data_of_another_user(user, request):
+    if user.has_access_to_view_data_of_another_user(request):
         data = {
             'views': user.get_views().count()
         }

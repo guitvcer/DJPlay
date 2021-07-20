@@ -11,8 +11,7 @@ class Move(models.Model):
                                verbose_name="Игрок", related_name="gomoku_move_player")
     party = models.ForeignKey('Party', on_delete=models.CASCADE, verbose_name="Партия")
 
-    def __str__(self):
-        return self.party.__str__()
+    def __str__(self): return self.party.__str__()
 
     class Meta:
         verbose_name = 'Ход партии Гомоку'
@@ -31,8 +30,7 @@ class Party(models.Model):
     winner = models.CharField(max_length=64, null=True, verbose_name="Победивший игрок")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата начала")
 
-    def __str__(self):
-        return f'id={self.id}, {self.player1}, {self.player2}, {self.date.date()}'
+    def __str__(self): return f'id={self.id}, {self.player1}, {self.player2}, {self.date.date()}'
 
     def get_moves(self):
         """Получить ходы партии"""

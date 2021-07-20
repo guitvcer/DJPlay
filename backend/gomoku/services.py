@@ -91,14 +91,9 @@ def check_row(move, party, player):
             except Move.DoesNotExist:
                 pass
 
-        if len(x_moves) == 5:
-            return x_moves
-        elif len(y_moves) == 5:
-            return y_moves
-        elif len(z_moves1) == 5:
-            return z_moves1
-        elif len(z_moves2) == 5:
-            return z_moves2
+        for moves in (x_moves, y_moves, z_moves1, z_moves2):
+            if len(moves) == 5:
+                return moves
 
 
 def register_move(coordinate, party_id, player):
