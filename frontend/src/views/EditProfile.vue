@@ -39,20 +39,40 @@ export default {
       })
     },
     submitForm(event) {
-      let body = {
-        username: event.target.username.value,
-        email: event.target.email.value,
-        birthday: (event.target.birthday.value !== "") ? event.target.birthday.value : null,
-        first_name: event.target.first_name.value,
-        last_name: event.target.last_name.value,
-        gender: event.target.gender.value,
-        is_private: event.target.is_private.value
-      }
+      // let body = {
+      //   avatar: event.target.avatar.files[0],
+      //   username: event.target.username.value,
+      //   email: event.target.email.value,
+      //   birthday: (event.target.birthday.value !== "") ? event.target.birthday.value : null,
+      //   first_name: event.target.first_name.value,
+      //   last_name: event.target.last_name.value,
+      //   gender: event.target.gender.value,
+      //   is_private: event.target.is_private.value
+      // }
+      //
+      // console.log(body)
+      const editProfileData = new FormData()
 
-      this.sendRequest(this.action, 'PATCH', JSON.stringify(body)).then(json => {
+      if (event.target.avatar.files[0])
+        editProfileData.append('avatar', event.target.avatar.files[0])
+      else
+        editProfileData.append('clear_avatar', event.target.avatar.dataset.clear)
+
+      editProfileData.append('username', event.target.username.value)
+      editProfileData.append('email', event.target.email.value)
+      editProfileData.append('birthday', event.target.birthday.value)
+      editProfileData.append('first_name', event.target.first_name.value)
+      editProfileData.append('last_name', event.target.last_name.value)
+      editProfileData.append('gender', event.target.gender.value)
+      editProfileData.append('is_private', event.target.is_private.value)
+
+      this.sendRequest(
+          this.action, 'PATCH', editProfileData,
+          'multipart/form-data; boundary=----WebKitFormBoundaryf5ZTx2ZOKUxVlo1D'
+      ).then(json => {
         if (json.type === 'alert') {
-          json.title = json.title['username'][0]
-          this.$emit('create-alert', json)
+          for (let alert of json.alerts)
+            this.$emit('create-alert', alert)
         } else {
           this.$emit('create-alert', {
             title: json.title,

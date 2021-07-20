@@ -34,9 +34,6 @@ class Party(models.Model):
     def __str__(self):
         return f'id={self.id}, {self.player1}, {self.player2}, {self.date.date()}'
 
-    def get_messages(self):
-        return Message.objects.filter(party=self)
-
     def get_moves(self):
         """Получить ходы партии"""
 

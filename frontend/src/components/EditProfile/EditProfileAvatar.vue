@@ -1,6 +1,11 @@
 <template>
-  <div class="mx-2 lg:mx-12 mb-12 flex-shrink-0">
-    <img :src="host + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">
+  <div class="mx-2 lg:mx-12 mb-12 flex-shrink-0 flex flex-col justify-center">
+<!--    <img :src="host + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">-->
+    <avatar-input
+      class="w-56 h-56 rounded mb-6 mx-auto"
+      :default-src="host + '/media/user.png'"
+      :avatar="host + user.avatar"
+    />
     <h2 class="text-3xl font-semibold mb-3 text-center lg:text-left select-text" style="word-break: break-word;">{{ user.username }}</h2>
     <hr>
     <div class="flex justify-center mt-3">
@@ -29,6 +34,7 @@
 </template>
 
 <script>
+import AvatarInput from '@/components/EditProfile/AvatarInput'
 import ProfileButton from '@/components/Profile/ProfileButton'
 
 export default {
@@ -38,8 +44,13 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      avatar: null
+    }
+  },
   components: {
-    ProfileButton
+    AvatarInput, ProfileButton
   }
 }
 </script>

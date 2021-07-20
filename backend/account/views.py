@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.urls import resolve
 from rest_framework import generics, status
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -101,6 +102,7 @@ class UserProfileAPIView(APIView):
 class UserProfileEditAPIView(APIView):
     """Изменить профиль пользователя"""
 
+    parsers = [MultiPartParser]
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):

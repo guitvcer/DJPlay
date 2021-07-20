@@ -97,9 +97,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserProfileEditSerializer(serializers.ModelSerializer):
     """Serializer редактирования провиля пользователя"""
 
+    avatar = serializers.FileField(required=False)
+    clear_avatar = serializers.BooleanField(required=False)
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'avatar', 'gender', 'is_private')
+        fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'gender', 'is_private', 'avatar',
+                  'clear_avatar')
+
+    def validate(self, attrs):
+        if attrs.get('clear_avatar'):
+            self.instance.avatar = '/user.png'
+
+        return super().validate(attrs)
 
 
 class UserChangePasswordSerializer(serializers.Serializer):

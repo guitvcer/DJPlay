@@ -13,11 +13,11 @@ function isAuthenticated() {
     return true
 }
 
-function sendRequest(url, method='GET', body=null) {
-    let accessToken = getCookie('access'),
-        headers = {
-            'Content-Type': 'application/json'
-        }
+function sendRequest(url, method='GET', body=null, file = false) {
+    const accessToken = getCookie('access')
+    let headers = {}
+
+    if (!file) headers['Content-Type'] = 'application/json'
 
     if (accessToken !== '' && accessToken) {
         headers['Authorization'] = 'Bearer ' + accessToken
@@ -29,7 +29,7 @@ function sendRequest(url, method='GET', body=null) {
     }).then(response => {
         if (response.ok) return response.json()
 
-        return response.text().then(error => {
+        return response.json().then(error => {
             let alert = {
                 level: 'danger',
                 type: 'alert',
@@ -37,11 +37,30 @@ function sendRequest(url, method='GET', body=null) {
             }
 
             if (response.status === 400) {
-                try {
-                    alert.title = JSON.parse(error).non_field_errors[0]
-                } catch (e) {
-                    alert.title = JSON.parse(error)
+                let alertsList = {
+                    alerts: [],
+                    type: 'alert'
                 }
+
+                for (let field in error) {
+                    let title = `
+                        <strong>${field}:</strong>&nbsp;
+                        <ul>
+                    `
+                    for (let description of error[field]) {
+                        title += `
+                            <li>${description}</li>
+                        `
+                    }
+                    title += `</ul>`
+
+                    alertsList.alerts.push({
+                        level: 'danger',
+                        title: title
+                    })
+                }
+
+                return alertsList
             } else if (response.status === 401) {
                 alert.title = 'Вы не авторизованы.'
             } else if (response.status === 403) {

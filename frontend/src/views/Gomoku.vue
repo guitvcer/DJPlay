@@ -99,7 +99,7 @@ export default {
   computed: {
     gameBackgroundUrl() {
       if (!this.loading)
-        return this.host + '/media/' + this.game.app_name + '/board_background.png'
+        return this.host + '/media/' + this.game['app_name'] + '/board_background.png'
     }
   },
   methods: {
@@ -191,7 +191,7 @@ export default {
               title: 'Вы выиграли. Соперник сдался.'
             })
           } else if (this.data['win']) {
-            for (let dotID of JSON.parse(this.data.row_moves)) {
+            for (let dotID of JSON.parse(this.data['row_moves'])) {
               const dot = document.querySelector('#' + dotID)
               this.selectDot(dot)
               dot.classList.add('bg-red-400')
@@ -310,6 +310,10 @@ export default {
           level: 'success',
           title: alert_title
         })
+
+        try {
+          document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
+        } catch (e) {}
       } else if (data['command'] === 'return_move_decline') {
         if (data['returner'] === this.username) {
           this.$emit('create-alert', {
@@ -322,6 +326,10 @@ export default {
             title: 'Соперник не отменил ход.'
           })
         }
+
+        try {
+          document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
+        } catch (e) {}
       }
     },
     resizeGomokuBoard() {
@@ -354,34 +362,26 @@ export default {
         lastMove.classList.add('border-main')
       } catch (e) {}
 
-
-      if (this.myMove) {
-        if (this.currentColor === 'white') {
-          target.classList.add('bg-white')
-          target.classList.add('dark:bg-gray-300')
-          target.classList.add('text-black')
-        } else if (this.currentColor === 'blue') {
-          target.classList.add('bg-main')
-          target.classList.add('dark:bg-main-dark2')
-          target.classList.add('text-gray-100')
-        }
-      } else {
-        if (this.currentColor === 'white') {
-          target.classList.add('bg-main')
-          target.classList.add('dark:bg-main-dark2')
-          target.classList.add('text-gray-100')
-        } else if (this.currentColor === 'blue') {
-          target.classList.add('bg-white')
-          target.classList.add('dark:bg-gray-300')
-          target.classList.add('text-black')
-        }
+      if (
+        (this.myMove && this.currentColor === 'white') ||
+        (!this.myMove && this.currentColor === 'blue')
+      ) {
+        target.classList.add('bg-white')
+        target.classList.add('dark:bg-gray-300')
+        target.classList.add('text-black')
+      } else if (
+          (this.myMove && this.currentColor === 'blue') ||
+          (!this.myMove && this.currentColor === 'white')
+      ) {
+        target.classList.add('bg-main')
+        target.classList.add('dark:bg-main-dark2')
+        target.classList.add('text-gray-100')
       }
 
       if (this.gameStatus !== 'playing') {
         if (this.currentColor === 'white') this.currentColor = 'blue'
         else this.currentColor = 'white'
       }
-
 
       target.classList.add('border-yellow-500')
       target.classList.add('border-2')
