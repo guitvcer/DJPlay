@@ -82,6 +82,11 @@ class UserProfileAPIView(APIView):
                     'title': 'Страница не найдена.'
                 }, status=status.HTTP_404_NOT_FOUND)
 
+            if not user.is_active:
+                return Response({
+                    'title': 'Страница не найдена.'
+                }, status=status.HTTP_404_NOT_FOUND)
+
             return Response(
                 get_user_profile_info(user, request, serializers.UserProfileSerializer),
                 status=status.HTTP_200_OK
