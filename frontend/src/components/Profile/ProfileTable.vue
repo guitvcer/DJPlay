@@ -45,48 +45,48 @@ export default {
     if (this.user) {
       this.mainInformation = [
         {
-          fieldName: 'Был(-а) онлайн',
-          fieldValue: this.$props.user.last_online
+          fieldName: (this.user.is_online) ? 'Статус' : 'Был(-а) онлайн',
+          fieldValue: (this.user.is_online) ? 'Онлайн' : this.user.last_online
         },
         {
           fieldName: 'Имя пользователя',
-          fieldValue: this.$props.user.username
+          fieldValue: this.user.username
         },
         {
           fieldName: 'Эл. почта',
-          fieldValue: this.$props.user.email
+          fieldValue: this.user.email
         },
         {
           fieldName: 'Друзья',
-          fieldValue: this.$props.user.friends
+          fieldValue: this.user.friends
         }
       ]
       this.additionalInformation = [
         {
           fieldName: 'Просмотры',
-          fieldValue: this.$props.user.views
+          fieldValue: this.user.views
         },
         {
           fieldName: 'Пол',
-          fieldValue: (this.$props.user.gender === null) ? 'Не указано' : (
-              this.$props.user.gender === 'M' ? 'Мужской' : 'Женский'
+          fieldValue: (this.user.gender === null) ? 'Не указано' : (
+              this.user.gender === 'M' ? 'Мужской' : 'Женский'
           )
         },
         {
           fieldName: 'Дата рождения',
-          fieldValue: this.$props.user.birthday
+          fieldValue: this.user.birthday
         },
         {
           fieldName: 'Дата регистрации',
-          fieldValue: this.$props.user.date_joined
+          fieldValue: this.user.date_joined
         },
         {
           fieldName: 'Настоящее имя',
-          fieldValue: this.$props.user.first_name
+          fieldValue: this.user.first_name
         },
         {
           fieldName: 'Настоящяя фамилия',
-          fieldValue: this.$props.user.last_name
+          fieldValue: this.user.last_name
         }
       ]
     }

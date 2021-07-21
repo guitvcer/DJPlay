@@ -16,6 +16,13 @@
 </template>
 
 <script>
+import TimeAgo from 'javascript-time-ago'
+import ru from 'javascript-time-ago/locale/ru'
+
+TimeAgo.addDefaultLocale(ru)
+
+const timeAgo = new TimeAgo()
+
 export default {
   props: {
     fieldName: {
@@ -30,8 +37,11 @@ export default {
     getFieldValue() {
       if (this.fieldValue === null) return 'Не указано'
 
-      if (typeof this.fieldValue === 'string')
-        return (this.fieldValue === '') ? 'Не указано' : this.fieldValue.substr(0, 48)
+      if (typeof this.fieldValue === 'string') {
+        if (this.fieldValue === '') return 'Не указано'
+        else if (this.fieldName === 'Был(-а) онлайн') return timeAgo.format(Date.parse(this.fieldValue))
+        else this.fieldValue.substr(0, 48)
+      }
 
       return this.fieldValue
     }
