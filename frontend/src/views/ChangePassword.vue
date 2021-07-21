@@ -72,7 +72,7 @@ export default {
   methods: {
     submitForm() {
       this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
-        if (json.type === 'alert') this.$emit('create-alert', json)
+        if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
         else {
           document.cookie = 'access=; Max-Age=0; path=/'
           document.cookie = 'refresh=; Max-Age=0; path=/'

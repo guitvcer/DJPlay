@@ -31,7 +31,7 @@ export default {
   methods: {
     setUserProfileInfo() {
       this.sendRequest(this.host + '/account/').then(json => {
-        if (json.type === 'alert') this.$emit('create-alert', json)
+        if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
         else {
           this.user = json
           this.loading = false

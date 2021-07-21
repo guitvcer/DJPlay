@@ -80,7 +80,7 @@ export default {
   },
   mounted() {
     this.sendRequest(this.host + '/gomoku/').then(json => {
-      if (json.type === 'alert') this.$emit('create-alert', json)
+      if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
       else {
         this.game = json
         this.loading = false
@@ -90,7 +90,10 @@ export default {
       }
     })
     this.sendRequest(this.host + '/account/').then(json => {
-      if (json.type === 'alert') this.$emit('create-alert', json)
+      if (json.type === 'alert') {
+        if (json.status === 401) return
+        for (let alert of json.alerts) this.$emit('create-alert', alert)
+      }
       else this.username = json.username
     })
 

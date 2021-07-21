@@ -58,7 +58,9 @@ export default {
     submitForm() {
       this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
         if (json.type === 'alert') {
-          this.$emit('create-alert', json)
+          for (let alert of json.alerts) {
+            this.$emit('create-alert', alert)
+          }
         } else {
           this.$emit('create-alert', {
               title: 'Вы успешно вошли в аккаунт.',

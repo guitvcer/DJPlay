@@ -31,7 +31,7 @@ export default {
   mounted() {
     console.log(this.host)
     this.sendRequest(this.host + '/chess/').then(json => {
-      if (json.type === 'alert') this.$emit('create-alert', json)
+      if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
       else {
         this.game = json
         this.loading = false

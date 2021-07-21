@@ -1,4 +1,3 @@
-from abc import ABC
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
 from rest_framework import serializers
@@ -14,15 +13,11 @@ class UserInfoSerializer(serializers.ModelSerializer):
         fields = ('username', 'avatar')
 
 
-class AuthorizationSerializer(serializers.Serializer, ABC):
+class AuthorizationSerializer(serializers.Serializer):
     """Serializer авторизации пользователя"""
 
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
-
-    def __init__(self):
-        super().__init__(self)
-        self.user = None
 
     def validate(self, attrs):
         error_text = 'Неверные имя пользователя и/или пароль.'
@@ -117,16 +112,12 @@ class UserProfileEditSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
 
-class UserChangePasswordSerializer(serializers.Serializer, ABC):
+class UserChangePasswordSerializer(serializers.Serializer):
     """Serializer смены пароль пользователя"""
 
     oldpassword = serializers.CharField(required=True)
     password1 = serializers.CharField(required=True)
     password2 = serializers.CharField(required=True)
-
-    def __init__(self):
-        super().__init__(self)
-        self.user = None
 
     def validate(self, attrs):
         self.user = self.context.get('user')
@@ -155,7 +146,7 @@ class UserChangePasswordSerializer(serializers.Serializer, ABC):
         self.user.save()
 
 
-class UserDeleteSerializer(serializers.Serializer, ABC):
+class UserDeleteSerializer(serializers.Serializer):
     """Serializer для удаления аккаунта пользователя"""
 
     password = serializers.CharField(required=True)
