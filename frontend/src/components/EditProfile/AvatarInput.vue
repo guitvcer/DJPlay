@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div>
     <input
         id="avatar"
         name="avatar"
@@ -10,9 +10,9 @@
         data-clear="off"
         @change="change"
     />
-    <img :src="src" alt="Avatar" class="h-full w-full object-cover rounded" />
     <div
-        :class="['absolute top-0 h-full w-full bg-black bg-opacity-0 hover:bg-opacity-25 transition duration-200 flex items-center justify-center', (value) ? 'bg-opacity-25': '']"
+        :class="['h-full w-full bg-black bg-opacity-0 hover:bg-opacity-25 transition duration-200 flex items-center justify-center', (value) ? 'bg-opacity-25': '']"
+        :style="avatarStyle"
     >
       <button
           type="button"
@@ -83,6 +83,11 @@ export default {
   },
   mounted() {
     if (this.newFile) this.src = this.avatar
+  },
+  computed: {
+    avatarStyle() {
+      return `background-image: linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)), url(${this.src}); background-size: 100%;`
+    }
   }
 };
 </script>
