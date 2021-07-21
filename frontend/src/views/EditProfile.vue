@@ -5,7 +5,7 @@
       v-if="!loading"
   >
     <form :action="action" class="block lg:flex justify-around" @submit.prevent="submitForm">
-      <edit-profile-avatar :user="user" @submit="submitForm" />
+      <edit-profile-avatar :user="user" @submit="submitForm" @create-alert="createAlert" @load-user="$emit('load-user')" />
       <edit-profile-table :user="user" />
     </form>
   </section>
@@ -29,6 +29,9 @@ export default {
     EditProfileTable
   },
   methods: {
+    createAlert(alert) {
+      this.$emit('create-alert', alert)
+    },
     setUserProfileInfo() {
       this.sendRequest(this.host + '/account/').then(json => {
         if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)

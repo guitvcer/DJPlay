@@ -71,16 +71,6 @@ const routes = [
         path: '/account/edit/',
         name: 'editProfile',
         component: import('./views/EditProfile.vue')
-    },
-    {
-        path: '/account/change-password/',
-        name: 'changePassword',
-        component: import('./views/ChangePassword')
-    },
-    {
-        path: '/account/delete/',
-        name: 'deleteProfile',
-        component: import('./views/DeleteProfile')
     }
 ]
 

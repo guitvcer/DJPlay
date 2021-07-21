@@ -1,6 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="open">
-    <Dialog as="div" static class="fixed z-10 inset-0 overflow-y-auto" @close="$emit('close-form')" :open="open">
+  <TransitionRoot as="template" :show="true">
+    <Dialog as="div" static class="fixed z-10 inset-0 overflow-y-auto" @close="$emit('close-modal')">
       <div class="items-end justify-center min-h-screen text-center flex items-center p-0">
         <TransitionChild
             as="template"
@@ -29,15 +29,27 @@
           >
             <authorization-form
                 v-if="action === 'authorization'"
-                @close-modal="open = false; $emit('close-modal')"
+                @close-modal="$emit('close-modal')"
                 @create-alert="createAlert"
                 @load-user="$emit('load-user')"
             />
             <registration-form
                 v-if="action === 'registration'"
-                @close-modal="open = false; $emit('close-modal')"
+                @close-modal="$emit('close-modal')"
                 @create-alert="createAlert"
                 @load-user="$emit('load-user')"
+            />
+            <change-password-form
+              v-if="action === 'changePassword'"
+              @close-modal="$emit('close-modal')"
+              @create-alert="createAlert"
+              @load-user="$emit('load-user')"
+            />
+            <delete-profile-form
+              v-if="action === 'deleteProfile'"
+              @close-modal="$emit('close-modal')"
+              @create-alert="createAlert"
+              @load-user="$emit('load-user')"
             />
           </div>
         </TransitionChild>
@@ -50,6 +62,8 @@
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import AuthorizationForm from '@/components/Auth/AuthorizationForm'
 import RegistrationForm from '@/components/Auth/RegistrationForm'
+import ChangePasswordForm from '@/components/EditProfile/ChangePasswordForm'
+import DeleteProfileForm from '@/components/EditProfile/DeleteProfileForm'
 
 export default {
   components: {
@@ -59,15 +73,13 @@ export default {
     TransitionChild,
     TransitionRoot,
     AuthorizationForm,
-    RegistrationForm
+    RegistrationForm,
+    ChangePasswordForm,
+    DeleteProfileForm
   },
   props: {
     action: {
       type: String,
-      required: true
-    },
-    open: {
-      type: Boolean,
       required: true
     }
   },

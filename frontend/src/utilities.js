@@ -37,10 +37,11 @@ function sendRequest(url, method='GET', body=null, file = false) {
             }
 
             for (let field in error) {
-                let title
+                let title = ''
 
-                if (field === 'non_field_errors' || field === 'title') {
-                    title = error[field]
+                if (field === 'non_field_errors' || field === 'title' || field === 'detail') {
+                    for (let description of error[field])
+                        title += description
                 } else {
                     title = `
                     <strong>${field}:</strong>&nbsp;

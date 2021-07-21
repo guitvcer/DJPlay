@@ -1,6 +1,5 @@
 <template>
   <div class="mx-2 lg:mx-12 mb-12 flex-shrink-0 flex flex-col justify-center">
-<!--    <img :src="host + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">-->
     <avatar-input
       class="w-56 h-56 rounded mb-6 mx-auto"
       :default-src="host + '/media/user.png'"
@@ -22,19 +21,36 @@
       <profile-button
           buttonName="user_profile_edit_change_password"
           title="Сменить пароль"
-          :url="{ name: 'changePassword' }"
+          type="button"
+          @click="showChangePasswordModal = true"
       />
       <profile-button
           buttonName="user_profile_edit_delete"
           title="Удалить аккаунт"
-          :url="{ name: 'deleteProfile' }"
+          type="button"
+          @click="showDeleteProfileModal = true"
       />
     </div>
+    <modal
+      action="changePassword"
+      v-if="showChangePasswordModal"
+      @close-modal="showChangePasswordModal = false"
+      @create-alert="createAlert"
+      @load-user="$emit('load-user')"
+    />
+    <modal
+      action="deleteProfile"
+      v-if="showDeleteProfileModal"
+      @close-modal="showDeleteProfileModal = false"
+      @create-alert="createAlert"
+      @load-user="$emit('load-user')"
+    />
   </div>
 </template>
 
 <script>
 import AvatarInput from '@/components/EditProfile/AvatarInput'
+import Modal from '@/components/Modal'
 import ProfileButton from '@/components/Profile/ProfileButton'
 
 export default {
@@ -46,11 +62,18 @@ export default {
   },
   data() {
     return {
-      avatar: null
+      avatar: null,
+      showChangePasswordModal: false,
+      showDeleteProfileModal: false
     }
   },
   components: {
-    AvatarInput, ProfileButton
+    AvatarInput, Modal, ProfileButton
+  },
+  methods: {
+    createAlert(alert) {
+      this.$emit('create-alert', alert)
+    }
   }
 }
 </script>
