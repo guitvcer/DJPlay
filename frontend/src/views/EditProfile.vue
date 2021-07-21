@@ -39,18 +39,6 @@ export default {
       })
     },
     submitForm(event) {
-      // let body = {
-      //   avatar: event.target.avatar.files[0],
-      //   username: event.target.username.value,
-      //   email: event.target.email.value,
-      //   birthday: (event.target.birthday.value !== "") ? event.target.birthday.value : null,
-      //   first_name: event.target.first_name.value,
-      //   last_name: event.target.last_name.value,
-      //   gender: event.target.gender.value,
-      //   is_private: event.target.is_private.value
-      // }
-      //
-      // console.log(body)
       const editProfileData = new FormData()
 
       if (event.target.avatar.files[0])

@@ -153,9 +153,6 @@ export default {
     },
     createAlert(alert) {
       this.$emit('create-alert', alert)
-    },
-    check() {
-      console.log(this.user)
     }
   },
   computed: {
