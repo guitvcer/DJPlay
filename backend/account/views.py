@@ -44,7 +44,7 @@ class UsersListAPIView(APIView):
                         'title': 'Страница не найдена.'
                     }, status=status.HTTP_404_NOT_FOUND)
 
-            if user.has_user_access_to_view_data_of_another_user(request):
+            if user.has_access_to_view_data_of_another_user(request):
                 if urlname == 'users_friends' or urlname == 'friends':
                     users_list = user.get_friends()
                 elif urlname == 'users_views' or urlname == 'views':
