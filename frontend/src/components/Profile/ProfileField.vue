@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { DateTime } from 'luxon'
 import TimeAgo from 'javascript-time-ago'
 import ru from 'javascript-time-ago/locale/ru'
 
@@ -40,6 +41,9 @@ export default {
       if (typeof this.fieldValue === 'string') {
         if (this.fieldValue === '') return 'Не указано'
         else if (this.fieldName === 'Был(-а) онлайн') return timeAgo.format(Date.parse(this.fieldValue))
+        else if (this.fieldName === 'Дата рождения' || this.fieldName === 'Дата регистрации') {
+          return DateTime.fromISO(this.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
+        }
         else this.fieldValue.substr(0, 48)
       }
 
