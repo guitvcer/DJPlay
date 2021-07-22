@@ -1,42 +1,49 @@
-import datetime
 import json
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.generic.websocket import WebsocketConsumer, AsyncJsonWebsocketConsumer
+from django.utils import timezone
+from .services import get_user_by_token
 
 
-class ConnectingConsumer(WebsocketConsumer):
+class ConnectingConsumer(AsyncJsonWebsocketConsumer):
     """Consumer изменяющий поле is_online пользователя"""
 
-    def connect(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.room_name = 'online_users'
+        self.room_group_name = self.room_name
+        self.user = None
+
+    async def connect(self):
         """При подключении, изменить поле is_online на True"""
 
         self.room_name = 'online_users'
         self.room_group_name = self.room_name
-        self.user_token = self.scope['cookies']['access']
 
-        user = get_user_by_token(self.user_token)
-        user.is_online = True
-        user.save()
-
-        async_to_sync(self.channel_layer.group_add)(
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name,
         )
 
-        self.accept()
+        await self.accept()
 
-    def disconnect(self, code):
+    async def disconnect(self, code):
         """При отключении, изменить поле is_online на False"""
 
-        user = get_user_by_token(self.user_token)
-        user.is_online = False
-        user.last_online = datetime.datetime.now()
-        user.save()
+        if self.user is not None:
+            self.user.is_online = False
+            self.user.last_online = await sync_to_async(timezone.now)()
+            await sync_to_async(self.user.save)()
 
-        async_to_sync(self.channel_layer.group_discard)(
+        await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name,
         )
+
+    async def receive_json(self, content, **kwargs):
+        self.user = await sync_to_async(get_user_by_token)(content.get('access_token'))
+        self.user.is_online = True
+        await sync_to_async(self.user.save)()
 
 
 class ChatConsumer(WebsocketConsumer):

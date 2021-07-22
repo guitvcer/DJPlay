@@ -12,11 +12,6 @@ game = Game.objects.get(name='Гомоку')
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
     """Consumer поиска соперника"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
-        self.room_name = None
-        self.room_group_name = None
-
     async def connect(self):
         self.room_name = 'party'
         self.room_group_name = 'find_%s' % self.room_name

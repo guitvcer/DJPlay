@@ -27,7 +27,8 @@ export default {
       user: {
         username: 'Гость',
         avatar: '/media/user.png'
-      }
+      },
+      connectionSocket: null // websocket for setting value for is_online
     }
   },
   components: {
@@ -46,6 +47,17 @@ export default {
           avatar: '/media/user.png'
         }
       }
+
+      if (this.isAuthenticated()) this.openConnectionSocket()
+    },
+    connectionSocketOnOpen() {
+      this.connectionSocket.send(JSON.stringify({
+        access_token: this.getCookie('access')
+      }))
+    },
+    openConnectionSocket() {
+      this.connectionSocket = new WebSocket(this.webSocketHost + '/ws')
+      this.connectionSocket.onopen = this.connectionSocketOnOpen
     }
   },
   mounted() {
