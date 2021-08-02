@@ -8,11 +8,17 @@
 
 ___
 
-## Запуск на локальном сервере
-    git clone https://github.com/guitvcer/DJPlay.git
-    cd DJPlay
-    pip install -r requirements.txt
-    python manage.py makemigrations account gomoku chess
+## Запуск сервера
+    cd DJPlay/backend
+    poetry install
+    poetry shell
+    python manage.py makemigrations account gomoku
     python manage.py migrate
     python manage.py setup
     python manage.py runserver
+
+
+## Запуск клиента
+    cd DJPlay/frontend
+    npm i
+    npm run serve
