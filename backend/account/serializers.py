@@ -120,12 +120,11 @@ class UserChangePasswordSerializer(serializers.Serializer):
     password2 = serializers.CharField(required=True)
 
     def validate(self, attrs):
-        self.user = self.context.get('user')
         oldpassword = attrs['oldpassword']
         password1 = attrs['password1']
         password2 = attrs['password2']
 
-        if not self.user.check_password(oldpassword):
+        if not self.instance.check_password(oldpassword):
             raise serializers.ValidationError('Введен неверный старый пароль.')
 
         if oldpassword == password1:
@@ -136,14 +135,14 @@ class UserChangePasswordSerializer(serializers.Serializer):
         if password1 != password2:
             raise serializers.ValidationError('Пароли не совпадают.')
 
-        self.user.set_password(password1)
-        self.user.save()
+        self.instance.set_password(password1)
+        self.instance.save()
 
         return attrs
 
     def save(self):
-        self.user.set_password(self.validated_data['password1'])
-        self.user.save()
+        self.instance.set_password(self.validated_data['password1'])
+        self.instance.save()
 
 
 class UserDeleteSerializer(serializers.Serializer):
@@ -152,11 +151,11 @@ class UserDeleteSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
     def validate(self, attrs):
-        if self.context.get('user').check_password(attrs['password']):
+        if self.instance.check_password(attrs['password']):
             return attrs
 
         raise serializers.ValidationError('Введен неверный пароль.')
 
     def delete(self):
-        self.context.get('user').is_active = False
-        self.context.get('user').save()
+        self.instance.is_active = False
+        self.instance.save()

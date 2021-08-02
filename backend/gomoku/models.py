@@ -1,4 +1,4 @@
-from account.models import User
+from account.models import User, Game
 from django.db import models
 
 
@@ -23,6 +23,7 @@ class Party(models.Model):
     """Модель партии Гомоку"""
 
     id = models.AutoField(primary_key=True)
+    game = models.ForeignKey(Game, on_delete=models.PROTECT, verbose_name="Игра")
     player1 = models.ForeignKey(User, on_delete=models.PROTECT,
                                 verbose_name="Игрок 1", related_name="gomokus_first_player")
     player2 = models.ForeignKey(User, on_delete=models.PROTECT,

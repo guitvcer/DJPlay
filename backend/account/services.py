@@ -1,12 +1,13 @@
-import random
-from django.conf import settings
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.urls import resolve
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
+from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from chess.models import Party as ChessParty
-from gomoku.models import Party as GomokuParty
-from .models import User, FriendRequest, Message, Queue, Game
+
+from .models import User, FriendRequest, Message
 
 
 def get_user_by_token(access_token: str) -> User:
@@ -26,7 +27,7 @@ def generate_tokens(user: User) -> dict:
 
 def get_active_users_by_filter(
         request: Request,
-        active_users=User.objects.filter(is_active=True)
+        active_users=User.active.all()
 ) -> QuerySet:
     """Получить всех активных пользователей по фильтру"""
 
@@ -122,51 +123,9 @@ def search_messages(keyword: str, messages=Message.objects.all()) -> QuerySet:
     return messages.filter(Q(text__icontains=keyword))
 
 
-def update_queue(game: Game, token: str) -> (ChessParty, GomokuParty):
-    """Обновить очередь определенной игры"""
+def get_user_profile_info(user: User, request: Request, serializer: SerializerMetaclass) -> dict:
+    """Получить информацию о пользователе"""
 
-    queue = Queue.objects.get(game=game)
-
-    if token is None:
-        queue.player1 = None
-        queue.save()
-        return
-
-    player = get_user_by_token(token)
-
-    if queue.player1 is None:
-        queue.player1 = player
-        queue.save()
-    elif queue.player1 == player:
-        queue.player1 = None
-        queue.save()
-    else:
-        # если очередь заполнена, создается игра и очищается очередь
-        party = None
-
-        if game.name == 'Шахматы':
-            random_int = random.randint(0, 1)
-
-            if random_int == 0:
-                party = ChessParty.objects.create(white=queue.player1, black=player)
-            else:
-                party = ChessParty.objects.create(white=player, black=queue.player1)
-        elif game.name == 'Гомоку':
-            party = GomokuParty.objects.create(player1=queue.player1, player2=player)
-
-        queue.player1 = None
-        queue.save()
-        return party
-
-
-def get_domain():
-    """Получить домен"""
-
-    return settings.ALLOWED_HOSTS[0] + ':8000' if settings.ALLOWED_HOSTS[0] == '127.0.0.1' \
-        else settings.ALLOWED_HOSTS[0]
-
-
-def get_user_profile_info(user: User, request: Request, serializer) -> dict:
     if user.has_access_to_view_data_of_another_user(request):
         data = {
             'views': user.get_views().count()
@@ -205,3 +164,44 @@ def get_user_profile_info(user: User, request: Request, serializer) -> dict:
     data['friends'] = user.get_friends().count()
 
     return data
+
+
+def get_users_friends_or_views(url_name: str, user: User) -> (QuerySet, None):
+    """Получить друзей/просмотры пользователя по адресу"""
+
+    if url_name in ('users_friends', 'friends'):
+        return user.get_friends()
+    elif url_name in ('users_views', 'views'):
+        return user.get_views()
+
+
+def get_users_list_or_403(request: Request, username: str) -> QuerySet:
+    """Получить список пользователей"""
+
+    url_name = resolve(request.path_info).url_name
+
+    if url_name in ('users_friends', 'users_views', 'friends', 'views'):
+        if username is None:
+            user = request.user
+        else:
+            user = get_object_or_404(User.objects.all(), username=username)
+
+        if user.has_access_to_view_data_of_another_user(request):
+            return get_users_friends_or_views(url_name, user)
+        else:
+            raise PermissionDenied
+    else:
+        return get_active_users_by_filter(request)
+
+
+def get_specific_or_current_user_info(request: Request, username: str, serializer: SerializerMetaclass) -> dict:
+    """Получить информацию об определенного или текущего пользователя"""
+
+    # получить информацию определенного пользователя
+    if username:
+        user = get_object_or_404(User.active.all(), username=username)
+        return get_user_profile_info(user, request, serializer)
+
+    # получить информацию о текущем пользователе
+    if request.user.is_authenticated:
+        return get_user_profile_info(request.user, request, serializer)

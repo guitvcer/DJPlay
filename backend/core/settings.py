@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     'social_django',
 
     'account',
-    'chess',
     'gomoku',
 ]
 
@@ -44,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'DJPlay.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -62,8 +61,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'DJPlay.wsgi.application'
-ASGI_APPLICATION = 'DJPlay.asgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {

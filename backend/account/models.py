@@ -2,18 +2,37 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class UserManager(models.Manager):
+    """Custom Manager для модели User, возвращается неудаленные аккаунты (is_active=True)"""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
+
+
 class User(AbstractUser):
     """Модель пользователя"""
+
+    GENDERS = (
+        ('М', 'Мужской'),
+        ('F', 'Женский')
+    )
+    PROVIDERS = (
+        ('1', 'DJPlay'),
+        ('2', 'VK'),
+        ('3', 'Google')
+    )
 
     id = models.AutoField(primary_key=True)
     avatar = models.ImageField(default="/user.png", verbose_name="Фото профиля")
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
-    gender = models.CharField(null=True, blank=True, max_length=1, choices=(('M', 'Мужской'), ('F', 'Женский')),
-                              verbose_name="Пол")
-    provider = models.CharField(default="DJPlay", max_length=64, verbose_name="Соц. сеть через которую вошел")
+    gender = models.CharField(null=True, blank=True, max_length=1, choices=GENDERS, verbose_name="Пол")
+    provider = models.CharField(default="1", choices=PROVIDERS, max_length=64,
+                                verbose_name="Соц. сеть через которую вошел")
     last_online = models.DateTimeField(null=True, blank=True, verbose_name="Был онлайн в")
     is_online = models.BooleanField(default=False, verbose_name="Онлайн?")
     is_private = models.BooleanField(default=False, verbose_name="Приватный аккаунт?")
+
+    active = UserManager()
 
     def __str__(self): return self.username
 
@@ -21,7 +40,7 @@ class User(AbstractUser):
         """Получить QuerySet из друзей"""
 
         fqs = []
-        active_users = User.objects.filter(is_active=True).exclude(id=self.id)
+        active_users = User.active.exclude(id=self.id)
 
         for active_user in active_users:
             try:
@@ -117,6 +136,29 @@ class Queue(models.Model):
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
 
     def __str__(self): return self.game.name
+
+    @staticmethod
+    def update_queue(queue, player):
+        if player is None:
+            queue.player1 = None
+            queue.save()
+            return
+
+        if queue.player1 is None:
+            queue.player1 = player
+            queue.save()
+        elif queue.player1 == player:
+            queue.player1 = None
+            queue.save()
+        else:
+            # если очередь заполнена, создается игра и очищается очередь
+
+            gomoku = Game.objects.get(app_name="gomoku")
+            party = queue.game.party_set.create(player1=queue.player1, player2=player, game=gomoku)
+            queue.player1 = None
+            queue.save()
+
+            return party
 
     class Meta:
         verbose_name = 'Очередь для игры'

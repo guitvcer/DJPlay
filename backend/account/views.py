@@ -1,20 +1,22 @@
 from django.conf import settings
-from django.urls import resolve
-from rest_framework import generics, status
+from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User, Game
+
+from .models import Game
 from .services import (
-    get_user_profile_info,
+    create_or_delete_or_accept_friend_request,
     get_active_users_by_filter,
-    create_or_delete_or_accept_friend_request
+    get_specific_or_current_user_info,
+    get_users_list_or_403
 )
 from . import serializers
 
 
-class GamesListAPIView(generics.ListAPIView):
+class GamesListAPIView(ListAPIView):
     """Список игр"""
 
     serializer_class = serializers.GameSerializer
@@ -29,94 +31,42 @@ class GamesListAPIView(generics.ListAPIView):
 class UsersListAPIView(APIView):
     """Список пользователей"""
 
-    def get(self, request, username=None):
-        urlname = resolve(self.request.path_info).url_name
-        users_list = None
-
-        if urlname == 'users_friends' or urlname == 'users_views' or urlname == 'friends' or urlname == 'views':
-            if username is None:
-                user = request.user
-            else:
-                try:
-                    user = User.objects.get(username=username)  # пользователь чьи друзья/просмотры возвращаются
-                except User.DoesNotExist:
-                    return Response({
-                        'title': 'Страница не найдена.'
-                    }, status=status.HTTP_404_NOT_FOUND)
-
-            if user.has_access_to_view_data_of_another_user(request):
-                if urlname == 'users_friends' or urlname == 'friends':
-                    users_list = user.get_friends()
-                elif urlname == 'users_views' or urlname == 'views':
-                    users_list = user.get_views()
-            else:
-                return Response({
-                    'title': 'Страница недоступна.'
-                }, status=status.HTTP_403_FORBIDDEN)
-        else:
-            users_list = get_active_users_by_filter(request)
-
+    @staticmethod
+    def get(request, username=None):
+        users_list = get_users_list_or_403(request, username)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         users_list = get_active_users_by_filter(request)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserProfileAPIView(APIView):
     """Профиль пользователя"""
 
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         username = kwargs.get('username')
-
-        # получить информацию определенного пользователя
-        if username:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                return Response({
-                    'title': 'Страница не найдена.'
-                }, status=status.HTTP_404_NOT_FOUND)
-
-            if not user.is_active:
-                return Response({
-                    'title': 'Страница не найдена.'
-                }, status=status.HTTP_404_NOT_FOUND)
-
-            return Response(
-                get_user_profile_info(user, request, serializers.UserProfileSerializer),
-                status=status.HTTP_200_OK
-            )
-
-        # получить информацию о текущем пользователе
-        if request.user.is_authenticated:
-            user_data = get_user_profile_info(request.user, request, serializers.UserProfileSerializer)
-
-            return Response(user_data, status=status.HTTP_200_OK)
-
-        return Response({
-            'title': 'Вы не авторизованы.'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        user_data = get_specific_or_current_user_info(request, username, serializers.UserProfileSerializer)
+        return Response(user_data, status=status.HTTP_200_OK)
 
 
 class UserProfileEditAPIView(APIView):
     """Изменить профиль пользователя"""
 
-    parsers = [MultiPartParser]
-    permission_classes = [IsAuthenticated]
+    parsers = (MultiPartParser, )
+    permission_classes = (IsAuthenticated, )
 
-    def patch(self, request, *args, **kwargs):
+    @staticmethod
+    def patch(request, *args, **kwargs):
         serializer = serializers.UserProfileEditSerializer(request.user, data=request.data, partial=True)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({
-                'title': 'Вы успешно обновили профиль.'
-            }, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
 
 class UserChangePasswordAPIView(APIView):
@@ -124,50 +74,46 @@ class UserChangePasswordAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        serializer = serializers.UserChangePasswordSerializer(data=request.data, context={'user': request.user})
+    @staticmethod
+    def post(request, *args, **kwargs):
+        serializer = serializers.UserChangePasswordSerializer(request.user, data=request.data)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({
-                'title': 'Вы успешно сменили пароль.'
-            }, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
 
 class UserDeleteAPIView(APIView):
     """Удаление аккаунта пользователя"""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated, )
 
-    def delete(self, request, *args, **kwargs):
-        serializer = serializers.UserDeleteSerializer(data=request.data, context={'user': request.user})
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        serializer = serializers.UserDeleteSerializer(request.user, data=request.data)
 
         if serializer.is_valid(raise_exception=True):
             serializer.delete()
-            return Response({
-                'title': 'Вы успешно удалили свой аккаунт.'
-            }, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
 
 class UserFriendRequest(APIView):
     """Запрос на дружбу"""
 
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            data = {
-                'title': create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
-            }
-            return Response(data, status=status.HTTP_200_OK)
+    permission_classes = (IsAuthenticated, )
 
-        return Response({
-            'title': 'Вы не авторизованы.'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+    @staticmethod
+    def get(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
+            return Response(status=status.HTTP_200_OK)
 
 
 class AuthorizationAPIView(APIView):
     """Авторизация пользователя"""
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         serializer = serializers.AuthorizationSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
@@ -177,7 +123,8 @@ class AuthorizationAPIView(APIView):
 class RegistrationAPIView(APIView):
     """Регистрация пользователя"""
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         serializer = serializers.RegistrationSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
