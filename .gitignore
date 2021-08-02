@@ -1,6 +1,13 @@
 .idea/
-frontend/.gitignore
-backend/.gitignore
 .gitignore
-ngrok
-node_modules/
+
+backend/media/
+backend/*/migrations/
+backend/venv/
+backend/db.sqlite3
+backend/ngrok
+backend/.env
+backend/*/__pycache__/
+backend/account/management/commands/__pycache__/
+
+frontend/node_modules/

@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "DJPlay"
+version = "2.0"
+description = ""
+authors = ["guitvcer <abdrakhman.galaxy.s2@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2.6"
+djangorestframework = "^3.12.4"
+channels = "^3.0.4"
+Pillow = "^8.3.1"
+django-cors-headers = "^3.7.0"
+djangorestframework-simplejwt = "^4.7.2"
+social-auth-app-django = "^4.0.0"
+python-dotenv = "^0.19.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'channels',
-    'captcha',
     'social_django',
 
     'account',
