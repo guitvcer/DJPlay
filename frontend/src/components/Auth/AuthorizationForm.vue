@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
 
 export default {
@@ -55,25 +56,31 @@ export default {
     }
   },
   methods: {
-    submitForm() {
-      this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
-        if (json.type === 'alert') {
-          for (let alert of json.alerts) {
-            this.$emit('create-alert', alert)
-          }
-        } else {
+    async submitForm() {
+      await axios
+        .post(this.action, this.body)
+        .then(response => {
           this.$emit('create-alert', {
-              title: 'Вы успешно вошли в аккаунт.',
-              level: 'success'
+            title: 'Вы успешно вошли в аккаунт.',
+            level: 'success'
           })
           this.$emit('close-modal')
 
-          document.cookie = `access=${json.access}; path=/`
-          document.cookie = `refresh=${json.refresh}; path=/`
+          document.cookie = `access=${response.data.access}; path=/`
+          document.cookie = `refresh=${response.data.refresh}; path=/`
 
           this.$emit('load-user')
-        }
-      })
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              this.$emit('create-alert', {
+                title: this.parseErrors(error.response.data, field),
+                level: 'danger'
+              })
+            }
+          }
+        })
 
       this.body.username = ''
       this.body.password = ''

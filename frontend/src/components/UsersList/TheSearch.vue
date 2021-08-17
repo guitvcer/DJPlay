@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   props: {
     action: {
@@ -46,10 +48,10 @@ export default {
     }
   },
   methods: {
-    submitForm() {
-      this.sendRequest(this.host + window.location.pathname, 'POST', JSON.stringify(this.body)).then(json => {
-        this.$emit('sent', json)
-      })
+    async submitForm() {
+      await axios
+        .post(this.host + window.location.pathname, this.body)
+        .then(response => this.$emit('sent', response.data))
     }
   }
 }

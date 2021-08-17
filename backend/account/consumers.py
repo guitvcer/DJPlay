@@ -1,6 +1,5 @@
-import json
-from asgiref.sync import async_to_sync, sync_to_async
-from channels.generic.websocket import WebsocketConsumer, AsyncJsonWebsocketConsumer
+from asgiref.sync import sync_to_async
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.utils import timezone
 from .services import get_user_by_token
 

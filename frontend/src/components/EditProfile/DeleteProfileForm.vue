@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
 
 export default {
@@ -44,15 +45,17 @@ export default {
     }
   },
   methods: {
-    submitForm() {
-      this.sendRequest(this.action, 'DELETE', JSON.stringify({
-        password: this.password
-      })).then(json => {
-        if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
-        else {
+    async submitForm() {
+      await axios
+        .delete(this.action, {
+          data: {
+            password: this.password
+          }
+        })
+        .then(response => {
           this.$emit('create-alert', {
             level: 'success',
-            title: 'Вы успешно удалили свой аккаунт.'
+            title: 'Вы успешно удалили профиль.'
           })
 
           document.cookie = 'access=; Max-Age=0; path=/'
@@ -60,10 +63,19 @@ export default {
 
           this.$emit('load-user')
           this.$router.push('/')
-        }
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              this.$emit('create-alert', {
+                title: this.parseErrors(error.response.data, field),
+                level: 'danger'
+              })
+            }
+          } else this.$emit('api-error', error)
+        })
 
-        this.password = ''
-      })
+      this.password = ''
     }
   }
 }

@@ -71,6 +71,10 @@ const routes = [
         path: '/account/edit/',
         name: 'editProfile',
         component: import('./views/EditProfile.vue')
+    },
+    {
+        path: '/:catchAll(.*)',
+        component: import('./components/ErrorPages/NotFound')
     }
 ]
 

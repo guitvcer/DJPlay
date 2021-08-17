@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 function getCookie(name) {
     for (let i of document.cookie.split('; ')) {
         let j = i.split('=');
@@ -8,75 +10,34 @@ function getCookie(name) {
 function isAuthenticated() {
     let accessToken = getCookie('access')
 
-    if (!accessToken || accessToken === '') return false
-
-    return true
+    return !(!accessToken || accessToken === '');
 }
 
-function sendRequest(url, method='GET', body=null, file = false) {
-    const accessToken = getCookie('access')
-    let headers = {}
-
-    if (!file) headers['Content-Type'] = 'application/json'
-
-    if (accessToken !== '' && accessToken) {
-        headers['Authorization'] = 'Bearer ' + accessToken
-    }
-    return fetch(url, {
-        method: method,
-        body: body,
-        headers: headers
-    }).then(response => {
-        if (response.ok) return response.json()
-
-        return response.json().then(error => {
-            let alertsList = {
-                alerts: [],
-                type: 'alert',
-                status: response.status
+async function getUserInfo() {
+    return axios
+        .get(this.host + '/account/')
+        .then(response => response.data)
+        .catch(error => {
+            return {
+                username: 'Гость',
+                avatar: '/media/user.png'
             }
-
-            for (let field in error) {
-                let title = ''
-
-                if (field === 'non_field_errors' || field === 'title' || field === 'detail') {
-                    for (let description of error[field])
-                        title += description
-                } else {
-                    title = `
-                    <strong>${field}:</strong>&nbsp;
-                    <ul>
-                `
-                    for (let description of error[field]) {
-                        title += `
-                        <li>${description}</li>
-                    `
-                    }
-                    title += `</ul>`
-                }
-
-                alertsList.alerts.push({
-                    level: 'danger',
-                    title: title
-                })
-            }
-
-            return alertsList
         })
-    })
 }
 
-function getUserInfo() {
-    let accessToken = getCookie('access')
+function parseErrors(data, field) {
+    let alertTitle = ``
 
-    if (accessToken) {
-        return sendRequest(this.host + '/account/')
-    } else {
-        return {
-            username: 'Гость',
-            avatar: '/media/user.png'
-        }
+    if (field !== 'non_field_errors') alertTitle = `<b>${field}:</b>`
+
+    alertTitle += `<ul>`
+
+    for (const fieldError of data[field]) {
+        alertTitle += `<li>${fieldError}</li>`
     }
+    alertTitle += '</ul>'
+
+    return alertTitle
 }
 
-export { getCookie, isAuthenticated, sendRequest, getUserInfo }
+export { getCookie, isAuthenticated, getUserInfo, parseErrors }

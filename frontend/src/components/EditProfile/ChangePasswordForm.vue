@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
 
 export default {
@@ -64,27 +65,32 @@ export default {
     Alert
   },
   methods: {
-    submitForm() {
-      this.sendRequest(this.action, 'POST', JSON.stringify(this.body)).then(json => {
-        if (json.type === 'alert') {
-          for (let alert of json.alerts) {
-            this.$emit('create-alert', alert)
-          }
-        }
-        else {
+    async submitForm() {
+      await axios
+        .patch(this.action, this.body)
+        .then(response => {
           document.cookie = 'access=; Max-Age=0; path=/'
           document.cookie = 'refresh=; Max-Age=0; path=/'
 
           this.$emit('load-user')
           this.$emit('create-alert', {
-            level: 'success',
-            title: json.title
+            title: 'Вы успешно сменили пароль.',
+            level: 'success'
           })
           this.$router.push('/')
-        }
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              this.$emit('create-alert', {
+                title: this.parseErrors(error.response.data, field),
+                level: 'danger'
+              })
+            }
+          } else this.$emit('api-error', error)
+        })
 
-        this.body = {}
-      })
+      this.body = {}
     }
   }
 }

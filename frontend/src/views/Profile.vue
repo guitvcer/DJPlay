@@ -1,6 +1,7 @@
 <template>
-  <section class="bg-gray-50 dark:bg-main-dark block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8" style="max-width: 1400px;">
+  <section :class="[!loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ', 'block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8']" style="max-width: 1400px;">
     <alert v-if="alerts.length" :alerts="alerts" />
+    <loading v-if="loading" />
     <profile-avatar
         :user="user"
         :profileViewAccess="profileViewAccess"
@@ -8,19 +9,21 @@
         @create-alert="createAlert"
         @load-profile="setUserProfileInfo"
     />
-    <profile-table v-if="profileViewAccess" :user="user" :extraText="extraText" />
-    <profile-table v-else :extraText="extraText" />
+    <profile-table v-if="profileViewAccess && !loading" :user="user" :extraText="extraText" />
+    <profile-table v-else-if="!loading" :extraText="extraText" />
   </section>
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
 import ProfileAvatar from '@/components/Profile/ProfileAvatar'
 import ProfileTable from '@/components/Profile/ProfileTable'
+import Loading from '@/components/Loading'
 
 export default {
   components: {
-    Alert, ProfileAvatar, ProfileTable
+    Alert, ProfileAvatar, ProfileTable, Loading
   },
   data() {
     return {
@@ -32,54 +35,35 @@ export default {
     }
   },
   methods: {
-    setUserProfileInfo() {
+    async setUserProfileInfo() {
       let url = this.host + '/account/'
 
       if (this.$route.params.username)
         url += this.$route.params.username
 
-      this.sendRequest(this.host + '/account/').then(json => {
-        if (json.type === 'alert') {
-          if (json.status === 401) {
-            this.sendRequest(url).then(json => {
-              if (json.type === 'alert') this.alerts.push(json)
-              else {
-                this.user = json
+      await axios
+        .get(url)
+        .then(async response => {
+          const viewer = await this.getUserInfo()
+          this.user = response.data
 
-                if (this.user.is_private) {
-                  this.extraText = 'Приватный профиль. Информация скрыта.'
-                  this.profileViewAccess = false
-                } else this.profileViewAccess = true
-
-                this.loading = false
-              }
-            })
-          } else this.alerts.push(json)
-        } else {
-          let viewer = json
-
-          this.sendRequest(url + '?username=' + json.username).then(json => {
-            if (json.type === 'alert') this.alerts.push(json)
+          if (this.user.username === viewer.username) {
+            if (this.user.is_private)
+              this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
+            this.profileViewAccess = true
+          } else if (this.user.is_private) {
+            if (this.user.friend_request === 'accepted') this.profileViewAccess = true
             else {
-              this.user = json
-
-              if (this.user.username === viewer.username) {
-                if (this.user.is_private)
-                  this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
-                this.profileViewAccess = true
-              } else if (this.user.is_private) {
-                if (this.user.friend_request === 'accepted') this.profileViewAccess = true
-                else {
-                  this.extraText = 'Приватный аккаунт. Информация скрыта.'
-                  this.profileViewAccess = false
-                }
-              } else this.profileViewAccess = true
-
-              this.loading = false
+              this.extraText = 'Приватный аккаунт. Информация скрыта.'
+              this.profileViewAccess = false
             }
-          })
-        }
-      })
+          } else this.profileViewAccess = true
+
+          this.loading = false
+        })
+        .catch(error => {
+          this.$emit('api-error', error)
+        })
     },
     createAlert(alert) {
       this.$emit('create-alert', alert)

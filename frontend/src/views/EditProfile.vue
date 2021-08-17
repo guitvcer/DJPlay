@@ -1,10 +1,10 @@
 <template>
   <section
-      class="bg-gray-50 dark:bg-main-dark mx-auto px-0 lg:px-12 py-16 mt-8"
+      :class="[!loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ', 'mx-auto px-0 lg:px-12 py-16 mt-8']"
       style="max-width: 1400px;"
-      v-if="!loading"
   >
-    <form :action="action" class="block lg:flex justify-around" @submit.prevent="submitForm">
+    <loading v-if="loading" class="m-auto" />
+    <form v-if="!loading" :action="action" class="block lg:flex justify-around" @submit.prevent="submitForm">
       <edit-profile-avatar :user="user" @submit="submitForm" @create-alert="createAlert" @load-user="$emit('load-user')" />
       <edit-profile-table :user="user" />
     </form>
@@ -12,8 +12,10 @@
 </template>
 
 <script>
+import axios from 'axios'
 import EditProfileAvatar from '@/components/EditProfile/EditProfileAvatar'
 import EditProfileTable from '@/components/EditProfile/EditProfileTable'
+import Loading from '@/components/Loading'
 
 export default {
   data() {
@@ -26,20 +28,24 @@ export default {
   },
   components: {
     EditProfileAvatar,
-    EditProfileTable
+    EditProfileTable,
+    Loading
   },
   methods: {
     createAlert(alert) {
       this.$emit('create-alert', alert)
     },
-    setUserProfileInfo() {
-      this.sendRequest(this.host + '/account/').then(json => {
-        if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
-        else {
-          this.user = json
+    async setUserProfileInfo() {
+      await axios
+        .get(this.host + '/account/')
+        .then(response => {
+          this.user = response.data
           this.loading = false
-        }
-      })
+        })
+        .catch(error => {
+          if (error.response.status === 401 || error.response.status === 500)
+            this.$emit('api-error', error)
+        })
     },
     submitForm(event) {
       const editProfileData = new FormData()
@@ -57,22 +63,30 @@ export default {
       editProfileData.append('gender', event.target.gender.value)
       editProfileData.append('is_private', event.target.is_private.value)
 
-      this.sendRequest(
-          this.action, 'PATCH', editProfileData,
-          'multipart/form-data; boundary=----WebKitFormBoundaryf5ZTx2ZOKUxVlo1D'
-      ).then(json => {
-        if (json.type === 'alert') {
-          for (let alert of json.alerts)
-            this.$emit('create-alert', alert)
-        } else {
+      axios
+        .patch(this.action, editProfileData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(response => {
           this.$emit('create-alert', {
-            title: json.title,
+            title: 'Вы успешно обновили профиль.',
             level: 'success'
           })
           this.$emit('load-user')
           this.$router.push('/account/')
-        }
-      })
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              this.$emit('create-alert', {
+                title: this.parseErrors(error.response.data, field),
+                level: 'danger'
+              })
+            }
+          } else this.$emit('api-error', error)
+        })
     }
   },
   mounted() {

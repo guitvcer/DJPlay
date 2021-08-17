@@ -75,7 +75,7 @@ class UserChangePasswordAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @staticmethod
-    def post(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         serializer = serializers.UserChangePasswordSerializer(request.user, data=request.data)
 
         if serializer.is_valid(raise_exception=True):
@@ -105,8 +105,9 @@ class UserFriendRequest(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
         if request.user.is_authenticated:
-            create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
-            return Response(status=status.HTTP_200_OK)
+            return Response({
+                'title': create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
+            }, status=status.HTTP_200_OK)
 
 
 class AuthorizationAPIView(APIView):

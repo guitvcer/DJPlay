@@ -1,5 +1,6 @@
 <template>
   <section class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16">
+    <loading v-if="loading" />
     <div v-if="!loading" class="max-w-3xl mx-0 mx-auto 2xl:mx-4 mt-12 md:mt-20 2xl:mt-0">
       <img :src="gameBackgroundUrl" :alt="game.name">
     </div>
@@ -16,7 +17,9 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
+import Loading from '@/components/Loading'
 
 export default {
   data() {
@@ -26,16 +29,16 @@ export default {
     }
   },
   components: {
-    Alert
+    Alert, Loading
   },
-  mounted() {
-    this.sendRequest(this.host + '/chess/').then(json => {
-      if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
-      else {
-        this.game = json
+  async mounted() {
+    await axios
+      .get(this.host + '/chess/')
+      .then(response => {
+        this.game = response.data
         this.loading = false
-      }
-    })
+      })
+      .catch(error => this.$emit('api-error', error))
   },
   computed: {
     gameBackgroundUrl() {

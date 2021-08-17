@@ -52,6 +52,7 @@
 
 <script>
 import { ref } from 'vue'
+import axios from 'axios'
 import Modal from '@/components/Modal'
 import ProfileButton from '@/components/Profile/ProfileButton'
 
@@ -78,14 +79,16 @@ export default {
   methods: {
     friendRequest() {
       if (this.isAuthenticated()) {
-        this.sendRequest(this.host + window.location.pathname + 'friend_request').then(json => {
-          if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
-          else this.$emit('create-alert', {
-            level: 'success',
-            title: json.title
+        axios
+          .get(this.host + window.location.pathname + 'friend_request')
+          .then(response => {
+            this.$emit('create-alert', {
+              title: response.data.title,
+              level: 'success'
+            })
+            this.$emit('load-profile')
           })
-          this.$emit('load-profile')
-        })
+          .catch(error => this.$emit('api-error', error))
       } else {
         this.open = true
         this.showAuthorizationModal = true

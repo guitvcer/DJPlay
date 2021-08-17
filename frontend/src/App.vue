@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <the-header
-        v-if="$route.name !== 'authorization' && $route.name !== 'registration'"
+        v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
         @create-alert="createAlert"
         :user="user"
         @load-user="setUserInfo"
@@ -10,7 +10,10 @@
 
     <!-- Content -->
     <main class="px-4 py-8">
-      <router-view @create-alert="createAlert" @load-user="setUserInfo" />
+      <router-view v-if="status === 200" @create-alert="createAlert" @load-user="setUserInfo" @api-error="apiError" />
+      <forbidden v-else-if="status === 403" @redirect="this.status = 200" />
+      <not-found v-else-if="status === 404" @redirect="this.status = 200" />
+      <server-error v-else-if="status === 500" @redirect="this.status = 200" />
     </main>
   </div>
 </template>
@@ -18,6 +21,9 @@
 <script>
 import Alert from '@/components/Alert'
 import TheHeader from '@/components/TheHeader'
+import Forbidden from '@/components/ErrorPages/Forbidden'
+import NotFound from '@/components/ErrorPages/NotFound'
+import ServerError from '@/components/ErrorPages/ServerError'
 
 export default {
   name: 'App',
@@ -28,25 +34,19 @@ export default {
         username: 'Гость',
         avatar: '/media/user.png'
       },
-      connectionSocket: null // websocket for setting value for is_online
+      connectionSocket: null, // websocket for setting value for is_online
+      status: 200,
     }
   },
   components: {
-    Alert, TheHeader
+    Alert, TheHeader, Forbidden, NotFound, ServerError
   },
   methods: {
     createAlert(alert) {
       this.alerts.push(alert)
     },
-    setUserInfo() {
-      try {
-        this.getUserInfo().then(json => this.user = json)
-      } catch (e) {
-        this.user = {
-          username: 'Гость',
-          avatar: '/media/user.png'
-        }
-      }
+    async setUserInfo() {
+      this.user = await this.getUserInfo()
 
       if (this.isAuthenticated()) this.openConnectionSocket()
     },
@@ -58,6 +58,9 @@ export default {
     openConnectionSocket() {
       this.connectionSocket = new WebSocket(this.webSocketHost + '/ws')
       this.connectionSocket.onopen = this.connectionSocketOnOpen
+    },
+    apiError(error) {
+      this.status = error.response.status
     }
   },
   mounted() {

@@ -1,5 +1,6 @@
 <template>
   <section class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16">
+    <loading v-if="loading" class="m-auto" />
     <div
       v-if="!loading"
       class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-10 md:mt-20 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
@@ -7,9 +8,7 @@
     >
       <div class="flex flex-col justify-between" id="dotsWrapper">
         <div v-for="(number, index) in numbers" :key="index" class="flex justify-between relative row">
-          <div v-for="(letter, index) in letters" :key="index" :id="letter + number" :class="dotClassName" @click="registerMove($event.target)">
-
-          </div>
+          <div v-for="(letter, index) in letters" :key="index" :id="letter + number" :class="dotClassName" @click="registerMove($event.target)"></div>
         </div>
       </div>
     </div>
@@ -36,7 +35,7 @@
         >Сдаться</button>
       </div>
     </div>
-    <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
+    <div v-if="!loading" class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
       <button title="Отменить ход" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="returnMove">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -52,7 +51,9 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
+import Loading from '@/components/Loading'
 
 export default {
   data() {
@@ -76,26 +77,23 @@ export default {
     }
   },
   components: {
-    Alert
+    Alert, Loading
   },
   mounted() {
-    this.sendRequest(this.host + '/gomoku/').then(json => {
-      if (json.type === 'alert') for (let alert of json.alerts) this.$emit('create-alert', alert)
-      else {
-        this.game = json
+    axios
+      .get(this.host + '/gomoku/')
+      .then(response => {
+        this.game = response.data
         this.loading = false
 
         setTimeout(this.resizeGomokuBoard, 1)
         setTimeout(this.resizeGomokuBoard, 2)
-      }
-    })
-    this.sendRequest(this.host + '/account/').then(json => {
-      if (json.type === 'alert') {
-        if (json.status === 401) return
-        for (let alert of json.alerts) this.$emit('create-alert', alert)
-      }
-      else this.username = json.username
-    })
+      })
+      .catch(error => {
+        this.$emit('api-error', error)
+      })
+
+    this.username = this.getUserInfo().username
 
     window.addEventListener('resize', this.resizeGomokuBoard)
   },
@@ -107,8 +105,15 @@ export default {
   },
   methods: {
     findOpponent() {
-      this.gameStatus = 'finding'
+      if (this.username === null) {
+        this.$emit('create-alert', {
+          title: 'Вы не авторизованы',
+          level: 'danger'
+        })
+        return
+      }
 
+      this.gameStatus = 'finding'
       this.findOpponentSocket = new WebSocket(this.webSocketHost + '/gomoku/ws/find')
       this.findOpponentSocket.onopen = this.findOpponentSocketOnOpen
       this.findOpponentSocket.onmessage = this.findOpponentSocketOnMessage

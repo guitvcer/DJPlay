@@ -1,17 +1,21 @@
 <template>
   <section class="flex justify-center flex-wrap">
     <alert :alerts="alerts" />
-    <home-game-item v-for="(game, index) in games" :key="index" :game="game" v-if="!loading" />
+    <loading v-if="loading" />
+    <home-game-item v-for="(game, index) in games" :key="index" :game="game" v-if="!loading && games.length > 0" />
+    <h2 v-else-if="!loading && games.length === 0" class="text-4xl font-semibold">Игр не найденo</h2>
   </section>
 </template>
 
 <script>
+import axios from 'axios'
 import Alert from '@/components/Alert'
 import HomeGameItem from '@/components/HomeGameItem'
+import Loading from '@/components/Loading'
 
 export default {
   components: {
-    Alert, HomeGameItem
+    Alert, HomeGameItem, Loading
   },
   data() {
     return {
@@ -20,16 +24,21 @@ export default {
       alerts: []
     }
   },
-  mounted() {
-    this.sendRequest(this.host + '/account/games/')
-      .then(json => {
-        if (json.type === 'alert') {
-          this.alerts.push(json)
-        } else {
-          this.games = json
+  methods: {
+    async loadGameList() {
+      await axios
+        .get(this.host + '/account/games/')
+        .then(response => {
+          this.games = response.data
           this.loading = false
-        }
-      })
+        })
+        .catch(error => {
+          this.$emit('api-error', error)
+        })
+    }
+  },
+  async mounted() {
+    await this.loadGameList()
   }
 }
 </script>

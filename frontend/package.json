@@ -12,6 +12,7 @@
     "@inertiajs/inertia": "^0.10.0",
     "@tailwindcss/postcss7-compat": "^2.0.2",
     "autoprefixer": "^9",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "javascript-time-ago": "^2.3.8",
     "luxon": "^2.0.1",

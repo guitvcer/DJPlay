@@ -13,7 +13,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+    'http://192.168.1.9:8080'
+]
 
 
 INSTALLED_APPS = [

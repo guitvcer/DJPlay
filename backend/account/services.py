@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.urls import resolve
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
@@ -205,3 +205,5 @@ def get_specific_or_current_user_info(request: Request, username: str, serialize
     # получить информацию о текущем пользователе
     if request.user.is_authenticated:
         return get_user_profile_info(request.user, request, serializer)
+
+    raise NotAuthenticated
