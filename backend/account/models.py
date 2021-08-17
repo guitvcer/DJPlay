@@ -1,11 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import QuerySet
+from rest_framework.request import Request
 
 
 class UserManager(models.Manager):
     """Custom Manager для модели User, возвращается неудаленные аккаунты (is_active=True)"""
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         return super().get_queryset().filter(is_active=True)
 
 
@@ -34,9 +36,9 @@ class User(AbstractUser):
 
     active = UserManager()
 
-    def __str__(self): return self.username
+    def __str__(self) -> str: return self.username
 
-    def get_friends(self):
+    def get_friends(self) -> QuerySet:
         """Получить QuerySet из друзей"""
 
         fqs = []
@@ -62,14 +64,15 @@ class User(AbstractUser):
 
         return User.objects.filter(id__in=ids_friends)
 
-    def get_gomoku_parties(self):
-        """Получить сыгранные партии Гомоку"""
+    def get_party_list(self, game) -> QuerySet:
+        """Получить QuerySet из сыгранных партии определенной игры"""
 
-        from gomoku.models import Party
+        if game.app_name == 'gomoku':
+            from gomoku.models import Party
 
-        return Party.objects.filter(player1=self).union(Party.objects.filter(player2=self)).order_by('-date')
+            return Party.objects.filter(player1=self).union(Party.objects.filter(player2=self)).order_by('-date')
 
-    def get_views(self):
+    def get_views(self) -> QuerySet:
         """Получить пользователей, которое просматривали страницу этого пользователя"""
 
         views = UserView.objects.filter(view_to=self)
@@ -78,12 +81,12 @@ class User(AbstractUser):
 
         return queryset
 
-    def has_access_to_view_data_of_another_user(self, request):
+    def has_access_to_view_data_of_another_user(self, request: Request) -> bool:
         """Может ли user просматривать данные этого пользователя"""
 
         return (self == request.user) or (request.user in self.get_friends()) or not self.is_private
 
-    def get_messages(self, user=None):
+    def get_messages(self, user=None) -> QuerySet:
         """Получить все сообщения связанные с двумя пользователями или одним"""
 
         list_of_ids = []
@@ -121,7 +124,7 @@ class Game(models.Model):
     image = models.ImageField(null=True, blank=True, verbose_name="Обложка")
     is_released = models.BooleanField(default=False, verbose_name="Выпущена ли игра?")
 
-    def __str__(self): return self.name
+    def __str__(self) -> str: return self.name
 
     class Meta:
         verbose_name = 'Игра'
@@ -135,10 +138,10 @@ class Queue(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name="Очередь для")
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
 
-    def __str__(self): return self.game.name
+    def __str__(self) -> str: return self.game.name
 
     @staticmethod
-    def update_queue(queue, player):
+    def update_queue(queue, player: User):
         if player is None:
             queue.player1 = None
             queue.save()
@@ -175,7 +178,7 @@ class FriendRequest(models.Model):
                                    related_name="+")
     is_active = models.BooleanField(default=False, verbose_name="Принят ли запрос?")
 
-    def __str__(self): return f'От {self.request_from} к {self.request_to}'
+    def __str__(self) -> str: return f'От {self.request_from} к {self.request_to}'
 
     class Meta:
         verbose_name = 'Запрос на дружбу'
@@ -189,7 +192,7 @@ class UserView(models.Model):
     view_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Просмотр от", related_name="+")
     view_to = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Просмотр к", related_name="+")
 
-    def __str__(self): return f'От {self.view_from} к {self.view_to}'
+    def __str__(self) -> str: return f'От {self.view_from} к {self.view_to}'
 
     class Meta:
         verbose_name = 'Просмотр пользователя'
@@ -205,7 +208,7 @@ class Message(models.Model):
     sent_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Отправитель", related_name="+")
     sent_to = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Получатель", related_name="+")
 
-    def __str__(self): return f'От {self.sent_from} к {self.sent_to}'
+    def __str__(self) -> str: return f'От {self.sent_from} к {self.sent_to}'
 
     class Meta:
         verbose_name = 'Сообщение'

@@ -32,10 +32,16 @@
           v-if="$props.user.is_me"
       />
       <profile-button
-          buttonName="user_parties_button"
+          buttonName="user_party_list_button"
           title="Посмотреть сыгранные партии"
-          :url="{ name: 'userParties', params: { username: $props.user.username } }"
-          v-if="profileViewAccess"
+          :url="{ name: 'userPartyList', params: { username: $props.user.username } }"
+          v-if="profileViewAccess && $route.params.username"
+      />
+      <profile-button
+          buttonName="user_party_list_button"
+          title="Посмотреть сыгранные партии"
+          :url="{ name: 'partyList' }"
+          v-else-if="$props.user.is_me"
       />
     </div>
 

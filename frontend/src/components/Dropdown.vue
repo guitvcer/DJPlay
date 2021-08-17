@@ -4,7 +4,7 @@
     <div>
       <MenuButton
           class="inline-flex items-center justify-center w-full rounded-md px-4 py-2 font-semibold">
-        <span class="hidden md:inline" v-text="user.username" />
+        <span id="username" class="hidden md:inline" v-text="user.username" />
         <img :src="host + user.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
       </MenuButton>
     </div>

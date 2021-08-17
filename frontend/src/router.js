@@ -58,9 +58,9 @@ const routes = [
         redirect: '/:username/'
     },
     {
-        path: '/account/:username/parties/',
-        name: 'userParties',
-        redirect: '/'
+        path: '/account/:username/party-list/',
+        name: 'userPartyList',
+        component: import('./views/UserPartyList.vue')
     },
     {
         path: '/account/users/',
@@ -71,6 +71,11 @@ const routes = [
         path: '/account/edit/',
         name: 'editProfile',
         component: import('./views/EditProfile.vue')
+    },
+    {
+        path: '/account/party-list/',
+        name: 'partyList',
+        component: import('./views/UserPartyList')
     },
     {
         path: '/:catchAll(.*)',

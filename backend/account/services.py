@@ -7,7 +7,7 @@ from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import User, FriendRequest, Message
+from .models import User, FriendRequest, Message, Game
 
 
 def get_user_by_token(access_token: str) -> User:
@@ -205,5 +205,18 @@ def get_specific_or_current_user_info(request: Request, username: str, serialize
     # получить информацию о текущем пользователе
     if request.user.is_authenticated:
         return get_user_profile_info(request.user, request, serializer)
+
+    raise NotAuthenticated
+
+
+def get_specific_or_current_users_party_list(request: Request, username: str, game: Game) -> QuerySet:
+    # получить QuerySet из партии определенного пользователя
+    if username:
+        user = get_object_or_404(User.active.all(), username=username)
+        return user.get_party_list(game)
+
+    # получить QuerySet из партии текущего пользователя
+    if request.user.is_authenticated:
+        return request.user.get_party_list(game)
 
     raise NotAuthenticated
