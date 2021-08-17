@@ -39,6 +39,8 @@ export default {
   },
   async mounted() {
     await this.loadGameList()
+
+    document.title = 'DJPlay'
   }
 }
 </script>

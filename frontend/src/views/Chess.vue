@@ -39,6 +39,8 @@ export default {
         this.loading = false
       })
       .catch(error => this.$emit('api-error', error))
+
+    document.title = 'Шахматы - DJPlay'
   },
   computed: {
     gameBackgroundUrl() {

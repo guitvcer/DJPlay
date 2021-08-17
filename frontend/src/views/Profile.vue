@@ -47,6 +47,8 @@ export default {
           const viewer = await this.getUserInfo()
           this.user = response.data
 
+          document.title = `${this.user.username} - Профиль`
+
           if (this.user.username === viewer.username) {
             if (this.user.is_private)
               this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'

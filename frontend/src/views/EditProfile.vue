@@ -90,8 +90,10 @@ export default {
     }
   },
   mounted() {
-    if (this.isAuthenticated()) this.setUserProfileInfo()
-    else {
+    if (this.isAuthenticated()) {
+      this.setUserProfileInfo()
+      document.title = 'Изменить профиль'
+    } else {
       this.$emit('create-alert', {
         level: 'danger',
         title: 'Вы не авторизованы.'

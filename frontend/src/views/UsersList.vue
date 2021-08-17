@@ -56,6 +56,8 @@ export default {
         this.loading = false
       })
       .catch(error => this.$emit('api-error', error))
+
+    document.title = 'Пользователи DJPlay'
   }
 }
 </script>

@@ -96,6 +96,8 @@ export default {
     this.username = this.getUserInfo().username
 
     window.addEventListener('resize', this.resizeGomokuBoard)
+
+    document.title = 'Гомоку - DJPlay'
   },
   computed: {
     gameBackgroundUrl() {
