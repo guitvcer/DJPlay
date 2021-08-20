@@ -72,7 +72,7 @@ export default {
     },
 
     findOpponent() {
-      if (this.username === null) {
+      if (this.username === 'Гость') {
         this.$emit('create-alert', {
           title: 'Вы не авторизованы',
           level: 'danger'
@@ -158,12 +158,10 @@ export default {
             }
           }
         } catch (e) {
-          {
-            this.$emit('create-alert', {
-              level: 'danger',
-              title: 'Вы проиграли.'
-            })
-          }
+          this.$emit('create-alert', {
+            level: 'danger',
+            title: 'Вы проиграли.'
+          })
         }
       } else if (e.code === 1006) {
         this.$emit('create-alert', {
@@ -195,9 +193,7 @@ export default {
         else if (this.data.username === this.opponent) {
           this.myMove = true
 
-          if (this.moves.length === 1) {
-            this.currentColor = 'blue'
-          }
+          if (this.moves.length === 1) this.currentColor = 'blue'
         }
       }
     },
@@ -219,9 +215,8 @@ export default {
       if (data['command'] === 'return_move') {
         let alert_title
 
-        if (data['returner'] === this.username)
-          alert_title = 'Вы отправили запрос на отмену хода.'
-        else if (data['returner'] === this.opponent)
+        if (data['returner'] === this.username) alert_title = 'Вы отправили запрос на отмену хода.'
+        else if (data['returner'] === this.opponent) {
           alert_title = `Соперник запрашивает отмену хода.
             <button class="acceptReturnMoveButton">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -233,6 +228,7 @@ export default {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>`
+        }
 
         this.$emit('create-alert', {
           level: 'simple',

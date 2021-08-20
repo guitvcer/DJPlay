@@ -1,14 +1,10 @@
 <template>
   <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
     <button v-if="name === 'Gomoku'" title="Отменить ход" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="returnMove">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-      </svg>
+      <reply-icon class="h-6 w-6" />
     </button>
     <button v-if="name === 'Gomoku'" title="Сбросить доску" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="resetBoard">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
+      <refresh-icon class="h-6 w-6" />
     </button>
 
     <button
@@ -16,47 +12,56 @@
         @click="$emit('firstMove')"
         class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-      </svg>
+      <chevron-double-left-icon class="h-6 w-6" />
     </button>
     <button
         v-if="name === 'GomokuParty'"
         @click="$emit('prevMove')"
         class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
+      <chevron-left-icon class="h-6 w-6" />
     </button>
     <button
         v-if="name === 'GomokuParty'"
         @click="$emit('nextMove')"
         class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
+      <chevron-right-icon class="h-6 w-6" />
     </button>
     <button
         v-if="name === 'GomokuParty'"
         @click="$emit('lastMove')"
         class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-      </svg>
+      <chevron-double-right-icon class="h-6 w-6" />
     </button>
   </div>
 </template>
 
 <script>
+import {
+  ChevronLeftIcon,
+  ChevronDoubleLeftIcon,
+  ChevronRightIcon,
+  ChevronDoubleRightIcon,
+  RefreshIcon,
+  ReplyIcon
+} from '@heroicons/vue/outline'
+
 export default {
   props: {
     name: {
       type: String,
       required: true
     }
+  },
+  components: {
+    ChevronLeftIcon,
+    ChevronDoubleLeftIcon,
+    ChevronRightIcon,
+    ChevronDoubleRightIcon,
+    RefreshIcon,
+    ReplyIcon
   },
   methods: {
     returnMove() {

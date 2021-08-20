@@ -19,7 +19,7 @@
           @click="browse()"
           class="rounded hover:bg-white hover:bg-opacity-25 p-2 focus:outline-none text-white transition duration-200"
       >
-        <icon name="camera" class="h-6 w-6"></icon>
+        <camera-icon class="h-6 w-6" />
       </button>
       <button
           type="button"
@@ -27,14 +27,14 @@
           @click="remove()"
           class="rounded hover:bg-white hover:bg-opacity-25 p-2 focus:outline-none text-white transition duration-200"
       >
-        <icon name="x" class="h-6 w-6"></icon>
+        <x-icon class="h-6 w-6" />
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import Icon from "./Icon";
+import { CameraIcon, XIcon } from '@heroicons/vue/outline'
 
 export default {
   props: {
@@ -79,7 +79,7 @@ export default {
     },
   },
   components: {
-    Icon,
+    CameraIcon, XIcon
   },
   mounted() {
     if (this.newFile) this.src = this.avatar
