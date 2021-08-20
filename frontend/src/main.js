@@ -21,5 +21,6 @@ app.config.globalProperties.getCookie = getCookie
 app.config.globalProperties.isAuthenticated = isAuthenticated
 app.config.globalProperties.getUserInfo = getUserInfo
 app.config.globalProperties.parseErrors = parseErrors
+app.config.globalProperties.dotClassName = 'dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center'
 
 app.use(router).mount('#app')

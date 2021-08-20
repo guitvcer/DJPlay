@@ -2,24 +2,44 @@ from rest_framework import serializers
 from .models import Party, Move
 
 
+class GomokuMoveSerializer(serializers.ModelSerializer):
+    """Serializer ходов Гомоку"""
+
+    player = serializers.SlugRelatedField(read_only=True, slug_field='username')
+
+    class Meta:
+        model = Move
+        exclude = ('party', )
+
+
 class GomokuPartySerializer(serializers.ModelSerializer):
-    """Serializer партии Гомоку"""
+    """Serializer ходов партии Гомоку"""
 
     player1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
     player2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
     moves = serializers.SerializerMethodField('get_moves')
 
-    def get_moves(self, party):
-        return party.get_moves().count()
+    @staticmethod
+    def get_moves(party: Party) -> dict:
+        serializer = GomokuMoveSerializer(party.get_moves(), many=True)
+        return serializer.data
 
     class Meta:
         model = Party
         fields = '__all__'
 
 
-class GomokuPartyMoveSerializer(serializers.ModelSerializer):
-    """Serializer ходов партии Гомоку"""
+class GomokuPartyListSerializer(serializers.ModelSerializer):
+    """Serializer партии Гомоку"""
+
+    player1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    moves_count = serializers.SerializerMethodField('get_moves_count')
+
+    @staticmethod
+    def get_moves_count(party: Party) -> int:
+        return party.get_moves().count()
 
     class Meta:
-        model = Move
+        model = Party
         fields = '__all__'

@@ -11,7 +11,6 @@
     <user-party-list-table
         v-if="!loading && partyList.length > 0"
         :partyList="partyList"
-        :movesList="movesList"
         :currentUsername="username"
     />
     <h3 v-else-if="partyList.length === 0 && !loading">Нет сыгранных партии</h3>
@@ -31,7 +30,6 @@ export default {
     return {
       loading: true,
       partyList: [],
-      movesList: [],
       title: null,
       game: 'gomoku'
     }

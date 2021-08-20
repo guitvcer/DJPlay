@@ -13,6 +13,11 @@ const routes = [
         name: 'gomoku'
     },
     {
+        path: '/gomoku/:id/',
+        component: import('./views/GomokuParty'),
+        name: 'gomokuParty'
+    },
+    {
         path: '/chess/',
         component: import('./views/Chess.vue'),
         name: 'chess'

@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from gomoku.serializers import GomokuPartySerializer
+from gomoku.serializers import GomokuPartyListSerializer
 from .models import Game
 from .services import (
     create_or_delete_or_accept_friend_request,
@@ -119,7 +119,7 @@ class UserPartyList(APIView):
     def get(request, *args, **kwargs):
         game = get_object_or_404(Game.objects.all(), app_name=kwargs.get('game_name'))
         user_party_list = get_specific_or_current_users_party_list(request, kwargs.get('username'), game)
-        serializer = GomokuPartySerializer(user_party_list, many=True)
+        serializer = GomokuPartyListSerializer(user_party_list, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
