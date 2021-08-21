@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from gomoku.serializers import GomokuPartyListSerializer
 from .models import Game
 from .services import (
+    add_user_view,
     create_or_delete_or_accept_friend_request,
     get_active_users_by_filter,
     get_specific_or_current_user_info,
@@ -36,6 +37,7 @@ class UsersListAPIView(APIView):
     @staticmethod
     def get(request, username=None):
         users_list = get_users_list_or_403(request, username)
+        print(users_list)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -52,7 +54,8 @@ class UserProfileAPIView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
         username = kwargs.get('username')
-        user_data = get_specific_or_current_user_info(request, username, serializers.UserProfileSerializer)
+        user_data, user = get_specific_or_current_user_info(request, username, serializers.UserProfileSerializer)
+        add_user_view(request, user)
         return Response(user_data, status=status.HTTP_200_OK)
 
 

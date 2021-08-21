@@ -77,7 +77,7 @@ class User(AbstractUser):
 
         views = UserView.objects.filter(view_to=self)
         list_of_ids = [view.view_from.id for view in views]
-        queryset = UserView.objects.filter(id__in=list_of_ids)
+        queryset = User.objects.filter(id__in=list_of_ids)
 
         return queryset
 

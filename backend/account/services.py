@@ -7,7 +7,7 @@ from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import User, FriendRequest, Message, Game
+from .models import User, FriendRequest, Message, Game, UserView
 
 
 def get_user_by_token(access_token: str) -> User:
@@ -194,22 +194,24 @@ def get_users_list_or_403(request: Request, username: str) -> QuerySet:
         return get_active_users_by_filter(request)
 
 
-def get_specific_or_current_user_info(request: Request, username: str, serializer: SerializerMetaclass) -> dict:
+def get_specific_or_current_user_info(request: Request, username: str, serializer: SerializerMetaclass) -> (dict, User):
     """Получить информацию об определенного или текущего пользователя"""
 
     # получить информацию определенного пользователя
     if username:
         user = get_object_or_404(User.active.all(), username=username)
-        return get_user_profile_info(user, request, serializer)
+        return get_user_profile_info(user, request, serializer), user
 
     # получить информацию о текущем пользователе
     if request.user.is_authenticated:
-        return get_user_profile_info(request.user, request, serializer)
+        return get_user_profile_info(request.user, request, serializer), request.user
 
     raise NotAuthenticated
 
 
 def get_specific_or_current_users_party_list(request: Request, username: str, game: Game) -> QuerySet:
+    """Получить список сыгранных партии текущего или определенного пользователя"""
+
     # получить QuerySet из партии определенного пользователя
     if username:
         user = get_object_or_404(User.active.all(), username=username)
@@ -220,3 +222,10 @@ def get_specific_or_current_users_party_list(request: Request, username: str, ga
         return request.user.get_party_list(game)
 
     raise NotAuthenticated
+
+
+def add_user_view(request: Request, user: User) -> None:
+    """Добавить авторизованного пользователя в список просмотров профиля определенного пользователя"""
+
+    if request.user.is_authenticated and request.user not in user.get_views():
+        UserView.objects.create(view_from=request.user, view_to=user)
