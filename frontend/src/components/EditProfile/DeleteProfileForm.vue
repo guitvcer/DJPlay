@@ -31,15 +31,10 @@
 
 <script>
 import axios from 'axios'
-import Alert from '@/components/Alert'
 
 export default {
-  components: {
-    Alert
-  },
   data() {
     return {
-      alerts: [],
       action: this.host + '/account/delete/',
       password: ''
     }

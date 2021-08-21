@@ -22,26 +22,31 @@
     ]"
     v-else-if="type === 'button'"
   >
-    <user-remove-icon class="h-6 w-6" v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')" />
+    <user-remove-icon
+        class="h-6 w-6"
+        v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')"
+    />
     <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friend_request_button'" />
-    <span class="block relative -top-0.5" v-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
-
-    <cog-icon class="h-6 w-6" v-if="buttonName === 'user_profile_edit_change_password'" />
-
-    <trash-icon v-if="buttonName === 'user_profile_edit_delete'" class="h-6 w-6" />
+    <span class="block relative -top-0.5" v-else-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
+    <cog-icon class="h-6 w-6" v-else-if="buttonName === 'user_profile_edit_change_password'" />
+    <trash-icon v-else-if="buttonName === 'user_profile_edit_delete'" class="h-6 w-6" />
   </button>
-  <router-link :to="url" class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600" :title="title" v-else>
-    <user-remove-icon class="h-6 w-6" v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')" />
+  <router-link
+      :to="url"
+      class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600"
+      :title="title"
+      v-else
+  >
+    <user-remove-icon
+        class="h-6 w-6"
+        v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')"
+    />
     <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friend_request_button'" />
-    <span class="block relative -top-0.5" v-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
-
-    <chat-icon v-if="buttonName === 'user_chat_button'" class="h-6 w-6" />
-
-    <pencil-icon class="h-6 w-6" v-if="buttonName === 'edit_profile_button'" />
-
-    <lightning-bolt-icon class="h-6 w-6" v-if="buttonName === 'user_party_list_button'" />
-
-    <arrow-sm-left-icon class="h-6 w-6" v-if="buttonName === 'user_profile_edit_cancel'" />
+    <span class="block relative -top-0.5" v-else-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
+    <chat-icon v-else-if="buttonName === 'user_chat_button'" class="h-6 w-6" />
+    <pencil-icon class="h-6 w-6" v-else-if="buttonName === 'edit_profile_button'" />
+    <lightning-bolt-icon class="h-6 w-6" v-else-if="buttonName === 'user_party_list_button'" />
+    <arrow-sm-left-icon class="h-6 w-6" v-else-if="buttonName === 'user_profile_edit_cancel'" />
   </router-link>
 </template>
 

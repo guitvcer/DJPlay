@@ -1,27 +1,32 @@
 <template>
   <section class="flex justify-center flex-wrap">
-    <alert :alerts="alerts" />
     <loading v-if="loading" />
-    <home-game-item v-for="(game, index) in games" :key="index" :game="game" v-if="!loading && games.length > 0" />
-    <h2 v-else-if="!loading && games.length === 0" class="text-4xl font-semibold">Игр не найденo</h2>
+    <home-game-item
+      v-if="!loading && games.length > 0"
+      v-for="(game, index) in games"
+      :key="index"
+      :game="game"
+    />
+    <h2
+      v-else-if="!loading && games.length === 0"
+      class="text-4xl font-semibold"
+    >Игр не найденo</h2>
   </section>
 </template>
 
 <script>
 import axios from 'axios'
-import Alert from '@/components/Alert'
-import HomeGameItem from '@/components/HomeGameItem'
-import Loading from '@/components/Loading'
+import HomeGameItem from '@/components/Home/HomeGameItem'
+import Loading from '@/components/Interface/Loading'
 
 export default {
   components: {
-    Alert, HomeGameItem, Loading
+    HomeGameItem, Loading
   },
   data() {
     return {
       games: [],
-      loading: true,
-      alerts: []
+      loading: true
     }
   },
   methods: {

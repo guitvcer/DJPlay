@@ -5,7 +5,12 @@
   >
     <loading v-if="loading" class="m-auto" />
     <form v-if="!loading" :action="action" class="block lg:flex justify-around" @submit.prevent="submitForm">
-      <edit-profile-avatar :user="user" @submit="submitForm" @create-alert="createAlert" @load-user="$emit('load-user')" />
+      <edit-profile-avatar
+          :user="user"
+          @submit="submitForm"
+          @create-alert="createAlert"
+          @load-user="$emit('load-user')"
+      />
       <edit-profile-table :user="user" />
     </form>
   </section>
@@ -15,7 +20,7 @@
 import axios from 'axios'
 import EditProfileAvatar from '@/components/EditProfile/EditProfileAvatar'
 import EditProfileTable from '@/components/EditProfile/EditProfileTable'
-import Loading from '@/components/Loading'
+import Loading from '@/components/Interface/Loading'
 
 export default {
   data() {

@@ -1,7 +1,10 @@
 <template>
   <div class="mx-2 lg:mx-12 mb-12 flex-shrink-0">
     <img :src="host + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">
-    <h2 class="text-3xl font-semibold mb-3 text-center lg:text-left select-text" style="word-break: break-word;">{{ user.username }}</h2>
+    <h2
+      class="text-3xl font-semibold mb-3 text-center lg:text-left select-text"
+      style="word-break: break-word"
+    >{{ user.username }}</h2>
     <hr v-if="profileViewAccess">
     <div class="flex justify-center mt-3">
       <profile-button
@@ -59,7 +62,7 @@
 <script>
 import { ref } from 'vue'
 import axios from 'axios'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Interface/Modal'
 import ProfileButton from '@/components/Profile/ProfileButton'
 
 export default {

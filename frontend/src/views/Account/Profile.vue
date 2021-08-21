@@ -1,6 +1,11 @@
 <template>
-  <section :class="[!loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ', 'block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8']" style="max-width: 1400px;">
-    <alert v-if="alerts.length" :alerts="alerts" />
+  <section
+    :class="[
+        !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
+        'block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8'
+    ]"
+    style="max-width: 1400px"
+  >
     <loading v-if="loading" />
     <profile-avatar
         :user="user"
@@ -16,22 +21,20 @@
 
 <script>
 import axios from 'axios'
-import Alert from '@/components/Alert'
 import ProfileAvatar from '@/components/Profile/ProfileAvatar'
 import ProfileTable from '@/components/Profile/ProfileTable'
-import Loading from '@/components/Loading'
+import Loading from '@/components/Interface/Loading'
 
 export default {
   components: {
-    Alert, ProfileAvatar, ProfileTable, Loading
+    ProfileAvatar, ProfileTable, Loading
   },
   data() {
     return {
       user: {},
       loading: true,
       profileViewAccess: false,
-      extraText: '',
-      alerts: []
+      extraText: ''
     }
   },
   methods: {

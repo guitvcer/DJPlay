@@ -10,7 +10,14 @@
     </div>
 
     <!-- Dropdown -->
-    <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+    <transition
+        enter-active-class="transition ease-out duration-100"
+        enter-from-class="transform opacity-0 scale-95"
+        enter-to-class="transform opacity-100 scale-100"
+        leave-active-class="transition ease-in duration-75"
+        leave-from-class="transform opacity-100 scale-100"
+        leave-to-class="transform opacity-0 scale-95"
+    >
       <!-- Dropdown items is user is authorized -->
       <MenuItems
           class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
@@ -113,7 +120,7 @@
 <script>
 import { ref } from 'vue'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Interface/Modal'
 
 export default {
   data() {

@@ -27,7 +27,6 @@
 
 <script>
 import EditProfileInput from '@/components/EditProfile/EditProfileInput'
-import VueTimeago from "vue-timeago";
 
 export default {
   props: {

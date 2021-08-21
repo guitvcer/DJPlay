@@ -33,12 +33,10 @@
 
 <script>
 import axios from 'axios'
-import Alert from '@/components/Alert'
 
 export default {
   data() {
     return {
-      alerts: [],
       action: this.host + '/account/change-password/',
       body: {
         'oldpassword': '',
@@ -60,9 +58,6 @@ export default {
         }
       ]
     }
-  },
-  components: {
-    Alert
   },
   methods: {
     async submitForm() {

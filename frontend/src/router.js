@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router'
-import Home from './views/Home.vue'
+import Home from './views/Account/Home.vue'
 
 const routes = [
     {
@@ -9,48 +9,43 @@ const routes = [
     },
     {
         path: '/gomoku/',
-        component: import('./views/Gomoku.vue'),
+        component: import('./views/Gomoku/Gomoku.vue'),
         name: 'gomoku'
     },
     {
         path: '/gomoku/:id/',
-        component: import('./views/GomokuParty'),
+        component: import('./views/Gomoku/GomokuParty'),
         name: 'gomokuParty'
     },
     {
-        path: '/chess/',
-        component: import('./views/Chess.vue'),
-        name: 'chess'
-    },
-    {
         path: '/account/',
-        component: import('./views/Profile'),
+        component: import('./views/Account/Profile'),
         name: 'userProfile'
     },
     {
         path: '/account/friends/',
-        component: import('./views/UsersList'),
+        component: import('./views/Account/UsersList'),
         name: 'friends'
     },
     {
         path: '/account/views/',
-        component: import('./views/UsersList'),
+        component: import('./views/Account/UsersList'),
         name: 'viewers'
     },
     {
         path: '/account/:username/',
         name: 'profile',
-        component: import('./views/Profile.vue')
+        component: import('./views/Account/Profile.vue')
     },
     {
         path: '/account/:username/views/',
         name: 'usersViewers',
-        component: import('./views/UsersList.vue')
+        component: import('./views/Account/UsersList.vue')
     },
     {
         path: '/account/:username/friends/',
         name: 'usersFriends',
-        component: import('./views/UsersList.vue')
+        component: import('./views/Account/UsersList.vue')
     },
     {
         path: '/account/:username/friend_request',
@@ -65,22 +60,22 @@ const routes = [
     {
         path: '/account/:username/party-list/',
         name: 'userPartyList',
-        component: import('./views/UserPartyList.vue')
+        component: import('./views/Account/UserPartyList.vue')
     },
     {
         path: '/account/users/',
         name: 'users',
-        component: import('./views/UsersList.vue')
+        component: import('./views/Account/UsersList.vue')
     },
     {
         path: '/account/edit/',
         name: 'editProfile',
-        component: import('./views/EditProfile.vue')
+        component: import('./views/Account/EditProfile.vue')
     },
     {
         path: '/account/party-list/',
         name: 'partyList',
-        component: import('./views/UserPartyList')
+        component: import('./views/Account/UserPartyList')
     },
     {
         path: '/:catchAll(.*)',

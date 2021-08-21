@@ -34,7 +34,7 @@ import axios from 'axios'
 import ControlPanel from '@/components/Gomoku/ControlPanel'
 import GomokuBoard from '@/components/Gomoku/GomokuBoard'
 import StartPanel from '@/components/Gomoku/StartPanel'
-import Loading from '@/components/Loading'
+import Loading from '@/components/Interface/Loading'
 
 export default {
   components: {
@@ -79,6 +79,8 @@ export default {
         this.loading = false
       })
       .catch(error => this.$emit('api-error', error))
+
+    document.title = `${this.party.player1} VS. ${this.party.player2}`
   },
   methods: {
     firstMove() {

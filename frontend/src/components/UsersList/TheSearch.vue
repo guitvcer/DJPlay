@@ -54,6 +54,7 @@ export default {
       await axios
         .post(this.host + window.location.pathname, this.body)
         .then(response => this.$emit('sent', response.data))
+        .catch(error => this.$emit('api-error', error))
     }
   }
 }

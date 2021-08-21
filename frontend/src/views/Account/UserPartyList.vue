@@ -1,5 +1,11 @@
 <template>
-  <section :class="[!loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ', 'block justify-around mx-auto px-4 md:px-12 py-8 md:py-16']" style="max-width: 1200px;">
+  <section
+    :class="[
+      !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
+      'block justify-around mx-auto px-4 md:px-12 py-8 md:py-16'
+    ]"
+    style="max-width: 1200px"
+  >
     <loading v-if="loading" />
     <div v-if="!loading" class="flex justify-between w-full mb-16">
       <h2 class="text-3xl font-semibold">{{ title }}</h2>
@@ -20,7 +26,7 @@
 <script>
 import axios from 'axios'
 import UserPartyListTable from "@/components/UserPartyList/UserPartyListTable";
-import Loading from '@/components/Loading'
+import Loading from '@/components/Interface/Loading'
 
 export default {
   components: {

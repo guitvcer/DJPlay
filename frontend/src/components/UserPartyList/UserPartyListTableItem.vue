@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 export default {
   props: {

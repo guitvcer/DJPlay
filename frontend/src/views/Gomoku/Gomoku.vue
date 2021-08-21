@@ -1,5 +1,8 @@
 <template>
-  <section class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16" style="max-width: 1800px">
+  <section
+      class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16"
+      style="max-width: 1800px"
+  >
     <loading v-if="loading" class="m-auto" />
     <gomoku-board v-if="!loading" ref="gomokuBoard" name="Gomoku" />
     <start-panel
@@ -16,8 +19,7 @@
 
 <script>
 import axios from 'axios'
-import Alert from '@/components/Alert'
-import Loading from '@/components/Loading'
+import Loading from '@/components/Interface/Loading'
 import ControlPanel from '@/components/Gomoku/ControlPanel'
 import GomokuBoard from '@/components/Gomoku/GomokuBoard'
 import StartPanel from '@/components/Gomoku/StartPanel'
@@ -41,7 +43,7 @@ export default {
     }
   },
   components: {
-    Alert, ControlPanel, GomokuBoard, StartPanel, Loading
+    ControlPanel, GomokuBoard, StartPanel, Loading
   },
   async mounted() {
     await this.loadGame()

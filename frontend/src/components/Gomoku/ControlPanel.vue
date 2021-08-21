@@ -1,9 +1,19 @@
 <template>
   <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
-    <button v-if="name === 'Gomoku'" title="Отменить ход" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="returnMove">
+    <button
+      v-if="name === 'Gomoku'"
+      title="Отменить ход"
+      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
+      @click="returnMove"
+    >
       <reply-icon class="h-6 w-6" />
     </button>
-    <button v-if="name === 'Gomoku'" title="Сбросить доску" class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1" @click="resetBoard">
+    <button
+      v-if="name === 'Gomoku'"
+      title="Сбросить доску"
+      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
+      @click="resetBoard"
+    >
       <refresh-icon class="h-6 w-6" />
     </button>
 

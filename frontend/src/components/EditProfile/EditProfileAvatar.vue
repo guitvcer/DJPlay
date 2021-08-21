@@ -5,7 +5,10 @@
       :default-src="host + '/media/user.png'"
       :avatar="host + user.avatar"
     />
-    <h2 class="text-3xl font-semibold mb-3 text-center lg:text-left select-text" style="word-break: break-word;">{{ user.username }}</h2>
+    <h2
+      class="text-3xl font-semibold mb-3 text-center lg:text-left select-text"
+      style="word-break: break-word"
+    >{{ user.username }}</h2>
     <hr>
     <div class="flex justify-center mt-3">
       <profile-button
@@ -50,7 +53,7 @@
 
 <script>
 import AvatarInput from '@/components/EditProfile/AvatarInput'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Interface/Modal'
 import ProfileButton from '@/components/Profile/ProfileButton'
 
 export default {

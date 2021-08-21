@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import Alert from '@/components/Alert'
-import TheHeader from '@/components/TheHeader'
+import Alert from '@/components/Interface/Alert'
+import TheHeader from '@/components/Home/TheHeader'
 import Forbidden from '@/components/ErrorPages/Forbidden'
 import NotFound from '@/components/ErrorPages/NotFound'
 import ServerError from '@/components/ErrorPages/ServerError'
