@@ -83,11 +83,6 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      alerts: []
-    }
-  },
   methods: {
     createAlert(alert) {
       this.$emit('create-alert', alert)

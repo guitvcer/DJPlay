@@ -25,7 +25,6 @@ import Loading from '@/components/Interface/Loading'
 export default {
   data() {
     return {
-      alerts: [],
       action: this.host + '/account/edit/',
       user: {},
       loading: true

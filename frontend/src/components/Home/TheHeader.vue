@@ -30,11 +30,6 @@ export default {
   components: {
     Dropdown
   },
-  data() {
-    return {
-      alerts: []
-    }
-  },
   methods: {
     createAlert(alert) {
       this.$emit('create-alert', alert)
