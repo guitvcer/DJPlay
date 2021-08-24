@@ -31,12 +31,6 @@ import axios from 'axios'
 import { SearchIcon } from '@heroicons/vue/outline'
 
 export default {
-  props: {
-    action: {
-      type: String,
-      required: true
-    },
-  },
   components: {
     SearchIcon
   },

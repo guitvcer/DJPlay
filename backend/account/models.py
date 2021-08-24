@@ -38,6 +38,16 @@ class User(AbstractUser):
 
     def __str__(self) -> str: return self.username
 
+    def get_chats(self) -> QuerySet:
+        """Получить список чатов"""
+
+        from chat.models import Chat
+
+        list_of_ids = [chat.id for chat in Chat.objects.all() if self in (chat.user1, chat.user2)]
+        queryset = Chat.objects.filter(id__in=list_of_ids)
+
+        return queryset
+
     def get_friends(self) -> QuerySet:
         """Получить QuerySet из друзей"""
 
@@ -197,20 +207,3 @@ class UserView(models.Model):
     class Meta:
         verbose_name = 'Просмотр пользователя'
         verbose_name_plural = 'Просмотры пользователя'
-
-
-class Message(models.Model):
-    """Модель сообщения в чате"""
-
-    id = models.AutoField(primary_key=True)
-    text = models.CharField(max_length=256, verbose_name="Текст")
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
-    sent_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Отправитель", related_name="+")
-    sent_to = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Получатель", related_name="+")
-
-    def __str__(self) -> str: return f'От {self.sent_from} к {self.sent_to}'
-
-    class Meta:
-        verbose_name = 'Сообщение'
-        verbose_name_plural = 'Сообщения'
-        ordering = ('date', )

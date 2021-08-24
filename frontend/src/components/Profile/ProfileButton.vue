@@ -17,7 +17,7 @@
     :class="[
         'flex border px-3 py-2 rounded mx-px sm:mx-1 hover:bg-gray-100 dark:hover:bg-main',
          friendRequest === 'accepted' || friendRequest === 'sent' ? ' border-friend-remove' : (
-             friendRequest === 'got' ? ' border-friend-add': ' dark:border-gray-600'
+             friendRequest === 'got' ? ' border-friend-add' : ' dark:border-gray-600'
          )
     ]"
     v-else-if="type === 'button'"
@@ -72,7 +72,7 @@ export default {
     friendsCount: Number,
     url: Object,
     type: String,
-    friendRequest: String
+    friendRequest: [String, Boolean]
   },
   components: {
     ArrowSmLeftIcon,

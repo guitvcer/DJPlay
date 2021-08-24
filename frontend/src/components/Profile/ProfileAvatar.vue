@@ -10,41 +10,41 @@
       <profile-button
           buttonName="friend_request_button"
           title="Друзья"
-          :friendsCount="$props.user.friends"
+          :friendsCount="user.friends"
           :url="{ name: 'friends' }"
-          v-if="$props.user.is_me"
+          v-if="user.is_me"
       />
       <profile-button
           buttonName="friend_request_button"
           type="button"
-          :friendRequest="$props.user.friend_request"
-          :friendsCount="$props.user.friends"
+          :friendRequest="user.friend_request"
+          :friendsCount="user.friends"
           @click="friendRequest"
           v-else
       />
       <profile-button
           buttonName="user_chat_button"
           title="Написать сообщение"
-          :url="{ name: 'userChat', params: { username: $props.user.username } }"
-          v-if="profileViewAccess"
+          :url="{ name: 'chat', params: { username: user.username } }"
+          v-if="profileViewAccess && !user.is_me"
       />
       <profile-button
           buttonName="edit_profile_button"
           title="Изменить профиль"
-          :url="{ name: 'editProfile', params: { username: $props.user.username } }"
-          v-if="$props.user.is_me"
+          :url="{ name: 'editProfile', params: { username: user.username } }"
+          v-if="user.is_me"
       />
       <profile-button
           buttonName="user_party_list_button"
           title="Посмотреть сыгранные партии"
-          :url="{ name: 'userPartyList', params: { username: $props.user.username } }"
+          :url="{ name: 'userPartyList', params: { username: user.username } }"
           v-if="profileViewAccess && $route.params.username"
       />
       <profile-button
           buttonName="user_party_list_button"
           title="Посмотреть сыгранные партии"
           :url="{ name: 'partyList' }"
-          v-else-if="$props.user.is_me"
+          v-else-if="user.is_me"
       />
     </div>
 

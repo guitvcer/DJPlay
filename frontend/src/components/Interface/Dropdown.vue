@@ -26,20 +26,20 @@
         <div class="py-1">
           <MenuItem v-slot="{ active }">
             <router-link
-                :to="{ name: 'userProfile' }"
-                :class="dropdownItemClass"
+              :to="{ name: 'userProfile' }"
+              :class="dropdownItemClass"
             >Профиль</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
-              to="/"
+              :to="{ name: 'chats' }"
               :class="dropdownItemClass"
             >Сообщения</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
-                :to="{ name: 'users' }"
-                :class="dropdownItemClass"
+              :to="{ name: 'users' }"
+              :class="dropdownItemClass"
             >Пользователи
             </router-link>
           </MenuItem>
@@ -52,17 +52,9 @@
         </div>
         <div class="py-1">
           <MenuItem v-slot="{ active }">
-            <router-link
-              to="/"
-              :class="dropdownItemClass"
-            >Админ-панель</router-link>
-          </MenuItem>
-        </div>
-        <div class="py-1">
-          <MenuItem v-slot="{ active }">
             <button
-                @click="logout"
-                :class="dropdownItemClass"
+              @click="logout"
+              :class="dropdownItemClass"
             >Выйти</button>
           </MenuItem>
         </div>
@@ -76,21 +68,21 @@
         <div class="py-1">
           <MenuItem v-slot="{ active }">
             <button
-                :class="dropdownItemClass"
-                @click="open = true; showAuthorizationModal = true"
+              :class="dropdownItemClass"
+              @click="open = true; showAuthorizationModal = true"
             >Войти</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
-                to="/"
-                :class="dropdownItemClass"
-                @click="open = true; showRegistrationModal = true"
+              to="/"
+              :class="dropdownItemClass"
+              @click="open = true; showRegistrationModal = true"
             >Регистрация</router-link>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
-                :to="{ name: 'users' }"
-                :class="dropdownItemClass"
+              :to="{ name: 'users' }"
+              :class="dropdownItemClass"
             >
               Пользователи
             </router-link>

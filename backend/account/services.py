@@ -7,7 +7,7 @@ from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import User, FriendRequest, Message, Game, UserView
+from .models import User, FriendRequest, Game, UserView
 
 
 def get_user_by_token(access_token: str) -> User:
@@ -98,29 +98,6 @@ def create_or_delete_or_accept_friend_request(request_from: User, username_of_re
         FriendRequest.objects.create(request_from=request_from, request_to=request_to)
 
         return "Вы отправили запрос на дружбу."
-
-
-def get_last_messages_with_every_user(current_user: User) -> QuerySet:
-    """Получить последние сообщения с каждым пользователем"""
-
-    all_users = User.objects.all()
-    list_of_ids = []
-
-    for user in all_users:
-        messages = current_user.get_messages(user)
-
-        if messages.count() > 0:
-            list_of_ids.append(messages.last().id)
-
-    messages = Message.objects.filter(id__in=list_of_ids)
-
-    return messages
-
-
-def search_messages(keyword: str, messages=Message.objects.all()) -> QuerySet:
-    """Искать сообщение"""
-
-    return messages.filter(Q(text__icontains=keyword))
 
 
 def get_user_profile_info(user: User, request: Request, serializer: SerializerMetaclass) -> dict:

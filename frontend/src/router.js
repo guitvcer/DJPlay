@@ -78,6 +78,16 @@ const routes = [
         component: import('./views/Account/UserPartyList')
     },
     {
+        path: '/chat/',
+        name: 'chats',
+        component: import('./views/Chat/Chat')
+    },
+    {
+        path: '/chat/:username/',
+        name: 'chat',
+        component: import('./views/Chat/Chat')
+    },
+    {
         path: '/:catchAll(.*)',
         component: import('./components/ErrorPages/NotFound')
     }

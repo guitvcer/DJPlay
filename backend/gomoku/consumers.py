@@ -136,8 +136,10 @@ class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_move(self, event):
-        message = {'username': event['username'],
-                   'move': event['move']}
+        message = {
+            'username': event['username'],
+            'move': event['move']
+        }
 
         try:
             message['win'] = event['win']

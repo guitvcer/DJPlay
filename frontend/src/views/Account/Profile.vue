@@ -49,7 +49,6 @@ export default {
         .then(async response => {
           const viewer = await this.getUserInfo()
           this.user = response.data
-          console.log(this.user)
 
           document.title = `${this.user.username} - Профиль`
 

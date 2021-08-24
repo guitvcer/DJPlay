@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'social_django',
 
     'account',
+    'chat',
     'gomoku',
 ]
 
