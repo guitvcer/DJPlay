@@ -3,6 +3,8 @@ from account.models import User
 
 
 class Chat(models.Model):
+    """Модель чата"""
+
     id = models.AutoField(primary_key=True)
     user1 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 1', related_name='chat_user1')
     user2 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 2', related_name='chat_user2')
@@ -21,7 +23,7 @@ class Message(models.Model):
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
     sent_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Отправитель")
 
-    def __str__(self) -> str: return f'Чат №{self.chat.id}, {self.sent_from}'
+    def __str__(self): return f'Чат №{self.chat.id}, {self.sent_from}'
 
     class Meta:
         verbose_name = 'Сообщение'

@@ -8,7 +8,7 @@
     ]"
     @click="$emit('load-chat')"
   >
-    <div class="mr-3">
+    <div class="mr-3 flex-shrink-0">
       <img :src="interlocutor.avatar" :alt="'Аватар ' + interlocutor.username" class="w-12 h-12 rounded">
     </div>
     <div class="truncate">
@@ -48,8 +48,7 @@ export default {
       else return this.chat['last_message']['text']
     },
     selected() {
-      const username = this.$route.params.username
-      return username === this.chat['user1']['username'] || username === this.chat['user2']['username']
+      return this.interlocutor.username === this.$route.params.username
     }
   }
 }

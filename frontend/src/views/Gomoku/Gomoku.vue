@@ -1,7 +1,7 @@
 <template>
   <section
-      class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16"
-      style="max-width: 1800px"
+    class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16"
+    style="max-width: 1800px"
   >
     <loading v-if="loading" class="m-auto" />
     <gomoku-board v-if="!loading" ref="gomokuBoard" name="Gomoku" />

@@ -1,10 +1,10 @@
 <template>
   <section
-      :class="[
-        !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
-        'mx-auto px-4 md:px-12 py-8 md:py-16'
-      ]"
-      style="max-width: 1200px"
+    :class="[
+      !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
+      'mx-auto px-4 md:px-12 py-8 md:py-16'
+    ]"
+    style="max-width: 1200px"
   >
     <loading v-if="loading" />
     <div class="md:flex justify-between" v-if="!loading">

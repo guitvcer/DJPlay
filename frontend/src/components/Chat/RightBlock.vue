@@ -1,9 +1,10 @@
 <template>
   <div
-    :class="[display === 'chats' ? 'hidden ' : '', 'w-full md:flex flex-col justify-between']"
-    style="height: 700px"
+    :class="[display === 'chats' ? 'hidden ' : '', 'w-full md:flex flex-col justify-between h-full']"
   >
-    <select-chat v-if="!chat" />
+    <chat-small-text v-if="!chat" class="mt-20">
+      Выберите чат, чтобы написать.
+    </chat-small-text>
 
     <div v-if="chat" class="w-full h-full" style="max-height: calc(100% - 55px)">
       <the-chat-header :interlocutor="interlocutor" @unselectChat="$emit('unselectChat')" />
@@ -14,14 +15,14 @@
 </template>
 
 <script>
-import SelectChat from '@/components/Chat/SelectChat'
+import ChatSmallText from '@/components/Chat/ChatSmallText'
 import SendMessageForm from '@/components/Chat/SendMessageForm'
 import Messages from '@/components/Chat/Messages'
 import TheChatHeader from '@/components/Chat/TheChatHeader'
 
 export default {
   components: {
-    SelectChat,
+    ChatSmallText,
     SendMessageForm,
     Messages,
     TheChatHeader
@@ -54,7 +55,6 @@ export default {
   watch: {
     chat() {
       if (this.chat) {
-        // this.$refs.messages.scrollToEnd()
         this.setInterlocutor()
       }
     }

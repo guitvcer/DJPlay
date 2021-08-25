@@ -3,7 +3,7 @@ from .models import Chat
 
 
 def get_chat(current_user: User, interlocutor: User) -> Chat:
-    """Получить чать по имение пользователя собеседеника"""
+    """Получить чат по имени пользователя собеседеника"""
 
     try:
         chat = Chat.objects.get(user1=current_user, user2=interlocutor)
@@ -12,7 +12,5 @@ def get_chat(current_user: User, interlocutor: User) -> Chat:
             chat = Chat.objects.get(user1=interlocutor, user2=current_user)
         except Chat.DoesNotExist:
             chat = Chat.objects.create(user1=interlocutor, user2=current_user)
-
-    print('get_chat()', chat)
 
     return chat

@@ -1,14 +1,18 @@
 <template>
-  <div id="messages" class="py-4 px-2 overflow-y-auto h-full" style="max-height: calc(100% - 81px)">
+  <div ref="messages" class="py-4 px-2 overflow-y-auto h-full" style="max-height: calc(100% - 81px)">
     <message
+      v-if="messages.length"
       v-for="(message, index) in messages"
       :key="index"
       :message="message"
+      :index="index"
     />
+    <chat-small-text v-else>Начало общения</chat-small-text>
   </div>
 </template>
 
 <script>
+import ChatSmallText from '@/components/Chat/ChatSmallText'
 import Message from '@/components/Chat/Message'
 
 export default {
@@ -19,18 +23,15 @@ export default {
     }
   },
   components: {
-    Message
+    ChatSmallText, Message
   },
   methods: {
     scrollToEnd() {
-      console.log('scrollToEnd()')
-      try {
-        const messages = document.getElementById('messages')
-        messages.scrollTo(0, messages.scrollHeight)
-      } catch (e) {
-        console.log(e)
-      }
-    },
+      this.$refs.messages.scrollTo(0, this.$refs.messages.scrollHeight)
+    }
+  },
+  mounted() {
+    this.scrollToEnd()
   }
 }
 </script>

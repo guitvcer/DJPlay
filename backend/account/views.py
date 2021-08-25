@@ -37,7 +37,6 @@ class UsersListAPIView(APIView):
     @staticmethod
     def get(request, username=None):
         users_list = get_users_list_or_403(request, username)
-        print(users_list)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -77,7 +76,7 @@ class UserProfileEditAPIView(APIView):
 class UserChangePasswordAPIView(APIView):
     """Смена пароля пользователя"""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated, )
 
     @staticmethod
     def patch(request, *args, **kwargs):
@@ -109,10 +108,9 @@ class UserFriendRequest(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return Response({
-                'title': create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
-            }, status=status.HTTP_200_OK)
+        return Response({
+            'title': create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
+        }, status=status.HTTP_200_OK)
 
 
 class UserPartyList(APIView):

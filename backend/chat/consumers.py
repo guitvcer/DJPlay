@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from account.models import User
 from account.services import get_user_by_token
-from .models import Chat, Message
+from .models import Message
 from .serializers import MessageSerializer
 from .services import get_chat
 
@@ -15,7 +15,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         super().__init__(args, kwargs)
         self.room_name = 'chat'
         self.room_group_name = None
-        self.chat_id = None
+        self.chat = None
         self.user = None
 
     async def connect(self):

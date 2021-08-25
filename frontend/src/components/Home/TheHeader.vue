@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-gray-50 dark:bg-main-dark border-b-2 border-main-light dark:border-main">
+  <header id="header" class="bg-gray-50 dark:bg-main-dark border-b-2 border-main-light dark:border-main">
     <div
       class="container mx-auto flex justify-between items-center h-full py-3 px-6 md:px-10 lg:px-20"
       style="max-width: 1750px"

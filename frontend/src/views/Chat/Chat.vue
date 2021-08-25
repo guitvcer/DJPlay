@@ -1,15 +1,16 @@
 <template>
   <section
-      :class="[
-        !loading ? 'bg-gray-50 dark:bg-main-dark h-5/6' : 'justify-center ',
-        'flex mx-auto rounded'
-      ]"
-      style="max-width: 1200px"
+    :class="[
+      !loading ? 'bg-gray-50 dark:bg-main-dark h-5/6' : 'justify-center',
+      ' flex mx-auto rounded h-full'
+    ]"
+    style="max-width: 1200px"
   >
     <loading v-if="loading" />
     <left-block v-if="!loading" :display="display" :chats="chats" @load-chat="loadChat" />
     <right-block
       v-if="!loading"
+      ref="rightBlock"
       :display="display"
       :chat="chat"
       @unselectChat="unselectChat"

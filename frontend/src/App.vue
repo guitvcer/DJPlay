@@ -1,15 +1,15 @@
 <template>
-  <div id="app">
+  <div id="app" class="h-full">
     <the-header
-        v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
-        @create-alert="createAlert"
-        :user="user"
-        @load-user="setUserInfo"
+      v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
+      @create-alert="createAlert"
+      :user="user"
+      @load-user="setUserInfo"
     />
     <alert v-if="alerts.length" :alerts="alerts" />
 
     <!-- Content -->
-    <main class="px-4 py-8">
+    <main :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8', ' h-full']">
       <router-view v-if="status === 200" @create-alert="createAlert" @load-user="setUserInfo" @api-error="apiError" />
       <forbidden v-else-if="status === 403" @redirect="this.status = 200" />
       <not-found v-else-if="status === 404" @redirect="this.status = 200" />
@@ -68,3 +68,15 @@ export default {
   }
 }
 </script>
+
+<style>
+main {
+  max-height: calc(100% - 96px)
+}
+
+@media screen and (max-width: 768px) {
+  main {
+    max-height: calc(100% - 90px)
+  }
+}
+</style>

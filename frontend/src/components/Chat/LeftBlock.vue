@@ -1,20 +1,17 @@
 <template>
   <div
-      :class="[display === 'chat' ? 'hidden ' : '', 'md:block w-full md:w-80 border-r dark:border-main-dark2']"
-      style="height: 700px"
+    :class="[display === 'chat' ? 'hidden ' : '', 'md:block w-full md:w-80 border-r dark:border-main-dark2 h-full']"
   >
-    <chat-search />
     <chat-list :chats="chats" @load-chat="$emit('load-chat')" />
   </div>
 </template>
 
 <script>
 import ChatList from '@/components/Chat/ChatList'
-import ChatSearch from '@/components/Chat/ChatSearch'
 
 export default {
   components: {
-    ChatList, ChatSearch
+    ChatList
   },
   props: {
     display: {

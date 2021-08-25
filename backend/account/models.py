@@ -36,7 +36,7 @@ class User(AbstractUser):
 
     active = UserManager()
 
-    def __str__(self) -> str: return self.username
+    def __str__(self): return self.username
 
     def get_chats(self) -> QuerySet:
         """Получить список чатов"""
@@ -96,28 +96,6 @@ class User(AbstractUser):
 
         return (self == request.user) or (request.user in self.get_friends()) or not self.is_private
 
-    def get_messages(self, user=None) -> QuerySet:
-        """Получить все сообщения связанные с двумя пользователями или одним"""
-
-        list_of_ids = []
-
-        if user is None:
-            for message in Message.objects.filter(sent_from=self):
-                list_of_ids.append(message.id)
-
-            for message in Message.objects.filter(sent_to=self):
-                list_of_ids.append(message.id)
-        else:
-            for message in Message.objects.filter(sent_from=self, sent_to=user):
-                list_of_ids.append(message.id)
-
-            for message in Message.objects.filter(sent_from=user, sent_to=self):
-                list_of_ids.append(message.id)
-
-        messages = Message.objects.filter(id__in=list_of_ids)
-
-        return messages
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
@@ -134,7 +112,7 @@ class Game(models.Model):
     image = models.ImageField(null=True, blank=True, verbose_name="Обложка")
     is_released = models.BooleanField(default=False, verbose_name="Выпущена ли игра?")
 
-    def __str__(self) -> str: return self.name
+    def __str__(self): return self.name
 
     class Meta:
         verbose_name = 'Игра'
@@ -148,7 +126,7 @@ class Queue(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name="Очередь для")
     player1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
 
-    def __str__(self) -> str: return self.game.name
+    def __str__(self): return self.game.name
 
     @staticmethod
     def update_queue(queue, player: User):
@@ -183,12 +161,12 @@ class FriendRequest(models.Model):
 
     id = models.AutoField(primary_key=True)
     request_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Запрос на дружбу от",
-                                     related_name="+")
+                                     related_name="friend_request_from")
     request_to = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Запрос на дружбу к",
-                                   related_name="+")
+                                   related_name="friend_request_to")
     is_active = models.BooleanField(default=False, verbose_name="Принят ли запрос?")
 
-    def __str__(self) -> str: return f'От {self.request_from} к {self.request_to}'
+    def __str__(self): return f'От {self.request_from} к {self.request_to}'
 
     class Meta:
         verbose_name = 'Запрос на дружбу'
@@ -199,10 +177,11 @@ class UserView(models.Model):
     """Модель просмотров пользователя"""
 
     id = models.AutoField(primary_key=True)
-    view_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Просмотр от", related_name="+")
-    view_to = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Просмотр к", related_name="+")
+    view_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Просмотр от",
+                                  related_name="user_view_from")
+    view_to = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Просмотр к", related_name="user_view_to")
 
-    def __str__(self) -> str: return f'От {self.view_from} к {self.view_to}'
+    def __str__(self): return f'От {self.view_from} к {self.view_to}'
 
     class Meta:
         verbose_name = 'Просмотр пользователя'

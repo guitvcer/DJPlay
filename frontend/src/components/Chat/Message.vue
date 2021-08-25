@@ -1,4 +1,5 @@
 <template>
+  <chat-small-text v-if="otherDay(index, message.date)">{{ parseDate(message.date) }}</chat-small-text>
   <div
     :class="['flex', message['sent_from']['username'] === currentUsername ? ' justify-end' : '']"
   >
@@ -7,20 +8,25 @@
         message['sent_from']['username'] === currentUsername ?
         'bg-white dark:bg-main dark:border-main-dark2' :
         'bg-main-light text-white dark:bg-main-dark2 dark:border-main',
-        ' border px-2 py-1 rounded select-text'
+        ' border px-2 py-1 rounded select-text break-all'
       ]"
-    >{{ message.text }}<small class="ml-1.5 select-none">{{ parseDate(message.date) }}</small>
-    </div>
+      style="max-width: 80%"
+    >{{ message.text }}<small class="ml-1.5 select-none">{{ parseTime(message.date) }}</small></div>
   </div>
 </template>
 
 <script>
 import { DateTime } from 'luxon'
+import ChatSmallText from '@/components/Chat/ChatSmallText'
 
 export default {
   props: {
     message: {
       type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
       required: true
     }
   },
@@ -29,10 +35,33 @@ export default {
       currentUsername: document.getElementById('username').innerHTML
     }
   },
+  components: {
+    ChatSmallText
+  },
   methods: {
-    parseDate(date) {
+    parseTime(date) {
       return DateTime.fromISO(date).setLocale('ru').toFormat('H:m')
+    },
+    parseDate(date) {
+      const messageDate = DateTime.fromISO(date)
+
+      if (messageDate.year === DateTime.now().year)
+        return messageDate.setLocale('ru').toFormat('d MMMM')
+      else return messageDate.setLocale('ru').toFormat('d MMMM y') + ' г.'
+    },
+    otherDay(index, date) {
+      if (index === 0) return true
+
+      const messageDate = DateTime.fromISO(date)
+      const nextMessageDate = DateTime.fromISO(this.$parent.messages[this.index - 1].date)
+
+      return (messageDate.day !== nextMessageDate.day) ||
+             (messageDate.month !== nextMessageDate.month) ||
+             (messageDate.year !== nextMessageDate.year)
     }
+  },
+  mounted() {
+    this.$parent.scrollToEnd()
   }
 }
 </script>
