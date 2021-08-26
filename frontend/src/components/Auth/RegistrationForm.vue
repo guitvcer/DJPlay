@@ -66,13 +66,16 @@ export default {
         username: '',
         password1: '',
         password2: '',
-        email: ''
+        email: '',
+        recaptcha: ''
       },
       action: this.host + '/account/registration'
     }
   },
   methods: {
     async submitForm() {
+      this.body.recaptcha = await this.recaptcha('registration')
+
       await axios
         .post(this.action, this.body)
         .then(response => {
@@ -103,6 +106,7 @@ export default {
       this.body.password1 = ''
       this.body.password2 = ''
       this.body.email = ''
+      this.body.recaptcha = ''
     }
   }
 }

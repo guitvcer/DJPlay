@@ -46,13 +46,16 @@ export default {
     return {
       body: {
         username: '',
-        password: ''
+        password: '',
+        recaptcha: ''
       },
       action: this.host + '/account/authorization'
     }
   },
   methods: {
     async submitForm() {
+      this.body.recaptcha = await this.recaptcha('authorization')
+
       await axios
         .post(this.action, this.body)
         .then(response => {
@@ -80,6 +83,7 @@ export default {
 
       this.body.username = ''
       this.body.password = ''
+      this.body.recaptcha = ''
     }
   }
 }

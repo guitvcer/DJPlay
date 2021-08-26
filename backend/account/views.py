@@ -130,7 +130,10 @@ class AuthorizationAPIView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        serializer = serializers.AuthorizationSerializer(data=request.data)
+        print(request.data)
+        serializer = serializers.AuthorizationSerializer(data=request.data, context={
+            'request': request
+        })
 
         if serializer.is_valid(raise_exception=True):
             return Response(serializer.get_tokens(), status=status.HTTP_200_OK)
@@ -141,7 +144,9 @@ class RegistrationAPIView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        serializer = serializers.RegistrationSerializer(data=request.data)
+        serializer = serializers.RegistrationSerializer(data=request.data, context={
+            'request': request
+        })
 
         if serializer.is_valid(raise_exception=True):
             return Response(serializer.save(), status=status.HTTP_201_CREATED)

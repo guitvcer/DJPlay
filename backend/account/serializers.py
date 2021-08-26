@@ -1,6 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
+from drf_recaptcha.fields import ReCaptchaV3Field
 from rest_framework import serializers
+
 from .models import User, Game
 from .services import generate_tokens
 
@@ -18,8 +20,11 @@ class AuthorizationSerializer(serializers.Serializer):
 
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
+    recaptcha = ReCaptchaV3Field(action='authorization')
 
     def validate(self, attrs):
+        super().validate(attrs)
+
         error_text = 'Неверные имя пользователя и/или пароль.'
 
         try:
@@ -44,12 +49,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     password1 = serializers.CharField(required=True)
     password2 = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password1', 'password2')
+    recaptcha = ReCaptchaV3Field(action='registration')
 
     def validate(self, attrs):
+        super().validate(attrs)
+
         try:
             User.objects.get(username=attrs['username'])
             raise serializers.ValidationError('Пользователь с таким именем уже существует.')
@@ -76,6 +80,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.save()
 
         return generate_tokens(user)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2', 'recaptcha')
 
 
 class GameSerializer(serializers.ModelSerializer):
