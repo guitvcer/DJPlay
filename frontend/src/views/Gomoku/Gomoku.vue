@@ -12,7 +12,10 @@
       @find-opponent="findOpponent"
       @cancel-finding="cancelFinding"
       @give-up="giveUp"
-    />
+    >
+      <h2 class="text-2xl md:text-4xl mb-4">{{ game.name }}</h2>
+      <p class="mb-12 md:mb-20">{{ game.rules }}</p>
+    </start-panel>
     <control-panel v-if="!loading" ref="controlPanel" name="Gomoku" />
   </section>
 </template>
@@ -40,6 +43,7 @@ export default {
       data: null,
       moves: [],
       currentColor: 'white',
+      dotClassName: 'dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center'
     }
   },
   components: {

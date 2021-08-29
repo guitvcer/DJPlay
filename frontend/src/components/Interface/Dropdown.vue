@@ -137,8 +137,11 @@ export default {
   },
   methods: {
     logout() {
+      this.$parent.$parent.connectionSocket.close()
+
       document.cookie = 'access=; Max-Age=0; path=/'
       document.cookie = 'refresh=; Max-Age=0; path=/'
+
       this.$emit('load-user')
       this.$emit('create-alert', {
         title: 'Вы успешно вышли из аккаунта.',

@@ -2,14 +2,14 @@
   <form method="get" class="mb-2" @submit.prevent="submitForm">
     <div class="flex mb-4">
       <input
-          type="text"
-          placeholder="Поиск"
-          id="query"
-          name="query"
-          class="dark:bg-main-dark2 dark:border-main border-2 px-4 py-1.5 w-full md:w-auto border-r-0 rounded-l border-gray-300 text-lg"
-          v-model="body.query"
+        type="text"
+        placeholder="Поиск"
+        id="query"
+        name="query"
+        class="dark:bg-main-dark2 dark:border-main border-2 px-4 py-1.5 w-full md:w-auto border-r-0 rounded-l border-gray-300 text-lg"
+        v-model="body.query"
       >
-      <button type="submit" class="dark:border-main border-2 px-4 py-2 rounded-r hover:bg-white border-gray-300">
+      <button type="submit" class="dark:border-main border-2 px-4 py-2 rounded-r hover:bg-white border-gray-300 dark:hover:bg-main">
         <search-icon class="h-6 w-6" />
       </button>
     </div>

@@ -16,7 +16,39 @@
       @prevMove="prevMove"
       @nextMove="nextMove"
       @lastMove="lastMove"
-    />
+    >
+      <p class="mb-4 flex justify-between">
+        <router-link
+            :to="{ name: 'profile', params: { username: party.player1 } }"
+            :class="[
+            party.player1 === party['winner'] ? 'border-green-600' : 'border-red-700',
+            ' w-1/3 pt-2 rounded border hover:bg-main-dark dark:hover:bg-main-dark2'
+          ]"
+        >
+          <img :src="this.host + this.player1.avatar" :alt="party.player1" class="w-8 m-auto">
+          <strong class="block text-center">{{ this.party.player1 }}</strong>
+        </router-link>
+        <strong class="text-2xl md:text-4xl w-1/3 text-center pt-4">VS.</strong>
+        <router-link
+            :to="{ name: 'profile', params: { username: party.player2 } }"
+            :class="[
+            party.player2 === party['winner'] ? 'border-green-600' : 'border-red-700',
+            ' w-1/3 pt-2 rounded border hover:bg-main-dark dark:hover:bg-main-dark2'
+          ]"
+        >
+          <img :src="this.host + this.player2.avatar" :alt="party.player2" class="w-8 m-auto">
+          <strong class="block text-center">{{ this.party.player2 }}</strong>
+        </router-link>
+      </p>
+      <p>
+        <span class="mr-2">Количество ходов : </span>
+        <span class="font-semibold">{{ party.moves.length }}</span>
+      </p>
+      <p>
+        <span class="mr-2">Дата : </span>
+        <span class="font-semibold">{{ parseDate(party.date) }}</span>
+      </p>
+    </start-panel>
     <control-panel
       v-if="!loading"
       name="GomokuParty"
@@ -35,6 +67,7 @@ import ControlPanel from '@/components/Gomoku/ControlPanel'
 import GomokuBoard from '@/components/Gomoku/GomokuBoard'
 import StartPanel from '@/components/Gomoku/StartPanel'
 import Loading from '@/components/Interface/Loading'
+import {DateTime} from "luxon";
 
 export default {
   components: {
@@ -47,7 +80,8 @@ export default {
       party: {},
       player1: {},
       player2: {},
-      moves: []
+      moves: [],
+      dotClassName: 'dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center'
     }
   },
   async mounted() {
@@ -113,6 +147,9 @@ export default {
     },
     lastMove() {
       this.$refs.gomokuBoard.selectPartyDots()
+    },
+    parseDate(date) {
+      return DateTime.fromISO(date).setLocale('ru').toFormat('d MMMM y') + ' г.'
     }
   }
 }

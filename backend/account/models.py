@@ -7,7 +7,7 @@ from rest_framework.request import Request
 class UserManager(models.Manager):
     """Custom Manager для модели User, возвращается неудаленные аккаунты (is_active=True)"""
 
-    def get_queryset(self) -> QuerySet:
+    def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
 
 

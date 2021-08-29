@@ -58,5 +58,4 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def notify_room(self, event):
-        await sync_to_async(print)(event)
         await self.send_json(event)

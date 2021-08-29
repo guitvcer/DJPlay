@@ -130,7 +130,6 @@ class AuthorizationAPIView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        print(request.data)
         serializer = serializers.AuthorizationSerializer(data=request.data, context={
             'request': request
         })

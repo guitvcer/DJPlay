@@ -1,42 +1,6 @@
 <template>
   <div class="bg-main dark:bg-main-dark text-gray-100 max-w-2xl w-full 2xl:w-auto rounded-md shadow-xl px-6 md:px-12 py-12 md:py-20 mb-10 flex flex-col justify-between mx-0 mx-auto 2xl:mx-4">
-    <div v-if="name === 'Gomoku'">
-      <h2 class="text-2xl md:text-4xl mb-4">{{ game.name }}</h2>
-      <p class="mb-12 md:mb-20">{{ game.rules }}</p>
-    </div>
-    <div v-else-if="name === 'GomokuParty'">
-      <p class="mb-4 flex justify-between">
-        <router-link
-          :to="{ name: 'profile', params: { username: party.player1 } }"
-          :class="[
-            party.player1 === party['winner'] ? 'border-green-600' : 'border-red-700',
-            ' w-1/3 pt-2 rounded border hover:bg-main-dark dark:hover:bg-main-dark2'
-          ]"
-        >
-          <img :src="this.host + this.player1.avatar" :alt="party.player1" class="w-8 m-auto">
-          <strong class="block text-center">{{ this.party.player1 }}</strong>
-        </router-link>
-        <strong class="text-2xl md:text-4xl w-1/3 text-center pt-4">VS.</strong>
-        <router-link
-          :to="{ name: 'profile', params: { username: party.player2 } }"
-          :class="[
-            party.player2 === party['winner'] ? 'border-green-600' : 'border-red-700',
-            ' w-1/3 pt-2 rounded border hover:bg-main-dark dark:hover:bg-main-dark2'
-          ]"
-        >
-          <img :src="this.host + this.player2.avatar" :alt="party.player2" class="w-8 m-auto">
-          <strong class="block text-center">{{ this.party.player2 }}</strong>
-        </router-link>
-      </p>
-      <p>
-        <span class="mr-2">Количество ходов : </span>
-        <span class="font-semibold">{{ party.moves.length }}</span>
-      </p>
-      <p>
-        <span class="mr-2">Дата : </span>
-        <span class="font-semibold">{{ parseDate(party.date) }}</span>
-      </p>
-    </div>
+    <div><slot></slot></div>
 
     <div v-if="name === 'Gomoku'">
       <button
@@ -105,11 +69,6 @@ export default {
     party: Object,
     player1: Object,
     player2: Object
-  },
-  methods: {
-    parseDate(date) {
-      return DateTime.fromISO(date).setLocale('ru').toFormat('d MMMM y') + ' г.'
-    }
   },
 }
 </script>

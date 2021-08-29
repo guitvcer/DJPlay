@@ -96,7 +96,7 @@ export default {
             }))
           }
         } else {
-          lastDot.className = this.dotClassName
+          lastDot.className = this.$parent.dotClassName
           lastDot.innerHTML = ''
 
           this.$parent.moves.pop()
@@ -114,7 +114,7 @@ export default {
         })
       } else {
         for (let dot of document.querySelectorAll('.dot')) {
-          dot.className = this.dotClassName
+          dot.className = this.$parent.dotClassName
           dot.innerHTML = ''
         }
 

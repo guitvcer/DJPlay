@@ -1,11 +1,16 @@
 <template>
   <div
-      class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-10 md:mt-20 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
+      class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
       id="gomokuBoard"
   >
     <div class="flex flex-col justify-between" id="dotsWrapper">
       <div v-for="(number, index) in numbers" :key="index" class="flex justify-between relative row">
-        <div v-for="(letter, index) in letters" :key="index" :id="letter + number" :class="dotClassName" @click="registerMove($event.target)"></div>
+        <div
+          v-for="(letter, index) in letters"
+          :key="index" :id="letter + number"
+          :class="$parent.dotClassName"
+          @click="registerMove($event.target)"
+        />
       </div>
     </div>
   </div>

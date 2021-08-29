@@ -7,6 +7,7 @@
       type="text"
       placeholder="Введите сообщение"
       maxlength="256"
+      required
       class="mr-1 rounded border px-4 py-1 w-full dark:bg-main-dark2 dark:border-main"
       v-model="messageText"
     >
