@@ -101,12 +101,15 @@ export default {
       })
       await this.$router.push('/')
     } else {
-      await this.loadChats()
+      document.title = 'Сообщения'
 
+      await this.loadChats()
       this.setEventForEscape()
 
-      if (this.$route.params.username)
+      if (this.$route.params.username) {
         await this.loadChat()
+        document.title = `Сообщения - ${this.interlocutor.username}`
+      }
     }
   },
   computed: {
