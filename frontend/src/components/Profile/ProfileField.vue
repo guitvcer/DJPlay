@@ -1,12 +1,20 @@
 <template>
   <div class="block sm:flex mb-2 sm:mb-0">
     <h4 class="w-full sm:w-6/12 flex-shrink-0">{{ fieldName }}</h4>
-    <p class="font-bold w-full sm:w-6/12 flex-shrink-0" style="word-wrap: break-word;" v-if="fieldName === 'Просмотры'">
+    <p
+      v-if="fieldName === 'Просмотры'"
+      class="font-bold w-full sm:w-6/12 flex-shrink-0"
+      style="word-wrap: break-word;"
+    >
       <router-link :to="$route.path + 'views/'">
         {{ getFieldValue }}
       </router-link>
     </p>
-    <p class="font-bold w-full sm:w-6/12 flex-shrink-0" style="word-wrap: break-word;" v-else-if="fieldName === 'Друзья'">
+    <p
+      v-else-if="fieldName === 'Друзья'"
+      class="font-bold w-full sm:w-6/12 flex-shrink-0"
+      style="word-wrap: break-word;"
+    >
       <router-link :to="$route.path + 'friends/'">
         {{ getFieldValue }}
       </router-link>
@@ -17,12 +25,6 @@
 
 <script>
 import { DateTime } from 'luxon'
-import TimeAgo from 'javascript-time-ago'
-import ru from 'javascript-time-ago/locale/ru'
-
-TimeAgo.addDefaultLocale(ru)
-
-const timeAgo = new TimeAgo()
 
 export default {
   props: {
@@ -40,7 +42,7 @@ export default {
 
       if (typeof this.fieldValue === 'string') {
         if (this.fieldValue === '') return 'Не указано'
-        else if (this.fieldName === 'Был(-а) онлайн') return timeAgo.format(Date.parse(this.fieldValue))
+        else if (this.fieldName === 'Был(-а) онлайн') return this.timeAgo.format(Date.parse(this.fieldValue))
         else if (this.fieldName === 'Дата рождения' || this.fieldName === 'Дата регистрации') {
           return DateTime.fromISO(this.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
         }

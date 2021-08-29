@@ -10,8 +10,18 @@
       :to="{ name: 'profile', params: { username: interlocutor.username } }"
       class="flex items-center hover:bg-gray-100 mx-2 p-2 dark:hover:bg-main rounded"
     >
-      <img :src="this.host + this.interlocutor.avatar" :alt="'Аватар ' + interlocutor.username" class="w-12 h-12 rounded">
-      <h2 class="text-xl font-semibold ml-2">{{ interlocutor.username }}</h2>
+<!--      <img :src="this.host + this.interlocutor.avatar" :alt="'Аватар ' + interlocutor.username" class="w-12 h-12 rounded">-->
+      <div
+        :style="'background-image: url(' + this.host + this.interlocutor.avatar + '); background-size: 100% 100%'"
+        class="w-12 h-12 rounded flex justify-end items-end"
+      >
+        <div v-if="this.interlocutor.is_online" class="rounded w-4 h-4 bg-green-500"></div>
+      </div>
+      <div class="ml-3">
+        <h2 class="text-xl font-semibold">{{ interlocutor.username }}</h2>
+        <p class="text-gray-500" v-if="interlocutor.is_online">В сети</p>
+        <p class="text-gray-500" v-else>{{ parseDate(interlocutor['last_online']) }}</p>
+      </div>
     </router-link>
   </div>
 </template>
@@ -28,6 +38,11 @@ export default {
   },
   components: {
     ArrowLeftIcon
+  },
+  methods: {
+    parseDate(date) {
+      return this.timeAgo.format(Date.parse(date))
+    }
   }
 }
 </script>

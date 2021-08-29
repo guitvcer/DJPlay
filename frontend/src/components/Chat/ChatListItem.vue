@@ -8,8 +8,11 @@
     ]"
     @click="$emit('load-chat')"
   >
-    <div class="mr-3 flex-shrink-0">
-      <img :src="interlocutor.avatar" :alt="'Аватар ' + interlocutor.username" class="w-12 h-12 rounded">
+    <div
+      :style="'background-image: url(' + interlocutor.avatar + '); background-size: 100% 100%'"
+      class="mr-3 flex-shrink-0 w-12 h-12 rounded flex justify-end items-end"
+    >
+      <div v-if="interlocutor.is_online" class="w-4 h-4 rounded bg-green-500"></div>
     </div>
     <div class="truncate">
       <p class="font-semibold">{{ interlocutor.username }}</p>

@@ -5,7 +5,13 @@
       <MenuButton
           class="inline-flex items-center justify-center w-full rounded-md px-4 py-2 font-semibold">
         <span id="username" class="hidden md:inline" v-text="user.username" />
-        <img :src="host + user.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">
+<!--        <img :src="host + user.avatar" alt="Фото пользователя" class="rounded w-12 md:w-14 h-12 md:h-14 ml-2">-->
+        <div
+          :style="'background-image: url(' + this.host + user.avatar + '); background-size: 100% 100%;'"
+          class="rounded w-12 md:w-14 h-12 md:h-14 ml-2 flex justify-end items-end"
+        >
+          <div v-if="user.username !== 'Гость'" class="w-4 h-4 rounded bg-green-500"></div>
+        </div>
       </MenuButton>
     </div>
 
