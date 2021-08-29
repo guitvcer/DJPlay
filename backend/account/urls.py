@@ -8,14 +8,15 @@ app_name = 'account'
 urlpatterns = [
     path('authorization', views.AuthorizationAPIView.as_view(), name='authorization'),
     path('registration', views.RegistrationAPIView.as_view(), name='registration'),
+    path('change-password', views.UserChangePasswordAPIView.as_view(), name='change_password'),
+    path('delete', views.UserDeleteAPIView.as_view(), name='delete_profile'),
+
     path('games/', views.GamesListAPIView.as_view(), name='games'),
     path('users/', views.UsersListAPIView.as_view(), name='users_list'),
     path('edit/', views.UserProfileEditAPIView.as_view(), name='edit_profile'),
-    path('change-password/', views.UserChangePasswordAPIView.as_view(), name='change_password'),
-    path('delete/', views.UserDeleteAPIView.as_view(), name='delete_profile'),
     path('friends/', views.UsersListAPIView.as_view(), name='friends'),
     path('views/', views.UsersListAPIView.as_view(), name='views'),
-    path('party-list/<str:game_name>/', views.UserPartyList.as_view(), name='party-list'),
+    path('party-list/<str:game_name>/', views.UserPartyList.as_view(), name='party_list'),
 
     path('<str:username>/friend_request', views.UserFriendRequest.as_view(), name='friend_request'),
     path('<str:username>/friends/', views.UsersListAPIView.as_view(), name='users_friends'),

@@ -35,7 +35,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      action: this.host + '/account/delete/',
+      action: this.host + '/account/delete',
       password: ''
     }
   },

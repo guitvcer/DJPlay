@@ -58,6 +58,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
             User.objects.get(username=attrs['username'])
             raise serializers.ValidationError('Пользователь с таким именем уже существует.')
         except User.DoesNotExist:
+            if attrs['username'] in ('authorization', 'registration', 'games', 'users', 'edit', 'change-password',
+                                     'delete', 'friends', 'views', 'party-list'):
+                raise serializers.ValidationError('Имя пользователя совпадает с ключевой фразой.')
+
             validate_password(attrs['password1'])
 
             if attrs['password1'] != attrs['password2']:

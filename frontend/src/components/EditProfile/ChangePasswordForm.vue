@@ -37,7 +37,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      action: this.host + '/account/change-password/',
+      action: this.host + '/account/change-password',
       body: {
         'oldpassword': '',
         'password1': '',
