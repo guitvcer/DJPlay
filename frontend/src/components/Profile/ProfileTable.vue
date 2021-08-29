@@ -5,20 +5,20 @@
       <h3 class="font-bold text-xl">Основная информация</h3>
       <hr class="mb-2">
       <profile-field
-          v-for="(field, index) in mainInformation"
-          :key="index"
-          :fieldName="field.fieldName"
-          :fieldValue="field.fieldValue"
+        v-for="(field, index) in mainInformation"
+        :key="index"
+        :fieldName="field.fieldName"
+        :fieldValue="field.fieldValue"
       />
     </div>
     <div class="mb-5" v-if="user">
       <h3 class="font-bold text-xl">Дополнительная информация</h3>
       <hr class="mb-2">
       <profile-field
-          v-for="(field, index) in additionalInformation"
-          :key="index"
-          :fieldName="field.fieldName"
-          :fieldValue="field.fieldValue"
+        v-for="(field, index) in additionalInformation"
+        :key="index"
+        :fieldName="field.fieldName"
+        :fieldValue="field.fieldValue"
       />
     </div>
   </div>

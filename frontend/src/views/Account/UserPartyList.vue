@@ -15,9 +15,9 @@
       </select>
     </div>
     <user-party-list-table
-        v-if="!loading && partyList.length > 0"
-        :partyList="partyList"
-        :currentUsername="username"
+      v-if="!loading && partyList.length > 0"
+      :partyList="partyList"
+      :currentUsername="username"
     />
     <h3 v-else-if="partyList.length === 0 && !loading">Нет сыгранных партии</h3>
   </section>

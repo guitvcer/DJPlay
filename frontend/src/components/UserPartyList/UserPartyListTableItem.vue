@@ -1,7 +1,7 @@
 <template>
   <router-link
-      :to="{ name: 'gomokuParty', params: { id: party.id } }"
-      class="flex p-2 text-center bg-white hover:bg-gray-100 dark:bg-main-dark2 dark:hover:bg-main"
+    :to="{ name: 'gomokuParty', params: { id: party.id } }"
+    class="flex p-2 text-center bg-white hover:bg-gray-100 dark:bg-main-dark2 dark:hover:bg-main"
   >
     <div class="w-1/4">{{ party.player1 }}, {{ party.player2 }}</div>
     <div class="w-1/4">{{ getResult(party.winner) }}</div>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { DateTime } from "luxon";
+import { DateTime } from "luxon"
 
 export default {
   props: {

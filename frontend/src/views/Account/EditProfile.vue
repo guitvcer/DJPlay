@@ -1,15 +1,15 @@
 <template>
   <section
-      :class="[!loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ', 'mx-auto px-0 lg:px-12 py-16 mt-8']"
-      style="max-width: 1400px;"
+    :class="[!loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ', 'mx-auto px-0 lg:px-12 py-16 mt-8']"
+    style="max-width: 1400px"
   >
     <loading v-if="loading" class="m-auto" />
     <form v-if="!loading" :action="action" class="block lg:flex justify-around" @submit.prevent="submitForm">
       <edit-profile-avatar
-          :user="user"
-          @submit="submitForm"
-          @create-alert="createAlert"
-          @load-user="$emit('load-user')"
+        :user="user"
+        @submit="submitForm"
+        @create-alert="createAlert"
+        @load-user="$emit('load-user')"
       />
       <edit-profile-table :user="user" />
     </form>

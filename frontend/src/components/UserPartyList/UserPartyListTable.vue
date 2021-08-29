@@ -7,11 +7,11 @@
       <div class="w-1/4">Дата</div>
     </div>
     <user-party-list-table-item
-        v-for="(party, index) in partyList"
-        :key="index"
-        :currentUsername="currentUsername"
-        :party="party"
-        :class="[index === partyList.length - 1 ? 'rounded-b' : '']"
+      v-for="(party, index) in partyList"
+      :key="index"
+      :currentUsername="currentUsername"
+      :party="party"
+      :class="[index === partyList.length - 1 ? 'rounded-b' : '']"
     />
   </div>
 </template>

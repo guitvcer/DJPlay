@@ -4,7 +4,7 @@
     <p
       v-if="fieldName === 'Просмотры'"
       class="font-bold w-full sm:w-6/12 flex-shrink-0"
-      style="word-wrap: break-word;"
+      style="word-wrap: break-word"
     >
       <router-link :to="$route.path + 'views/'">
         {{ getFieldValue }}
@@ -13,13 +13,13 @@
     <p
       v-else-if="fieldName === 'Друзья'"
       class="font-bold w-full sm:w-6/12 flex-shrink-0"
-      style="word-wrap: break-word;"
+      style="word-wrap: break-word"
     >
       <router-link :to="$route.path + 'friends/'">
         {{ getFieldValue }}
       </router-link>
     </p>
-    <p class="font-bold w-full sm:w-6/12 flex-shrink-0" style="word-wrap: break-word;" v-else>{{ getFieldValue }}</p>
+    <p class="font-bold w-full sm:w-6/12 flex-shrink-0" style="word-wrap: break-word" v-else>{{ getFieldValue }}</p>
   </div>
 </template>
 

@@ -12,26 +12,26 @@
     <hr>
     <div class="flex justify-center mt-3">
       <profile-button
-          buttonName="user_profile_edit_save"
-          title="Сохранить"
-          type="submit"
+        buttonName="user_profile_edit_save"
+        title="Сохранить"
+        type="submit"
       />
       <profile-button
-          buttonName="user_profile_edit_cancel"
-          title="Отменить"
-          :url="{ name: 'profile', params: { username: $props.user.username } }"
+        buttonName="user_profile_edit_cancel"
+        title="Отменить"
+        :url="{ name: 'profile', params: { username: $props.user.username } }"
       />
       <profile-button
-          buttonName="user_profile_edit_change_password"
-          title="Сменить пароль"
-          type="button"
-          @click="showChangePasswordModal = true"
+        buttonName="user_profile_edit_change_password"
+        title="Сменить пароль"
+        type="button"
+        @click="showChangePasswordModal = true"
       />
       <profile-button
-          buttonName="user_profile_edit_delete"
-          title="Удалить аккаунт"
-          type="button"
-          @click="showDeleteProfileModal = true"
+        buttonName="user_profile_edit_delete"
+        title="Удалить аккаунт"
+        type="button"
+        @click="showDeleteProfileModal = true"
       />
     </div>
     <modal

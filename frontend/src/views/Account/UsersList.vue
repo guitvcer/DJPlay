@@ -20,12 +20,12 @@
 <script>
 import axios from 'axios'
 import TheSearch from '@/components/UsersList/TheSearch'
-import UserItem from '@/components/UsersList/UserItem'
+import UserListItem from '@/components/UsersList/UserListItem'
 import Loading from '@/components/Interface/Loading'
 
 export default {
   components: {
-    TheSearch, UserItem, Loading
+    TheSearch, UserListItem, Loading
   },
   data() {
     return {

@@ -18,30 +18,30 @@
     </button>
 
     <button
-        v-if="name === 'GomokuParty'"
-        @click="$emit('firstMove')"
-        class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
+      v-if="name === 'GomokuParty'"
+      @click="$emit('firstMove')"
+      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
       <chevron-double-left-icon class="h-6 w-6" />
     </button>
     <button
-        v-if="name === 'GomokuParty'"
-        @click="$emit('prevMove')"
-        class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
+      v-if="name === 'GomokuParty'"
+      @click="$emit('prevMove')"
+      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
       <chevron-left-icon class="h-6 w-6" />
     </button>
     <button
-        v-if="name === 'GomokuParty'"
-        @click="$emit('nextMove')"
-        class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
+      v-if="name === 'GomokuParty'"
+      @click="$emit('nextMove')"
+      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
       <chevron-right-icon class="h-6 w-6" />
     </button>
     <button
-        v-if="name === 'GomokuParty'"
-        @click="$emit('lastMove')"
-        class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
+      v-if="name === 'GomokuParty'"
+      @click="$emit('lastMove')"
+      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
       <chevron-double-right-icon class="h-6 w-6" />
     </button>

@@ -1,18 +1,18 @@
 <template>
   <section
     :class="[
-        !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
-        'block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8'
+      !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
+      'block lg:flex justify-around mx-auto px-0 lg:px-12 py-16 mt-8'
     ]"
     style="max-width: 1400px"
   >
     <loading v-if="loading" />
     <profile-avatar
-        :user="user"
-        :profileViewAccess="profileViewAccess"
-        v-if="!loading"
-        @create-alert="createAlert"
-        @load-profile="setUserProfileInfo"
+      :user="user"
+      :profileViewAccess="profileViewAccess"
+      v-if="!loading"
+      @create-alert="createAlert"
+      @load-profile="setUserProfileInfo"
     />
     <profile-table v-if="profileViewAccess && !loading" :user="user" :extraText="extraText" />
     <profile-table v-else-if="!loading" :extraText="extraText" />

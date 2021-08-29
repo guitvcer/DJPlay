@@ -6,33 +6,33 @@
     >{{ field.placeholder }}</label>
 
     <select
-        :name="field.id"
-        :id="field.name"
-        v-if="field.type === 'select'"
-        class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
+      :name="field.id"
+      :id="field.name"
+      v-if="field.type === 'select'"
+      class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
     >
       <option v-for="(option, index) in field.options" :key="index" :value="option.value">{{ option.title }}</option>
     </select>
 
     <input
-        :type="field.type"
-        :name="field.name"
-        :id="field.name"
-        :value="field.value"
-        @click="check"
-        class="switch"
-        v-else-if="field.type === 'checkbox'"
+      :type="field.type"
+      :name="field.name"
+      :id="field.name"
+      :value="field.value"
+      @click="check"
+      class="switch"
+      v-else-if="field.type === 'checkbox'"
     >
 
     <input
-        :type="field.type"
-        :name="field.name"
-        :id="field.name"
-        :placeholder="field.placeholder"
-        :maxlength="field.max_length"
-        :value="field.value"
-        class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
-        v-else
+      :type="field.type"
+      :name="field.name"
+      :id="field.name"
+      :placeholder="field.placeholder"
+      :maxlength="field.max_length"
+      :value="field.value"
+      class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
+      v-else
     >
   </div>
 </template>

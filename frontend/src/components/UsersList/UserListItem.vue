@@ -8,7 +8,7 @@
     </div>
     <h3 class="pt-2 hover:underline text-xl md:text-lg ml-4 md:ml-0 truncate">
       <router-link
-          :to="{ name: 'profile', params: { username: user.username } }"
+        :to="{ name: 'profile', params: { username: user.username } }"
       >{{ user.username }}</router-link>
     </h3>
   </div>

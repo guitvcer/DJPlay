@@ -1,10 +1,10 @@
 <template>
-  <div class="fixed px-2 right-0 top-5 w-full md:w-auto alert-wrapper" style="z-index: 999999; min-width: 300px;">
+  <div class="fixed px-2 right-0 top-5 w-full md:w-auto alert-wrapper" style="z-index: 999999; min-width: 300px">
     <div
-        role="alert"
-        v-for="(alert, index) in alerts"
-        :key="index"
-        :class="'py-4 px-4 leading-normal rounded border-l-4 w-full flex justify-between my-1 dark:text-black ' + alert.level"
+      role="alert"
+      v-for="(alert, index) in alerts"
+      :key="index"
+      :class="'py-4 px-4 leading-normal rounded border-l-4 w-full flex justify-between my-1 dark:text-black ' + alert.level"
     >
       <div class="flex items-center w-full">
         <information-circle-icon class="h-6 w-6 mr-2 flex-shrink-0" v-if="alert.level === 'simple'" />

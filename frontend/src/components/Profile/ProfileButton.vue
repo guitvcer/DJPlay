@@ -1,9 +1,9 @@
 <template>
   <button
-      type="submit"
-      class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600"
-      v-if="type === 'submit'"
-      @submit.prevent="$emit('submit')"
+    type="submit"
+    class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600"
+    v-if="type === 'submit'"
+    @submit.prevent="$emit('submit')"
   >
     <check-icon class="h-6 w-6" v-if="buttonName === 'user_profile_edit_save'" />
   </button>
@@ -32,14 +32,14 @@
     <trash-icon v-else-if="buttonName === 'user_profile_edit_delete'" class="h-6 w-6" />
   </button>
   <router-link
-      :to="url"
-      class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600"
-      :title="title"
-      v-else
+    :to="url"
+    class="flex border hover:bg-gray-100 px-3 py-2 rounded mx-px sm:mx-1 dark:hover:bg-main dark:border-gray-600"
+    :title="title"
+    v-else
   >
     <user-remove-icon
-        class="h-6 w-6"
-        v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')"
+      class="h-6 w-6"
+      v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')"
     />
     <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friend_request_button'" />
     <span class="block relative -top-0.5" v-else-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>

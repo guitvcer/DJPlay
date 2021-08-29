@@ -17,17 +17,17 @@
 
     <!-- Dropdown -->
     <transition
-        enter-active-class="transition ease-out duration-100"
-        enter-from-class="transform opacity-0 scale-95"
-        enter-to-class="transform opacity-100 scale-100"
-        leave-active-class="transition ease-in duration-75"
-        leave-from-class="transform opacity-100 scale-100"
-        leave-to-class="transform opacity-0 scale-95"
+      enter-active-class="transition ease-out duration-100"
+      enter-from-class="transform opacity-0 scale-95"
+      enter-to-class="transform opacity-100 scale-100"
+      leave-active-class="transition ease-in duration-75"
+      leave-from-class="transform opacity-100 scale-100"
+      leave-to-class="transform opacity-0 scale-95"
     >
       <!-- Dropdown items is user is authorized -->
       <MenuItems
-          class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
-          v-if="isAuthenticated()"
+        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
+        v-if="isAuthenticated()"
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
@@ -68,8 +68,8 @@
 
       <!-- and if user is not authorized -->
       <MenuItems
-          class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
-          v-else
+        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
+        v-else
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
@@ -97,20 +97,20 @@
       </MenuItems>
     </transition>
     <modal
-        action="authorization"
-        :open="open"
-        v-if="showAuthorizationModal"
-        @close-modal="closeModal"
-        @create-alert="createAlert"
-        @load-user="$emit('load-user')"
+      action="authorization"
+      :open="open"
+      v-if="showAuthorizationModal"
+      @close-modal="closeModal"
+      @create-alert="createAlert"
+      @load-user="$emit('load-user')"
     />
     <modal
-        action="registration"
-        :open="open"
-        v-if="showRegistrationModal"
-        @close-modal="closeModal"
-        @create-alert="createAlert"
-        @load-user="$emit('load-user')"
+      action="registration"
+      :open="open"
+      v-if="showRegistrationModal"
+      @close-modal="closeModal"
+      @create-alert="createAlert"
+      @load-user="$emit('load-user')"
     />
   </Menu>
 </template>
