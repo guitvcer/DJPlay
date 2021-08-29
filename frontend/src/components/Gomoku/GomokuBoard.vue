@@ -1,7 +1,7 @@
 <template>
   <div
-      class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
-      id="gomokuBoard"
+    class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
+    id="gomokuBoard"
   >
     <div class="flex flex-col justify-between" id="dotsWrapper">
       <div v-for="(number, index) in numbers" :key="index" class="flex justify-between relative row">
@@ -53,10 +53,12 @@ export default {
       } else this.selectDot(target)
     },
     resizeGomokuBoard() {
-      const gomokuBoard = document.querySelector('#gomokuBoard')
-      gomokuBoard.setAttribute('style',
-          'height: ' + gomokuBoard.offsetWidth + 'px'
-      )
+      try {
+        const gomokuBoard = document.querySelector('#gomokuBoard')
+        gomokuBoard.setAttribute('style',
+            'height: ' + gomokuBoard.offsetWidth + 'px'
+        )
+      } catch (e) {}
     },
     selectDot(target) {
       // выйти из функции, если нажата уже нажатый ход

@@ -61,11 +61,20 @@ export default {
           this.loading = false
         })
         .catch(error => this.$emit('api-error', error))
+    },
+    focusToSearch(event) {
+      if (event.code === 'Slash') {
+        try {
+          const search = document.getElementById('usersListSearch')
+          if (document.activeElement !== search) event.preventDefault()
+          search.focus()
+        } catch (e) {}
+      }
     }
   },
   async mounted() {
     await this.loadUsersList()
-
+    document.addEventListener('keydown', this.focusToSearch)
     document.title = 'Пользователи DJPlay'
   }
 }
