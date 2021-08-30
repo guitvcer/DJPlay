@@ -12,7 +12,7 @@
       <h2 class="text-2xl md:text-3xl pl-3 md:pl-0 pt-3 md:pt-0 font-semibold">Найдено: {{ usersList.length }}</h2>
     </div>
     <div class="md:flex flex-wrap mt-8" v-if="usersList.length && !loading">
-      <user-item v-for="(user, index) in usersList" :key="index" :user="user" />
+      <user-list-item v-for="(user, index) in usersList" :key="index" :user="user" />
     </div>
   </section>
 </template>
@@ -44,10 +44,10 @@ export default {
       let url = this.host
 
       if (
-          this.$route.name === 'usersFriends' ||
-          this.$route.name === 'usersViewers' ||
-          this.$route.name === 'friends' ||
-          this.$route.name === 'viewers'
+        this.$route.name === 'usersFriends' ||
+        this.$route.name === 'usersViewers' ||
+        this.$route.name === 'friends' ||
+        this.$route.name === 'viewers'
       ) {
         url += this.$route.path
       } else {

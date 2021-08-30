@@ -14,7 +14,8 @@ from .services import (
     get_active_users_by_filter,
     get_specific_or_current_user_info,
     get_specific_or_current_users_party_list,
-    get_users_list_or_403
+    get_users_list_or_403,
+    google_authorization
 )
 from . import serializers
 
@@ -149,3 +150,16 @@ class RegistrationAPIView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             return Response(serializer.save(), status=status.HTTP_201_CREATED)
+
+
+class SocialAuthorizationAPIView(APIView):
+    """Авторизация через соц.сети"""
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        credentials = None
+
+        if request.data['provider'] == 'Google':
+            credentials = google_authorization(request.data['code'])
+
+        return Response(credentials, status=status.HTTP_200_OK)

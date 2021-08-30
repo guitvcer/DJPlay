@@ -1,7 +1,9 @@
+import requests
+from django.conf import settings
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.urls import resolve
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated, ParseError, NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
@@ -206,3 +208,48 @@ def add_user_view(request: Request, user: User) -> None:
 
     if request.user.is_authenticated and request.user not in user.get_views():
         UserView.objects.create(view_from=request.user, view_to=user)
+
+
+def google_authorization(code: str) -> dict:
+    """Получить jwt токены авторизации и создать пользователя (если нету) по токену google"""
+
+    google_tokens = requests.post('https://www.googleapis.com/oauth2/v4/token', headers={
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }, data={
+        'code': code,
+        'redirect_uri': f'{settings.CORS_ALLOWED_ORIGINS[0]}/account/google-oauth2/',
+        'client_id': settings.SOCIAL_AUTH_GOOGLE_OAUTH_KEY,
+        'client_secret': settings.SOCIAL_AUTH_GOOGLE_OAUTH_SECRET,
+        'scope': '',
+        'grant_type': 'authorization_code',
+    })
+
+    if google_tokens.status_code == 400:
+        raise ParseError
+
+    google_user_data = requests.get(
+        'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + google_tokens.json()['access_token']
+    ).json()
+
+    try:
+        user = User.objects.get(username=google_user_data['name'])
+
+        if not user.is_active:
+            raise NotFound
+    except User.DoesNotExist:
+        # создать локально .png файл аватарки пользователя
+        avatar = requests.get(google_user_data['picture'])
+        local_avatar_name = f"{google_user_data['name']}.png"
+        local_avatar = open(f"{settings.BASE_DIR}/media/{local_avatar_name}", 'wb')
+        local_avatar.write(avatar.content)
+        local_avatar.close()
+
+        user = User.objects.create(
+            username=google_user_data['name'],
+            first_name=google_user_data['given_name'],
+            last_name=google_user_data['family_name'],
+            email=google_user_data['email'],
+            avatar=local_avatar_name
+        )
+
+    return generate_tokens(user)

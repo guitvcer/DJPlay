@@ -1,6 +1,6 @@
 <template>
   <form :action="this.action" method="post" @submit.prevent="submitForm">
-    <div class="px-4 py-12">
+    <div class="px-4 pt-12">
       <h3 class="text-center text-4xl font-semibold">Вход в аккаунт</h3>
       <div class="flex flex-col mt-12">
         <input
@@ -21,6 +21,22 @@
           v-model="body.password"
           required
         >
+      </div>
+      <div class="flex justify-center py-4">
+        <a
+          :href="`https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${origin}/account/google-oauth2/&prompt=consent&response_type=code&client_id=${this.GOOGLE_CLIENT_ID}&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline`"
+          class="rounded hover:bg-gray-50 dark:hover:bg-main-dark p-2 mx-0.5 border dark:border-main"
+          title="Авторизация через Google"
+        >
+          <img :src="this.host + '/media/icons/google.svg'" alt="Google" class="w-8 h-8">
+        </a>
+        <a
+          href=""
+          class="rounded hover:bg-gray-50 dark:hover:bg-main-dark p-2 mx-0.5 border dark:border-main"
+          title="Авторизация через VK"
+        >
+          <img :src="this.host + '/media/icons/vk.svg'" alt="VK" class="w-8 h-8">
+        </a>
       </div>
     </div>
     <div class="bg-gray-50 dark:bg-main-dark py-3 px-6 flex flex-row-reverse">
@@ -49,7 +65,8 @@ export default {
         password: '',
         recaptcha: ''
       },
-      action: this.host + '/account/authorization'
+      action: this.host + '/account/authorization',
+      origin: window.location.origin
     }
   },
   methods: {

@@ -78,6 +78,11 @@ const routes = [
         component: import('./views/Account/UserPartyList')
     },
     {
+        path: '/account/google-oauth2/',
+        name: 'googleOAuth2',
+        component: import('./views/Account/GoogleOAuth2')
+    },
+    {
         path: '/chat/',
         name: 'chats',
         component: import('./views/Chat/Chat')
