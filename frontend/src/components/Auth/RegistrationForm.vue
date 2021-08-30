@@ -49,7 +49,7 @@
           <img :src="this.host + '/media/icons/google.svg'" alt="Google" class="w-8 h-8">
         </a>
         <a
-          href=""
+          :href="`https://oauth.vk.com/authorize?client_id=${this.VK_CLIENT_ID}&redirect_uri=${origin}/account/vk-oauth2/&display=mobile&response_type=token&v=5.59`"
           class="rounded hover:bg-gray-50 dark:hover:bg-main-dark p-2 mx-0.5 border dark:border-main"
           title="Авторизация через VK"
         >
