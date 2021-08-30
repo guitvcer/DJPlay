@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from account.models import User
 from .serializers import ChatSerializer, ChatListSerializer
-from .services import get_chat
+from .services import get_or_create_chat
 
 
 class ChatListAPIView(ListAPIView):
@@ -28,7 +28,7 @@ class ChatAPIView(APIView):
     def get(request, *args, **kwargs):
         username = kwargs.get('username')
         interlocutor = get_object_or_404(User, username=username)
-        chat = get_chat(request.user, interlocutor)
+        chat = get_or_create_chat(request.user, interlocutor)
         serializer = ChatSerializer(chat)
 
         return Response(serializer.data, status=HTTP_200_OK)

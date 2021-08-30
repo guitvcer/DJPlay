@@ -3,6 +3,7 @@ from django.core.validators import validate_email
 from drf_recaptcha.fields import ReCaptchaV3Field
 from rest_framework import serializers
 
+from chat.services import get_or_create_chat
 from .models import User, Game
 from .services import generate_tokens
 
@@ -82,6 +83,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )
         user.set_password(self.validated_data['password1'])
         user.save()
+
+        get_or_create_chat(user, user)
 
         return generate_tokens(user)
 

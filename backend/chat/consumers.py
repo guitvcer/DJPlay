@@ -5,7 +5,7 @@ from account.models import User
 from account.services import get_user_by_token
 from .models import Message
 from .serializers import MessageSerializer
-from .services import get_chat
+from .services import get_or_create_chat
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -24,7 +24,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         interlocutor = await sync_to_async(User.objects.get)(username=interlocutor_username)
 
         self.user = await sync_to_async(get_user_by_token)(access_token)
-        self.chat = await sync_to_async(get_chat)(self.user, interlocutor)
+        self.chat = await sync_to_async(get_or_create_chat)(self.user, interlocutor)
         self.room_group_name = 'chat_%s' % self.chat.id
 
         await self.channel_layer.group_add(

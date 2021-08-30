@@ -1,6 +1,7 @@
 <template>
   <div class="px-1 mt-2">
     <chat-list-item
+      v-if="chats.length > 0"
       v-for="(chat, index) in chats"
       :key="index"
       :chat="chat"

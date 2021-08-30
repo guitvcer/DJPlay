@@ -11,6 +11,7 @@ from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from social_core.backends.vk import VKOAuth2
 
+from chat.services import get_or_create_chat
 from .models import User, FriendRequest, Game, UserView
 
 
@@ -208,7 +209,7 @@ def get_specific_or_current_users_party_list(request: Request, username: str, ga
 def add_user_view(request: Request, user: User) -> None:
     """Добавить авторизованного пользователя в список просмотров профиля определенного пользователя"""
 
-    if request.user.is_authenticated and request.user not in user.get_views():
+    if request.user.is_authenticated and request.user != user and request.user not in user.get_views():
         UserView.objects.create(view_from=request.user, view_to=user)
 
 
@@ -264,6 +265,7 @@ def google_authorization(code: str) -> dict:
             email=google_user_data['email'],
             avatar=avatar_url
         )
+        get_or_create_chat(user, user)
 
     return generate_tokens(user)
 
@@ -293,5 +295,6 @@ def vk_authorization(access_token: str) -> dict:
             avatar=avatar_url,
             provider='VK'
         )
+        get_or_create_chat(user, user)
 
     return generate_tokens(user)

@@ -2,7 +2,7 @@ from account.models import User
 from .models import Chat
 
 
-def get_chat(current_user: User, interlocutor: User) -> Chat:
+def get_or_create_chat(current_user: User, interlocutor: User) -> Chat:
     """Получить чат по имени пользователя собеседеника"""
 
     try:

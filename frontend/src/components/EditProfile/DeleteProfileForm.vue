@@ -48,6 +48,7 @@ export default {
           }
         })
         .then(response => {
+          this.$parent.$parent.connectionSocket.close()
           this.$emit('create-alert', {
             level: 'success',
             title: 'Вы успешно удалили профиль.'
