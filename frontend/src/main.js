@@ -35,5 +35,6 @@ TimeAgo.addDefaultLocale(ru)
 app.config.globalProperties.timeAgo = new TimeAgo()
 
 app.config.globalProperties.GOOGLE_CLIENT_ID = '568731334008-liiq5eghbc2icnc51c4mrfcdcldsstvn.apps.googleusercontent.com'
+app.config.globalProperties.VK_CLIENT_ID = '7938245'
 
 app.use(router).mount('#app')

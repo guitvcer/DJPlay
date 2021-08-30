@@ -83,6 +83,11 @@ const routes = [
         component: import('./views/Account/GoogleOAuth2')
     },
     {
+        path: '/account/vk-oauth2/',
+        name: 'vkOAuth2',
+        component: import('./views/Account/VKOAuth2')
+    },
+    {
         path: '/chat/',
         name: 'chats',
         component: import('./views/Chat/Chat')

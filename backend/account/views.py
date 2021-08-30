@@ -15,7 +15,8 @@ from .services import (
     get_specific_or_current_user_info,
     get_specific_or_current_users_party_list,
     get_users_list_or_403,
-    google_authorization
+    google_authorization,
+    vk_authorization
 )
 from . import serializers
 
@@ -157,9 +158,13 @@ class SocialAuthorizationAPIView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        credentials = None
+        provider = request.data.get('provider')
 
-        if request.data['provider'] == 'Google':
-            credentials = google_authorization(request.data['code'])
+        if provider == 'Google':
+            credentials = google_authorization(request.data.get('code'))
+        elif provider == 'VK':
+            credentials = vk_authorization(request.data.get('access_token'))
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(credentials, status=status.HTTP_200_OK)

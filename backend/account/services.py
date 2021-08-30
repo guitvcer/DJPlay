@@ -1,3 +1,4 @@
+import os
 import requests
 from django.conf import settings
 from django.db.models import Q
@@ -8,6 +9,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from social_core.backends.vk import VKOAuth2
 
 from .models import User, FriendRequest, Game, UserView
 
@@ -210,8 +212,23 @@ def add_user_view(request: Request, user: User) -> None:
         UserView.objects.create(view_from=request.user, view_to=user)
 
 
+def download_file_by_url(url: str, file_name: str) -> None:
+    """Скачать файл по url"""
+
+    file = requests.get(url)
+    downloaded_file_absolute_url = f'{settings.BASE_DIR}/media/{file_name}'
+
+    if not os.path.exists(downloaded_file_absolute_url):
+        downloaded_file = open(downloaded_file_absolute_url, 'wb')
+        downloaded_file.write(file.content)
+        downloaded_file.close()
+
+
 def google_authorization(code: str) -> dict:
-    """Получить jwt токены авторизации и создать пользователя (если нету) по токену google"""
+    """Получить JWT токены авторизации и создать пользователя (если нету) по токену Google"""
+
+    if code is None:
+        raise ParseError
 
     google_tokens = requests.post('https://www.googleapis.com/oauth2/v4/token', headers={
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -237,19 +254,44 @@ def google_authorization(code: str) -> dict:
         if not user.is_active:
             raise NotFound
     except User.DoesNotExist:
-        # создать локально .png файл аватарки пользователя
-        avatar = requests.get(google_user_data['picture'])
-        local_avatar_name = f"{google_user_data['name']}.png"
-        local_avatar = open(f"{settings.BASE_DIR}/media/{local_avatar_name}", 'wb')
-        local_avatar.write(avatar.content)
-        local_avatar.close()
+        avatar_url = f"{google_user_data['name']}.png"
+        download_file_by_url(google_user_data['picture'], avatar_url)
 
         user = User.objects.create(
             username=google_user_data['name'],
             first_name=google_user_data['given_name'],
             last_name=google_user_data['family_name'],
             email=google_user_data['email'],
-            avatar=local_avatar_name
+            avatar=avatar_url
+        )
+
+    return generate_tokens(user)
+
+
+def vk_authorization(access_token: str) -> dict:
+    """Получить JWT токены авторизации и создать пользователя (если нету) по токену VK"""
+
+    if access_token is None:
+        raise NotFound
+
+    vk_user_data = VKOAuth2().user_data(access_token=access_token)
+
+    try:
+        user = User.objects.get(username=vk_user_data['screen_name'])
+
+        if not user.is_active:
+            raise NotFound
+    except User.DoesNotExist:
+        avatar_url = f"{vk_user_data['screen_name']}.png"
+        download_file_by_url(vk_user_data['photo'], avatar_url)
+
+        user = User.objects.create(
+            username=vk_user_data['screen_name'],
+            first_name=vk_user_data['first_name'],
+            last_name=vk_user_data['last_name'],
+            email=vk_user_data.get('email'),
+            avatar=avatar_url,
+            provider='VK'
         )
 
     return generate_tokens(user)

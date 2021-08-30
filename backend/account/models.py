@@ -19,16 +19,17 @@ class User(AbstractUser):
         ('F', 'Женский')
     )
     PROVIDERS = (
-        ('1', 'DJPlay'),
-        ('2', 'VK'),
-        ('3', 'Google')
+        ('DJPlay', 'DJPlay'),
+        ('VK', 'VK'),
+        ('Google', 'Google')
     )
 
     id = models.AutoField(primary_key=True)
     avatar = models.ImageField(default="/user.png", verbose_name="Фото профиля")
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=GENDERS, verbose_name="Пол")
-    provider = models.CharField(default="1", choices=PROVIDERS, max_length=64,
+    email = models.EmailField(null=True, blank=True, max_length=64, verbose_name="Эл.почта")
+    provider = models.CharField(default="DJPlay", choices=PROVIDERS, max_length=64,
                                 verbose_name="Соц. сеть через которую вошел")
     last_online = models.DateTimeField(null=True, blank=True, verbose_name="Был онлайн в")
     is_online = models.BooleanField(default=False, verbose_name="Онлайн?")
