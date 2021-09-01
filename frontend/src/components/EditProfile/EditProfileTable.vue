@@ -63,21 +63,21 @@ export default {
           type: 'date',
           name: 'birthday',
           placeholder: 'Дата рождения',
-          value: this.user.birthday
+          value: this.user['birthday']
         },
         {
           type: 'text',
           name: 'first_name',
           placeholder: 'Имя',
           max_length: 64,
-          value: this.user.first_name
+          value: this.user['first_name']
         },
         {
           type: 'text',
           name: 'last_name',
           placeholder: 'Фамилия',
           max_length: 64,
-          value: this.user.last_name
+          value: this.user['last_name']
         },
         {
           type: 'select',
@@ -97,13 +97,13 @@ export default {
           ],
           name: 'gender',
           placeholder: 'Пол',
-          value: this.user.gender
+          value: this.user['gender']
         },
         {
           type: 'checkbox',
           name: 'is_private',
           placeholder: 'Приватный аккаунт?',
-          value: this.user.is_private
+          value: this.user['is_private']
         }
       ]
     }

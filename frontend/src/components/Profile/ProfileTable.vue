@@ -43,10 +43,12 @@ export default {
   },
   mounted() {
     if (this.user) {
+      console.log(this.user)
+
       this.mainInformation = [
         {
           fieldName: (this.user.is_online) ? 'Статус' : 'Был(-а) онлайн',
-          fieldValue: (this.user.is_online) ? 'Онлайн' : this.user.last_online
+          fieldValue: (this.user.is_online) ? 'Онлайн' : this.user['last_online']
         },
         {
           fieldName: 'Имя пользователя',
@@ -58,35 +60,35 @@ export default {
         },
         {
           fieldName: 'Друзья',
-          fieldValue: this.user.friends
+          fieldValue: this.user['friends']
         }
       ]
       this.additionalInformation = [
         {
           fieldName: 'Просмотры',
-          fieldValue: this.user.views
+          fieldValue: this.user['views']
         },
         {
           fieldName: 'Пол',
-          fieldValue: (this.user.gender === null) ? 'Не указано' : (
-              this.user.gender === 'M' ? 'Мужской' : 'Женский'
+          fieldValue: (this.user['gender'] === "") ? 'Не указано' : (
+              this.user['gender'] === 'M' ? 'Мужской' : 'Женский'
           )
         },
         {
           fieldName: 'Дата рождения',
-          fieldValue: this.user.birthday
+          fieldValue: this.user['birthday']
         },
         {
           fieldName: 'Дата регистрации',
-          fieldValue: this.user.date_joined
+          fieldValue: this.user['date_joined']
         },
         {
           fieldName: 'Настоящее имя',
-          fieldValue: this.user.first_name
+          fieldValue: this.user['first_name']
         },
         {
           fieldName: 'Настоящяя фамилия',
-          fieldValue: this.user.last_name
+          fieldValue: this.user['last_name']
         }
       ]
     }

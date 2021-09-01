@@ -10,7 +10,6 @@
       :to="{ name: 'profile', params: { username: interlocutor.username } }"
       class="flex items-center hover:bg-gray-100 mx-2 p-2 dark:hover:bg-main rounded"
     >
-<!--      <img :src="this.host + this.interlocutor.avatar" :alt="'Аватар ' + interlocutor.username" class="w-12 h-12 rounded">-->
       <div
         :style="'background-image: url(' + this.host + this.interlocutor.avatar + '); background-size: 100% 100%'"
         class="w-12 h-12 rounded flex justify-end items-end"
@@ -20,7 +19,7 @@
       <div class="ml-3">
         <h2 class="text-xl font-semibold">{{ interlocutor.username }}</h2>
         <p class="text-gray-500" v-if="interlocutor.is_online">В сети</p>
-        <p class="text-gray-500" v-else>{{ parseDate(interlocutor['last_online']) }}</p>
+        <p class="text-gray-500" v-else>Был(-а) в сети {{ parseDate(interlocutor['last_online']) }}</p>
       </div>
     </router-link>
   </div>
