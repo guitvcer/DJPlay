@@ -5,7 +5,7 @@
     v-if="type === 'submit'"
     @submit.prevent="$emit('submit')"
   >
-    <check-icon class="h-6 w-6" v-if="buttonName === 'user_profile_edit_save'" />
+    <check-icon class="h-6 w-6" v-if="buttonName === 'userProfileEditSave'" />
   </button>
   <button
     type="button"
@@ -23,13 +23,13 @@
     v-else-if="type === 'button'"
   >
     <user-remove-icon
-        class="h-6 w-6"
-        v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')"
+      class="h-6 w-6"
+      v-if="buttonName === 'friendRequestButton' && (friendRequest === 'accepted' || friendRequest === 'sent')"
     />
-    <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friend_request_button'" />
-    <span class="block relative -top-0.5" v-else-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
-    <cog-icon class="h-6 w-6" v-else-if="buttonName === 'user_profile_edit_change_password'" />
-    <trash-icon v-else-if="buttonName === 'user_profile_edit_delete'" class="h-6 w-6" />
+    <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friendRequestButton'" />
+    <span class="block relative -top-0.5" v-else-if="buttonName === 'friendRequestButton'">&nbsp; {{ friendsCount }}</span>
+    <cog-icon class="h-6 w-6" v-else-if="buttonName === 'userProfileEditChangePassword'" />
+    <trash-icon v-else-if="buttonName === 'userProfileEditDelete'" class="h-6 w-6" />
   </button>
   <router-link
     :to="url"
@@ -39,14 +39,14 @@
   >
     <user-remove-icon
       class="h-6 w-6"
-      v-if="buttonName === 'friend_request_button' && (friendRequest === 'accepted' || friendRequest === 'sent')"
+      v-if="buttonName === 'friendRequestButton' && (friendRequest === 'accepted' || friendRequest === 'sent')"
     />
-    <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friend_request_button'" />
-    <span class="block relative -top-0.5" v-else-if="buttonName === 'friend_request_button'">&nbsp; {{ friendsCount }}</span>
-    <chat-icon v-else-if="buttonName === 'user_chat_button'" class="h-6 w-6" />
-    <pencil-icon class="h-6 w-6" v-else-if="buttonName === 'edit_profile_button'" />
-    <lightning-bolt-icon class="h-6 w-6" v-else-if="buttonName === 'user_party_list_button'" />
-    <arrow-sm-left-icon class="h-6 w-6" v-else-if="buttonName === 'user_profile_edit_cancel'" />
+    <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friendRequestButton'" />
+    <span class="block relative -top-0.5" v-else-if="buttonName === 'friendRequestButton'">&nbsp; {{ friendsCount }}</span>
+    <chat-icon v-else-if="buttonName === 'userChatButton'" class="h-6 w-6" />
+    <pencil-icon class="h-6 w-6" v-else-if="buttonName === 'editProfileButton'" />
+    <lightning-bolt-icon class="h-6 w-6" v-else-if="buttonName === 'userPartyListButton'" />
+    <arrow-sm-left-icon class="h-6 w-6" v-else-if="buttonName === 'userProfileEditCancel'" />
   </router-link>
 </template>
 
@@ -87,8 +87,8 @@ export default {
   },
   computed: {
     title() {
-      if (this.buttonName === 'friend_request') return 'Добавить в друзья'
-      else if (this.buttonName === 'send_message') return 'Написать сообщение'
+      if (this.buttonName === 'friendRequest') return 'Добавить в друзья'
+      else if (this.buttonName === 'sendMessage') return 'Написать сообщение'
     }
   }
 }

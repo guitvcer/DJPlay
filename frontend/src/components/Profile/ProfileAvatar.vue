@@ -8,14 +8,14 @@
     <hr v-if="profileViewAccess">
     <div class="flex justify-center mt-3">
       <profile-button
-        buttonName="friend_request_button"
+        buttonName="friendRequestButton"
         title="Друзья"
         :friendsCount="user['friends']"
         :url="{ name: 'friends' }"
         v-if="user['isMe']"
       />
       <profile-button
-        buttonName="friend_request_button"
+        buttonName="friendRequestButton"
         type="button"
         :friendRequest="user.friendRequest"
         :friendsCount="user['friends']"
@@ -23,25 +23,25 @@
         v-else
       />
       <profile-button
-        buttonName="user_chat_button"
+        buttonName="userChatButton"
         title="Написать сообщение"
         :url="{ name: 'chat', params: { username: user.username } }"
         v-if="profileViewAccess && !user['isMe']"
       />
       <profile-button
-        buttonName="edit_profile_button"
+        buttonName="editProfileButton"
         title="Изменить профиль"
         :url="{ name: 'editProfile', params: { username: user.username } }"
         v-if="user['isMe']"
       />
       <profile-button
-        buttonName="user_party_list_button"
+        buttonName="userPartyListButton"
         title="Посмотреть сыгранные партии"
         :url="{ name: 'userPartyList', params: { username: user.username } }"
         v-if="profileViewAccess && $route.params.username"
       />
       <profile-button
-        buttonName="user_party_list_button"
+        buttonName="userPartyListButton"
         title="Посмотреть сыгранные партии"
         :url="{ name: 'partyList' }"
         v-else-if="user['isMe']"
