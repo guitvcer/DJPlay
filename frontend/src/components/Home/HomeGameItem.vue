@@ -3,10 +3,9 @@
     <img :src="game.image" :alt="game.name" class="w-60 mb-10">
     <h3 class="font-bold text-3xl mb-4">{{ game.name }}</h3>
     <router-link
-      :to="{ name: game.app_name }"
-      class="border-main border px-3 py-2 rounded text-center hover:bg-main dark:hover:bg-main-dark2 hover:text-white dark:bg-main-dark2"
-    >
-      Играть<span v-if="!game.is_released"> (в разработке)</span>
+      :to="{ name: game['app_name'] }"
+      class="border-main border px-3 py-2 rounded text-center hover:bg-main dark:hover:bg-main-dark hover:text-white dark:bg-main-dark2"
+    >Играть<span v-if="!game['is_released']"> (в разработке)</span>
     </router-link>
   </div>
 </template>

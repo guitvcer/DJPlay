@@ -26,7 +26,7 @@
     >
       <!-- Dropdown items is user is authorized -->
       <MenuItems
-        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
+        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
         v-if="isAuthenticated()"
       >
         <div class="py-1">
@@ -68,7 +68,7 @@
 
       <!-- and if user is not authorized -->
       <MenuItems
-        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark2 border-main-light border"
+        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
         v-else
       >
         <div class="py-1">
@@ -79,19 +79,16 @@
             >Войти</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
-            <router-link
-              to="/"
+            <button
               :class="dropdownItemClass"
               @click="open = true; showRegistrationModal = true"
-            >Регистрация</router-link>
+            >Регистрация</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <router-link
               :to="{ name: 'users' }"
               :class="dropdownItemClass"
-            >
-              Пользователи
-            </router-link>
+            >Пользователи</router-link>
           </MenuItem>
         </div>
       </MenuItems>
@@ -125,7 +122,8 @@ export default {
     return {
       open: ref(false),
       showAuthorizationModal: false,
-      showRegistrationModal: false
+      showRegistrationModal: false,
+      dropdownItemClass: 'hover:bg-gray-50 hover:text-gray-900 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main w-full text-left'
     }
   },
   props: {
@@ -161,11 +159,6 @@ export default {
     },
     createAlert(alert) {
       this.$emit('create-alert', alert)
-    }
-  },
-  computed: {
-    dropdownItemClass() {
-      return 'hover:bg-gray-50 hover:text-gray-900 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main w-full text-left'
     }
   }
 }
