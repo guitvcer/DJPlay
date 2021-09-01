@@ -57,15 +57,15 @@ export default {
       if (event.target.avatar.files[0])
         editProfileData.append('avatar', event.target.avatar.files[0])
       else
-        editProfileData.append('clear_avatar', event.target.avatar.dataset.clear)
+        editProfileData.append('clearAvatar', event.target.avatar.dataset.clear)
 
       editProfileData.append('username', event.target.username.value)
       editProfileData.append('email', event.target.email.value)
-      editProfileData.append('birthday', event.target.birthday.value)
-      editProfileData.append('first_name', event.target.first_name.value)
-      editProfileData.append('last_name', event.target.last_name.value)
-      editProfileData.append('gender', event.target.gender.value)
-      editProfileData.append('is_private', event.target.is_private.value)
+      editProfileData.append('birthday', event.target['birthday'].value)
+      editProfileData.append('firstName', event.target['firstName'].value)
+      editProfileData.append('lastName', event.target['lastName'].value)
+      editProfileData.append('gender', event.target['gender'].value)
+      editProfileData.append('isPrivate', event.target['isPrivate'].value)
 
       axios
         .patch(this.action, editProfileData, {

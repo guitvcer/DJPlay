@@ -16,11 +16,11 @@
     <div class="flex flex-col justify-end px-4">
       <div class="flex items-center">
         <label for="online" class="mr-2">Онлайн</label>
-        <input type="checkbox" id="online" name="online" class="w-5 h-5" v-model="body.is_online">
+        <input type="checkbox" id="online" name="online" class="w-5 h-5" v-model="body.isOnline">
       </div>
       <div class="flex items-center" v-if="isAuthenticated()">
         <label for="online" class="mr-2">В друзьях</label>
-        <input type="checkbox" id="friend" name="friend" class="w-5 h-5" v-model="body.is_friend">
+        <input type="checkbox" id="friend" name="friend" class="w-5 h-5" v-model="body.isFriend">
       </div>
     </div>
   </form>
@@ -38,8 +38,8 @@ export default {
     return {
       body: {
         query: '',
-        is_online: false,
-        is_friend: false
+        isOnline: false,
+        isFriend: false
       }
     }
   },

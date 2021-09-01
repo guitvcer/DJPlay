@@ -58,7 +58,7 @@ export default {
   computed: {
     gameBackgroundUrl() {
       if (!this.loading)
-        return `${this.host}/media/${this.game['app_name']}/board_background.png`
+        return `${this.host}/media/${this.game.appName}/board_background.png`
     }
   },
   methods: {

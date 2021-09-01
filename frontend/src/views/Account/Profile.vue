@@ -53,11 +53,11 @@ export default {
           document.title = `${this.user.username} - Профиль`
 
           if (this.user.username === viewer.username) {
-            if (this.user.is_private)
+            if (this.user['isPrivate'])
               this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
             this.profileViewAccess = true
-          } else if (this.user.is_private) {
-            if (this.user.friend_request === 'accepted') this.profileViewAccess = true
+          } else if (this.user['isPrivate']) {
+            if (this.user['friendRequest'] === 'accepted') this.profileViewAccess = true
             else {
               this.extraText = 'Приватный аккаунт. Информация скрыта.'
               this.profileViewAccess = false

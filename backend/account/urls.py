@@ -19,7 +19,7 @@ urlpatterns = [
     path('views/', views.UsersListAPIView.as_view(), name='views'),
     path('party-list/<str:game_name>/', views.UserPartyList.as_view(), name='party_list'),
 
-    path('<str:username>/friend_request', views.UserFriendRequest.as_view(), name='friend_request'),
+    path('<str:username>/friend-request', views.UserFriendRequest.as_view(), name='friend_request'),
     path('<str:username>/friends/', views.UsersListAPIView.as_view(), name='users_friends'),
     path('<str:username>/views/', views.UsersListAPIView.as_view(), name='users_views'),
     path('<str:username>/party-list/<str:game_name>/', views.UserPartyList.as_view(), name='users_party_list'),

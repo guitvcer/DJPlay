@@ -67,17 +67,17 @@ export default {
         },
         {
           type: 'text',
-          name: 'first_name',
+          name: 'firstName',
           placeholder: 'Имя',
           max_length: 64,
-          value: this.user['first_name']
+          value: this.user['firstName']
         },
         {
           type: 'text',
-          name: 'last_name',
+          name: 'lastName',
           placeholder: 'Фамилия',
           max_length: 64,
-          value: this.user['last_name']
+          value: this.user['lastName']
         },
         {
           type: 'select',
@@ -101,9 +101,9 @@ export default {
         },
         {
           type: 'checkbox',
-          name: 'is_private',
+          name: 'isPrivate',
           placeholder: 'Приватный аккаунт?',
-          value: this.user['is_private']
+          value: this.user['isPrivate']
         }
       ]
     }

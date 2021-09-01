@@ -1,11 +1,11 @@
 <template>
   <chat-small-text v-if="otherDay(index, message.date)">{{ parseDate(message.date) }}</chat-small-text>
   <div
-    :class="['flex', message['sent_from']['username'] === currentUsername ? ' justify-end' : '']"
+    :class="['flex', message['sentFrom']['username'] === currentUsername ? ' justify-end' : '']"
   >
     <div
       :class="[
-        message['sent_from']['username'] === currentUsername ?
+        message['sentFrom']['username'] === currentUsername ?
         'bg-white dark:bg-main dark:border-main-dark2' :
         'bg-main-light text-white dark:bg-main-dark2 dark:border-main',
         ' border px-2 py-1 rounded select-text break-all'

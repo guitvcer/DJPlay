@@ -10,15 +10,15 @@
       <profile-button
         buttonName="friend_request_button"
         title="Друзья"
-        :friendsCount="user.friends"
+        :friendsCount="user['friends']"
         :url="{ name: 'friends' }"
-        v-if="user.is_me"
+        v-if="user['isMe']"
       />
       <profile-button
         buttonName="friend_request_button"
         type="button"
-        :friendRequest="user.friend_request"
-        :friendsCount="user.friends"
+        :friendRequest="user.friendRequest"
+        :friendsCount="user['friends']"
         @click="friendRequest"
         v-else
       />
@@ -26,13 +26,13 @@
         buttonName="user_chat_button"
         title="Написать сообщение"
         :url="{ name: 'chat', params: { username: user.username } }"
-        v-if="profileViewAccess && !user.is_me"
+        v-if="profileViewAccess && !user['isMe']"
       />
       <profile-button
         buttonName="edit_profile_button"
         title="Изменить профиль"
         :url="{ name: 'editProfile', params: { username: user.username } }"
-        v-if="user.is_me"
+        v-if="user['isMe']"
       />
       <profile-button
         buttonName="user_party_list_button"
@@ -44,7 +44,7 @@
         buttonName="user_party_list_button"
         title="Посмотреть сыгранные партии"
         :url="{ name: 'partyList' }"
-        v-else-if="user.is_me"
+        v-else-if="user['isMe']"
       />
     </div>
 
@@ -89,7 +89,7 @@ export default {
     friendRequest() {
       if (this.isAuthenticated()) {
         axios
-          .get(this.host + window.location.pathname + 'friend_request')
+          .get(this.host + window.location.pathname + 'friend-request')
           .then(response => {
             this.$emit('create-alert', {
               title: response.data.title,

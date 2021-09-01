@@ -43,12 +43,10 @@ export default {
   },
   mounted() {
     if (this.user) {
-      console.log(this.user)
-
       this.mainInformation = [
         {
-          fieldName: (this.user.is_online) ? 'Статус' : 'Был(-а) онлайн',
-          fieldValue: (this.user.is_online) ? 'Онлайн' : this.user['last_online']
+          fieldName: (this.user.isOnline) ? 'Статус' : 'Был(-а) онлайн',
+          fieldValue: (this.user.isOnline) ? 'Онлайн' : this.user['lastOnline']
         },
         {
           fieldName: 'Имя пользователя',
@@ -80,15 +78,15 @@ export default {
         },
         {
           fieldName: 'Дата регистрации',
-          fieldValue: this.user['date_joined']
+          fieldValue: this.user['dateJoined']
         },
         {
           fieldName: 'Настоящее имя',
-          fieldValue: this.user['first_name']
+          fieldValue: this.user['firstName']
         },
         {
           fieldName: 'Настоящяя фамилия',
-          fieldValue: this.user['last_name']
+          fieldValue: this.user['lastName']
         }
       ]
     }

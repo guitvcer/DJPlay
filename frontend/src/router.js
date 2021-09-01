@@ -48,7 +48,7 @@ const routes = [
         component: import('./views/Account/UsersList.vue')
     },
     {
-        path: '/account/:username/friend_request',
+        path: '/account/:username/friend-request',
         name: 'friendRequest',
         redirect: '/:username/'
     },

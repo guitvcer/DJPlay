@@ -4,7 +4,7 @@
       :style="'background-image: url(' + this.host + user.avatar + '); background-size: 100% 100%'"
       class="w-16 h-16 md:w-24 md:h-24 rounded flex justify-end items-end"
     >
-      <div v-if="user.is_online" class="rounded w-5 h-5 bg-green-500"></div>
+      <div v-if="user['isOnline']" class="rounded w-5 h-5 bg-green-500"></div>
     </div>
     <h3 class="pt-2 hover:underline text-xl md:text-lg ml-4 md:ml-0 truncate">
       <router-link

@@ -12,7 +12,7 @@
       :style="'background-image: url(' + interlocutor.avatar + '); background-size: 100% 100%'"
       class="mr-3 flex-shrink-0 w-12 h-12 rounded flex justify-end items-end"
     >
-      <div v-if="interlocutor.is_online" class="w-4 h-4 rounded bg-green-500"></div>
+      <div v-if="interlocutor['isOnline']" class="w-4 h-4 rounded bg-green-500"></div>
     </div>
     <div class="truncate">
       <p class="font-semibold">{{ interlocutor.username }}</p>
@@ -46,9 +46,9 @@ export default {
   },
   computed: {
     lastMessage() {
-      if (this.chat['last_message']['sent_from']['username'] === this.currentUsername)
-        return `Вы: ${this.chat['last_message']['text']}`
-      else return this.chat['last_message']['text']
+      if (this.chat['lastMessage']['sentFrom']['username'] === this.currentUsername)
+        return `Вы: ${this.chat['lastMessage']['text']}`
+      else return this.chat['lastMessage']['text']
     },
     selected() {
       return this.interlocutor.username === this.$route.params.username
