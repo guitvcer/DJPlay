@@ -8,10 +8,9 @@
   >
     <loading v-if="loading" />
     <div v-if="!loading" class="flex justify-between w-full mb-16">
-      <h2 class="text-3xl font-semibold">{{ title }}</h2>
+      <h2 class="text-3xl font-semibold">{{ title }} ({{ partyList.length }})</h2>
       <select class="bg-white dark:bg-main border-2 border-main rounded" v-model="game">
         <option value="gomoku">Гомоку</option>
-        <option value="chess">Шахматы</option>
       </select>
     </div>
     <user-party-list-table

@@ -7,8 +7,7 @@
       <profile-field
         v-for="(field, index) in mainInformation"
         :key="index"
-        :fieldName="field.fieldName"
-        :fieldValue="field.fieldValue"
+        :field="field"
       />
     </div>
     <div class="mb-5" v-if="user">
@@ -17,8 +16,7 @@
       <profile-field
         v-for="(field, index) in additionalInformation"
         :key="index"
-        :fieldName="field.fieldName"
-        :fieldValue="field.fieldValue"
+        :field="field"
       />
     </div>
   </div>
@@ -37,8 +35,8 @@ export default {
   },
   data() {
     return {
-      mainInformation: [],
-      additionalInformation: []
+      mainInformation: null,
+      additionalInformation: null
     }
   },
   mounted() {

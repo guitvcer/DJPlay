@@ -8,7 +8,7 @@
     <hr v-if="profileViewAccess">
     <div class="flex justify-center mt-3">
       <profile-button
-        buttonName="friendRequestButton"
+        buttonName="friendsButton"
         title="Друзья"
         :friendsCount="user['friends']"
         :url="{ name: 'friends' }"

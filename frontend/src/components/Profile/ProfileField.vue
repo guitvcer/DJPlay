@@ -1,23 +1,17 @@
 <template>
   <div class="block sm:flex mb-2 sm:mb-0">
-    <h4 class="w-full sm:w-6/12 flex-shrink-0">{{ fieldName }}</h4>
+    <h4 class="w-full sm:w-6/12 flex-shrink-0">{{ field.fieldName }}</h4>
     <p
-      v-if="fieldName === 'Просмотры'"
-      class="font-bold w-full sm:w-6/12 flex-shrink-0"
-      style="word-wrap: break-word"
+      v-if="field.fieldName === 'Просмотры'"
+      class="font-bold w-full sm:w-6/12 flex-shrink-0 break-words"
     >
-      <router-link :to="$route.path + 'views/'">
-        {{ getFieldValue }}
-      </router-link>
+      <router-link :to="$route.path + 'views/'">{{ getFieldValue }}</router-link>
     </p>
     <p
-      v-else-if="fieldName === 'Друзья'"
-      class="font-bold w-full sm:w-6/12 flex-shrink-0"
-      style="word-wrap: break-word"
+      v-else-if="field.fieldName === 'Друзья'"
+      class="font-bold w-full sm:w-6/12 flex-shrink-0 break-words"
     >
-      <router-link :to="$route.path + 'friends/'">
-        {{ getFieldValue }}
-      </router-link>
+      <router-link :to="$route.path + 'friends/'">{{ getFieldValue }}</router-link>
     </p>
     <p class="font-bold w-full sm:w-6/12 flex-shrink-0" style="word-wrap: break-word" v-else>{{ getFieldValue }}</p>
   </div>
@@ -28,28 +22,25 @@ import { DateTime } from 'luxon'
 
 export default {
   props: {
-    fieldName: {
-      type: String,
+    field: {
+      type: Object,
       required: true,
     },
-    fieldValue: {
-      required: true
-    }
   },
   computed: {
     getFieldValue() {
-      if (this.fieldValue === null) return 'Не указано'
+      if (this.field.fieldValue === null) return 'Не указано'
 
-      if (typeof this.fieldValue === 'string') {
-        if (this.fieldValue === '') return 'Не указано'
-        else if (this.fieldName === 'Был(-а) онлайн') return this.timeAgo.format(Date.parse(this.fieldValue))
-        else if (this.fieldName === 'Дата рождения' || this.fieldName === 'Дата регистрации') {
-          return DateTime.fromISO(this.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
+      if (typeof this.field.fieldValue === 'string') {
+        if (this.field.fieldValue === '') return 'Не указано'
+        else if (this.field.fieldName === 'Был(-а) онлайн') return this.timeAgo.format(Date.parse(this.field.fieldValue))
+        else if (this.field.fieldName === 'Дата рождения' || this.field.fieldName === 'Дата регистрации') {
+          return DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
         }
-        else this.fieldValue.substr(0, 48)
+        else this.field.fieldValue.substr(0, 48)
       }
 
-      return this.fieldValue
+      return this.field.fieldValue
     }
   }
 }

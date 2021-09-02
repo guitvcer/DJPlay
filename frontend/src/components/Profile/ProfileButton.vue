@@ -37,13 +37,19 @@
     :title="title"
     v-else
   >
+    <user-group-icon
+      class="h-6 w-6"
+      v-if="buttonName === 'friendsButton'"
+    />
     <user-remove-icon
       class="h-6 w-6"
-      v-if="buttonName === 'friendRequestButton' && (friendRequest === 'accepted' || friendRequest === 'sent')"
+      v-else-if="buttonName === 'friendRequestButton' && (friendRequest === 'accepted' || friendRequest === 'sent')"
     />
-    <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friendRequestButton'" />
+
+    <user-add-icon class="h-6 w-6" v-if="buttonName === 'friendRequestButton'" />
     <span class="block relative -top-0.5" v-else-if="buttonName === 'friendRequestButton'">&nbsp; {{ friendsCount }}</span>
-    <chat-icon v-else-if="buttonName === 'userChatButton'" class="h-6 w-6" />
+
+    <chat-icon v-if="buttonName === 'userChatButton'" class="h-6 w-6" />
     <pencil-icon class="h-6 w-6" v-else-if="buttonName === 'editProfileButton'" />
     <lightning-bolt-icon class="h-6 w-6" v-else-if="buttonName === 'userPartyListButton'" />
     <arrow-sm-left-icon class="h-6 w-6" v-else-if="buttonName === 'userProfileEditCancel'" />
@@ -59,6 +65,7 @@ import {
   LightningBoltIcon,
   PencilIcon,
   TrashIcon,
+  UserGroupIcon,
   UserAddIcon,
   UserRemoveIcon
 } from '@heroicons/vue/outline'
@@ -82,6 +89,7 @@ export default {
     LightningBoltIcon,
     PencilIcon,
     TrashIcon,
+    UserGroupIcon,
     UserAddIcon,
     UserRemoveIcon
   },
