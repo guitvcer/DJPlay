@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser
@@ -7,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gomoku.serializers import GomokuPartyListSerializer
-from .models import Game
 from .services import (
     add_user_view,
     create_or_delete_or_accept_friend_request,
@@ -16,7 +14,8 @@ from .services import (
     get_specific_or_current_users_party_list,
     get_users_list_or_403,
     google_authorization,
-    vk_authorization
+    vk_authorization,
+    get_games
 )
 from . import serializers
 
@@ -27,10 +26,7 @@ class GamesListAPIView(ListAPIView):
     serializer_class = serializers.GameSerializer
 
     def get_queryset(self):
-        if settings.DEBUG:
-            return Game.objects.all()
-
-        return Game.objects.filter(is_released=True)
+        return get_games()
 
 
 class UsersListAPIView(APIView):
@@ -38,13 +34,13 @@ class UsersListAPIView(APIView):
 
     @staticmethod
     def get(request, username=None):
-        users_list = get_users_list_or_403(request, username)
+        users_list = get_users_list_or_403(request.path_info, username, request.user)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @staticmethod
     def post(request, *args, **kwargs):
-        users_list = get_active_users_by_filter(request)
+        users_list = get_active_users_by_filter(request.data, request.user, request.path_info)
         serializer = serializers.UserInfoSerializer(users_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -55,8 +51,8 @@ class UserProfileAPIView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
         username = kwargs.get('username')
-        user_data, user = get_specific_or_current_user_info(request, username, serializers.UserProfileSerializer)
-        add_user_view(request, user)
+        user_data, user = get_specific_or_current_user_info(request.user, username, serializers.UserProfileSerializer)
+        add_user_view(request.user, user)
         return Response(user_data, status=status.HTTP_200_OK)
 
 
@@ -103,7 +99,7 @@ class UserDeleteAPIView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 
-class UserFriendRequest(APIView):
+class UserFriendRequestAPIView(APIView):
     """Запрос на дружбу"""
 
     permission_classes = (IsAuthenticated, )
@@ -115,13 +111,13 @@ class UserFriendRequest(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class UserPartyList(APIView):
+class UserPartyListAPIView(APIView):
     """Список сыгранных партии пользователя"""
 
     @staticmethod
     def get(request, *args, **kwargs):
-        game = get_object_or_404(Game.objects.all(), app_name=kwargs.get('game_name'))
-        user_party_list = get_specific_or_current_users_party_list(request, kwargs.get('username'), game)
+        game = get_object_or_404(get_games(), app_name=kwargs.get('game_name'))
+        user_party_list = get_specific_or_current_users_party_list(request.user, kwargs.get('username'), game)
         serializer = GomokuPartyListSerializer(user_party_list, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -28,7 +28,7 @@ export default {
     return {
       numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
       letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p'],
-      newMoveSound: new Audio(this.host + '/media/sounds/new_move.mp3')
+      newMoveSound: new Audio(`${this.host}/media/sounds/new_move.mp3`)
     }
   },
   mounted() {
@@ -108,7 +108,9 @@ export default {
       // добавить порядковый номер внутрь "точки"
       target.innerHTML = this.$parent.moves.length
 
-      this.newMoveSound.play()
+      try {
+        this.newMoveSound.play()
+      } catch (e) {}
     },
     selectPartyDots() {
       for (const move of this.$parent.party.moves) {

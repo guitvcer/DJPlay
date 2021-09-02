@@ -1,7 +1,8 @@
+from account.models import User
 from .models import Party, Move
 
 
-def player_gives_up(party_id, loser):
+def player_gives_up(party_id: id, loser: User) -> None:
     """Игрок сдается"""
 
     party = Party.objects.get(id=party_id)
@@ -17,19 +18,13 @@ def player_gives_up(party_id, loser):
     party.save()
 
 
-def create_gomoku_party():
-    """Создать игру Гомоку"""
-
-    return Party.objects.create()
-
-
-def get_x(move):
+def get_x(move: Move) -> str:
     """Получить колонну/букву хода"""
 
     return move.coordinate[0]
 
 
-def get_y(move):
+def get_y(move: Move) -> str:
     """Получить ряд/число хода"""
 
     if len(move.coordinate) == 2:
@@ -38,13 +33,13 @@ def get_y(move):
         return move.coordinate[1] + move.coordinate[2]
 
 
-def get_letter(letter, n):
+def get_letter(letter: str, n: int) -> str:
     """Получить букву через n букв после буквы"""
 
     return chr(ord(letter) + n)
 
 
-def check_row(move, party, player):
+def check_row(move: Move, party: Party, player: User) -> (list, None):
     """Вернуть 5 точек непрерывной линии, если регистрируемый сейчас ход является завершающим линию"""
 
     x = get_x(move)
@@ -96,7 +91,7 @@ def check_row(move, party, player):
                 return moves
 
 
-def register_move(coordinate, party_id, player):
+def register_move(coordinate: str, party_id: int, player: User) -> (list, None):
     """Зарегистрировать ход, и вернуть коордианаты, в случае когда ход делает линию из 5 точек"""
 
     if coordinate == 'nothing':
@@ -111,20 +106,7 @@ def register_move(coordinate, party_id, player):
         return check_row(move, party, player)
 
 
-def get_last_move_of_player(party_id, player):
-    """Получить последний ход игрока определенной партии"""
-
-    party = Party.objects.get(id=party_id)
-
-    if party.player1 == player:
-        player2 = party.player2
-    else:
-        player2 = party.player1
-
-    return party.get_moves().filter(player=player2).last().coordinate
-
-
-def delete_returnable_move(party_id, coordinate):
+def delete_returnable_move(party_id: int, coordinate: str) -> None:
     """Удалить ходы после возвращаемого хода"""
 
     party = Party.objects.get(id=party_id)

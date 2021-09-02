@@ -53,7 +53,7 @@ class User(AbstractUser):
         """Получить QuerySet из друзей"""
 
         fqs = []
-        active_users = User.active.exclude(id=self.id)
+        active_users = User.active.all()
 
         for active_user in active_users:
             try:
@@ -83,7 +83,7 @@ class User(AbstractUser):
 
             return Party.objects.filter(player1=self).union(Party.objects.filter(player2=self)).order_by('-date')
 
-    def get_views(self) -> QuerySet:
+    def get_viewers(self) -> QuerySet:
         """Получить пользователей, которое просматривали страницу этого пользователя"""
 
         views = UserView.objects.filter(view_to=self)
@@ -92,10 +92,10 @@ class User(AbstractUser):
 
         return queryset
 
-    def has_access_to_view_data_of_another_user(self, request: Request) -> bool:
+    def has_access_to_view_data_of_another_user(self, user) -> bool:
         """Может ли user просматривать данные этого пользователя"""
 
-        return (self == request.user) or (request.user in self.get_friends()) or not self.is_private
+        return (self == user) or (user in self.get_friends()) or not self.is_private
 
     class Meta:
         verbose_name = 'Пользователь'
