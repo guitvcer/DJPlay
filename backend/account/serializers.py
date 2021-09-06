@@ -48,8 +48,8 @@ class AuthorizationSerializer(serializers.Serializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializer регистрациия пользователя"""
 
-    password1 = serializers.CharField(required=True)
-    password2 = serializers.CharField(required=True)
+    password_1 = serializers.CharField(required=True)
+    password_2 = serializers.CharField(required=True)
     recaptcha = ReCaptchaV3Field(action='registration')
 
     def validate(self, attrs):
@@ -63,9 +63,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
                                      'delete', 'friends', 'views', 'party-list', 'google-oauth2', 'vk-oauth2'):
                 raise serializers.ValidationError('Имя пользователя совпадает с ключевой фразой.')
 
-            validate_password(attrs['password1'])
+            validate_password(attrs['password_1'])
 
-            if attrs['password1'] != attrs['password2']:
+            if attrs['password_1'] != attrs['password_2']:
                 raise serializers.ValidationError('Пароли не совпадают.')
 
             validate_email(attrs['email'])
@@ -81,7 +81,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             username=self.validated_data['username'],
             email=self.validated_data['email']
         )
-        user.set_password(self.validated_data['password1'])
+        user.set_password(self.validated_data['password_1'])
         user.save()
 
         get_or_create_chat(user, user)
@@ -90,7 +90,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2', 'recaptcha')
+        fields = ('username', 'email', 'password_1', 'password_2', 'recaptcha')
 
 
 class GameSerializer(serializers.ModelSerializer):
@@ -130,33 +130,33 @@ class UserProfileEditSerializer(serializers.ModelSerializer):
 class UserChangePasswordSerializer(serializers.Serializer):
     """Serializer смены пароль пользователя"""
 
-    oldpassword = serializers.CharField(required=True)
-    password1 = serializers.CharField(required=True)
-    password2 = serializers.CharField(required=True)
+    old_password = serializers.CharField(required=True)
+    password_1 = serializers.CharField(required=True)
+    password_2 = serializers.CharField(required=True)
 
     def validate(self, attrs):
-        oldpassword = attrs['oldpassword']
-        password1 = attrs['password1']
-        password2 = attrs['password2']
+        old_password = attrs['old_password']
+        password_1 = attrs['password_1']
+        password_2 = attrs['password_2']
 
-        if not self.instance.check_password(oldpassword):
+        if not self.instance.check_password(old_password):
             raise serializers.ValidationError('Введен неверный старый пароль.')
 
-        if oldpassword == password1:
+        if old_password == password_1:
             raise serializers.ValidationError('Вы ввели старый пароль.')
 
-        validate_password(password1)
+        validate_password(password_1)
 
-        if password1 != password2:
+        if password_1 != password_2:
             raise serializers.ValidationError('Пароли не совпадают.')
 
-        self.instance.set_password(password1)
+        self.instance.set_password(password_1)
         self.instance.save()
 
         return attrs
 
     def save(self):
-        self.instance.set_password(self.validated_data['password1'])
+        self.instance.set_password(self.validated_data['password_1'])
         self.instance.save()
 
 

@@ -1,8 +1,5 @@
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, get_object_or_404, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
-from rest_framework.views import APIView
 
 from account.models import User
 from .serializers import ChatSerializer, ChatListSerializer
@@ -19,16 +16,15 @@ class ChatListAPIView(ListAPIView):
         return self.request.user.get_chats()
 
 
-class ChatAPIView(APIView):
+class ChatAPIView(RetrieveAPIView):
     """API определенного чата"""
 
     permission_classes = (IsAuthenticated, )
+    serializer_class = ChatSerializer
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        username = kwargs.get('username')
+    def get_object(self):
+        username = self.kwargs.get('username')
         interlocutor = get_object_or_404(User, username=username)
-        chat = get_or_create_chat(request.user, interlocutor)
-        serializer = ChatSerializer(chat)
+        chat = get_or_create_chat(self.request.user, interlocutor)
 
-        return Response(serializer.data, status=HTTP_200_OK)
+        return chat

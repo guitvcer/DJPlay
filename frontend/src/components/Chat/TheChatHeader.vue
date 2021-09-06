@@ -11,7 +11,7 @@
       class="flex items-center hover:bg-gray-100 mx-2 p-2 dark:hover:bg-main rounded"
     >
       <div
-        :style="'background-image: url(' + this.host + this.interlocutor.avatar + '); background-size: 100% 100%'"
+        :style="'background-image: url(' + this.interlocutor.avatar + '); background-size: 100% 100%'"
         class="w-12 h-12 rounded flex justify-end items-end"
       >
         <div v-if="this.interlocutor['isOnline']" class="rounded w-4 h-4 bg-green-500"></div>
@@ -40,6 +40,8 @@ export default {
   },
   methods: {
     parseDate(date) {
+      if (date == null) return 'никогда'
+
       return this.timeAgo.format(Date.parse(date))
     }
   }

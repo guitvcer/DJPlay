@@ -66,7 +66,7 @@ export default {
         },
         {
           fieldName: 'Пол',
-          fieldValue: (this.user['gender'] === "") ? 'Не указано' : (
+          fieldValue: (this.user['gender'] === "" || this.user['gender'] == null) ? 'Не указано' : (
               this.user['gender'] === 'M' ? 'Мужской' : 'Женский'
           )
         },

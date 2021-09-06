@@ -35,7 +35,8 @@ export default {
       chat: null,
       loading: true,
       display: 'chats',
-      chatSocket: null
+      chatSocket: null,
+      interlocutor: null
     }
   },
   methods: {
@@ -55,6 +56,13 @@ export default {
           .then(response => {
             this.chat = response.data
             this.display = 'chat'
+
+            const username = document.getElementById('username').innerHTML
+
+            if (this.chat['user1'].username === username) this.interlocutor = this.chat['user2']
+            else this.interlocutor = this.chat['user1']
+
+            document.title = `Сообщения - ${this.interlocutor.username}`
           })
           .catch(error => this.$emit('api-error', error))
 
@@ -108,16 +116,7 @@ export default {
 
       if (this.$route.params.username) {
         await this.loadChat()
-        document.title = `Сообщения - ${this.interlocutor.username}`
       }
-    }
-  },
-  computed: {
-    interlocutor() {
-      const username = document.getElementById('username').innerHTML
-
-      if (this.chat.user1.username === username) return this.chat['user2']
-      else return this.chat['user1']
     }
   }
 }
