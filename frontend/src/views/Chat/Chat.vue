@@ -66,8 +66,9 @@ export default {
           })
           .catch(error => this.$emit('api-error', error))
 
-        const url = `${this.webSocketHost}/chat/ws/${this.interlocutor.username}/${this.getCookie('access')}/`
+        const url = `${this.webSocketHost}/chat/ws/${this.interlocutor.username}/`
         this.chatSocket = new WebSocket(url)
+        this.chatSocket.onopen = this.chatSocketOnOpen
         this.chatSocket.onmessage = this.chatSocketOnMessage
       }, 10)
     },
@@ -89,6 +90,12 @@ export default {
       this.chatSocket.send(JSON.stringify({
         text: messageText
       }))
+    },
+    chatSocketOnOpen(e) {
+      const message = {
+        access_token: this.getCookie('access')
+      }
+      this.chatSocket.send(JSON.stringify(message))
     },
     chatSocketOnMessage(e) {
       const newMessage = JSON.parse(e.data).message
