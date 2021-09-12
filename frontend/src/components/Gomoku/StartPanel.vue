@@ -7,16 +7,19 @@
         class="px-6 py-4 w-full text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
         @click="$emit('find-opponent')"
         v-if="!$parent.gameStatus"
+        tabindex="3"
       >Найти соперника</button>
       <button
         class="px-6 py-4 w-full text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
         @click="$emit('cancel-finding')"
         v-else-if="$parent.gameStatus === 'finding'"
+        tabindex="3"
       >Отменить ожидание</button>
       <button
         class="px-6 py-4 w-full text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
         @click="$emit('give-up')"
         v-else-if="$parent.gameStatus === 'playing'"
+        tabindex="3"
       >Сдаться</button>
     </div>
     <div v-else-if="name === 'GomokuParty'" class="hidden 2xl:flex px-8 justify-center mt-4">

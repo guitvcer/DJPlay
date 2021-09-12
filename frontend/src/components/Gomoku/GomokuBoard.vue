@@ -2,14 +2,21 @@
   <div
     class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
     id="gomokuBoard"
+    @keydown.left="focusToLeft"
+    @keydown.down="focusToDown"
+    @keydown.up="focusToUp"
+    @keydown.right="focusToRight"
   >
     <div class="flex flex-col justify-between" id="dotsWrapper">
-      <div v-for="(number, index) in numbers" :key="index" class="flex justify-between relative row">
+      <div v-for="(number, numberIndex) in numbers" :key="numberIndex" class="flex justify-between relative row">
         <div
-          v-for="(letter, index) in letters"
-          :key="index" :id="letter + number"
+          v-for="(letter, letterIndex) in letters"
+          :key="letterIndex"
+          :id="letter + number"
           :class="$parent.dotClassName"
+          :tabindex="numberIndex * 15 + letterIndex + 4"
           @click="registerMove($event.target)"
+          @keydown.enter="registerMove($event.target)"
         />
       </div>
     </div>
@@ -109,6 +116,7 @@ export default {
       target.innerHTML = this.$parent.moves.length
 
       try {
+        this.newMoveSound.currentTime = 0
         this.newMoveSound.play()
       } catch (e) {}
     },
@@ -117,6 +125,38 @@ export default {
         const dot = document.getElementById(move['coordinate'])
         this.selectDot(dot)
       }
+    },
+    focusToLeft() {
+      if (this.$route.name === 'gomokuParty') return
+
+      const tabIndex = +document.activeElement.getAttribute('tabindex') - 1
+
+      if (tabIndex > 3)
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+    },
+    focusToDown() {
+      if (this.$route.name === 'gomokuParty') return
+
+      const tabIndex = +document.activeElement.getAttribute('tabindex') + 15
+
+      if (tabIndex < 229)
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+    },
+    focusToUp() {
+      if (this.$route.name === 'gomokuParty') return
+
+      const tabIndex = +document.activeElement.getAttribute('tabindex') - 15
+
+      if (tabIndex > 3)
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+    },
+    focusToRight() {
+      if (this.$route.name === 'gomokuParty') return
+
+      const tabIndex = +document.activeElement.getAttribute('tabindex') + 1
+
+      if (tabIndex < 229)
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
     }
   }
 }
