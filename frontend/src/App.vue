@@ -34,8 +34,9 @@ export default {
         username: 'Гость',
         avatar: '/media/user.png'
       },
-      connectionSocket: null, // websocket for setting value for is_online
+      chatSocket: null,
       status: 200,
+      newMessageSound: new Audio(`${this.host}/media/sounds/message.mp3`)
     }
   },
   components: {
@@ -48,23 +49,56 @@ export default {
     async setUserInfo() {
       this.user = await this.getUserInfo()
 
-      if (this.isAuthenticated()) this.openConnectionSocket()
+      if (this.isAuthenticated()) this.openChatSocket()
     },
-    connectionSocketOnOpen() {
-      this.connectionSocket.send(JSON.stringify({
-        access_token: this.getCookie('access')
+    chatSocketOnOpen() {
+      this.chatSocket.send(JSON.stringify({
+        access: this.getCookie('access')
       }))
     },
-    openConnectionSocket() {
-      this.connectionSocket = new WebSocket(this.webSocketHost + '/ws')
-      this.connectionSocket.onopen = this.connectionSocketOnOpen
+    chatSocketOnMessage(e) {
+      const data = JSON.parse(e.data)
+
+      if (data.status === 400) return
+
+      const message = data.message
+
+      if (this.$route.params.username === message.sentFrom.username) return
+
+      const title = `
+        <div class="flex hover:bg-gray-100 p-2 rounded">
+          <div>
+            <div
+              style="background-image: url(${this.host}${message.sentFrom.avatar}); background-size: 100% 100%"
+              class="w-12 h-12 rounded flex justify-end items-end"
+            >
+              <div class="rounded w-4 h-4 bg-green-500"></div>
+            </div>
+          </div>
+          <div class="ml-3">
+            <h2 class="text-xl font-semibold">${message.sentFrom.username}</h2>
+            <p class="text-gray-500">${message.text}</p>
+          </div>
+        </div>`
+
+      this.alerts.push({
+        title: title,
+        level: 'simple',
+        url: `/chat/${message.sentFrom.username}/`
+      })
+      this.newMessageSound.play()
+    },
+    openChatSocket() {
+      this.chatSocket = new WebSocket(this.webSocketHost + '/ws')
+      this.chatSocket.onopen = this.chatSocketOnOpen
+      this.chatSocket.onmessage = this.chatSocketOnMessage
     },
     apiError(error) {
       this.status = error.response.status
     }
   },
-  mounted() {
-    this.setUserInfo()
+  async mounted() {
+    await this.setUserInfo()
   }
 }
 </script>

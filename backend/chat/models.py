@@ -9,6 +9,9 @@ class Chat(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 1', related_name='chat_user1')
     user2 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 2', related_name='chat_user2')
 
+    def get_interlocutor(self, user: User) -> User:
+        return self.user2 if user == self.user1 else self.user1
+
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'

@@ -10,6 +10,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
+            gomoku = None
+
             try:
                 gomoku = Game.objects.get(name="Гомоку")
                 Queue.objects.get(game=gomoku)
@@ -27,26 +29,6 @@ class Command(BaseCommand):
                 Queue.objects.create(game=gomoku)
             except Queue.DoesNotExist:
                 Queue.objects.create(game=gomoku)
-
-            try:
-                chess = Game.objects.get(name='Шахматы')
-                Queue.objects.get(game=chess)
-            except Game.DoesNotExist:
-                chess = Game.objects.create(
-                    name="Шахматы",
-                    app_name="chess",
-                    rules="Шахматная партия ведётся между двумя соперниками на шахматной доске путём передвижения"
-                          " шахматных фигур. Соперником в шахматной партии может быть один человек, коллектив из"
-                          " нескольких человек или компьютер.<ul><li>Партия считается выигранной шахматистом,"
-                          " который дал мат королю соперника.</li><li>Партия считается выигранной тем из партнёров,"
-                          " противник которого признал себя побеждённым.</li><li>Партия считается выигранной, если у"
-                          " одного из шахматистов закончилось время на ходы.</li></ul>",
-                    image="/chess.png",
-                    is_released=False
-                )
-                Queue.objects.create(game=chess)
-            except Queue.DoesNotExist:
-                Queue.objects.create(game=chess)
 
             self.stdout.write(self.style.SUCCESS('Database was successfully set up'))
         except OperationalError:

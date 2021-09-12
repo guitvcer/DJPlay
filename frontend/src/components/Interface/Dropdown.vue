@@ -141,7 +141,7 @@ export default {
   },
   methods: {
     logout() {
-      this.$parent.$parent.connectionSocket.close()
+      this.$parent.$parent.chatSocket.close()
 
       document.cookie = 'access=; Max-Age=0; path=/'
       document.cookie = 'refresh=; Max-Age=0; path=/'

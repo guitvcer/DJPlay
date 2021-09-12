@@ -64,7 +64,7 @@ export default {
       await axios
         .patch(this.action, this.body)
         .then(response => {
-          this.$parent.$parent.connectionSocket.close()
+          this.$parent.$parent.chatSocket.close()
 
           document.cookie = 'access=; Max-Age=0; path=/'
           document.cookie = 'refresh=; Max-Age=0; path=/'

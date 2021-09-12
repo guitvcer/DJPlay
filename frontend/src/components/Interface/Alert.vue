@@ -11,7 +11,15 @@
         <exclamation-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'danger'" />
         <badge-check-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'success'" />
         <shield-exclamation-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'warning'" />
-        <p class="flex flex-col justify-start items-center text-left mr-2" v-html="alert.title" />
+
+        <router-link
+          v-if="alert.url"
+          @click="alerts.splice(index, 1)"
+          :to="alert.url"
+          class="flex flex-col justify-start items-center text-left mr-2"
+          v-html="alert.title"
+        />
+        <p v-else class="flex flex-col justify-start items-center text-left mr-2" v-html="alert.title" />
       </div>
       <button @click="alerts.splice(index, 1)">
         <x-icon class="w-4 h-4 fill-current" />

@@ -63,13 +63,12 @@ export default {
             else this.interlocutor = this.chat['user1']
 
             document.title = `Сообщения - ${this.interlocutor.username}`
+
+            this.chatSocket = new WebSocket(`${this.webSocketHost}/ws`)
+            this.chatSocket.onopen = this.chatSocketOnOpen
+            this.chatSocket.onmessage = this.chatSocketOnMessage
           })
           .catch(error => this.$emit('api-error', error))
-
-        const url = `${this.webSocketHost}/chat/ws/${this.interlocutor.username}/`
-        this.chatSocket = new WebSocket(url)
-        this.chatSocket.onopen = this.chatSocketOnOpen
-        this.chatSocket.onmessage = this.chatSocketOnMessage
       }, 10)
     },
     unselectChat() {
@@ -78,7 +77,7 @@ export default {
       this.display = 'chats'
 
       try {
-        this.chatSocket.close()
+        // this.chatSocket.close()
       } catch (e) {}
     },
     setEventForEscape() {
@@ -88,17 +87,22 @@ export default {
     },
     submitMessage(messageText) {
       this.chatSocket.send(JSON.stringify({
-        text: messageText
+        messageText: messageText,
+        chatId: this.chat.id
       }))
     },
-    chatSocketOnOpen(e) {
-      const message = {
-        access_token: this.getCookie('access')
-      }
-      this.chatSocket.send(JSON.stringify(message))
+    chatSocketOnOpen() {
+      this.chatSocket.send(JSON.stringify({
+        access: this.getCookie('access'),
+        chatId: this.chat.id
+      }))
     },
     chatSocketOnMessage(e) {
-      const newMessage = JSON.parse(e.data).message
+      const data = JSON.parse(e.data)
+
+      if (data.status === 400) return
+
+      const newMessage = data.message
 
       for (const message of this.chat.messages) {
         if (message.id === newMessage.id) return
