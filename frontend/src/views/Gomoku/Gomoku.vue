@@ -156,7 +156,7 @@ export default {
                 level: 'success',
                 title: 'Вы выиграли.'
               })
-            } else if (this.data.username === this.opponent) {
+            } else {
               this.$emit('create-alert', {
                 level: 'danger',
                 title: 'Вы проиграли.'
@@ -223,17 +223,22 @@ export default {
 
         if (data['returner'] === this.username) alert_title = 'Вы отправили запрос на отмену хода.'
         else if (data['returner'] === this.opponent) {
-          alert_title = `Соперник запрашивает отмену хода.
-            <button class="acceptReturnMoveButton">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            <button class="declineReturnMoveButton">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>`
+          alert_title = `
+            <div class="flex items-center">
+              <p>Соперник запрашивает отмену хода.</p>
+              <div class="flex">
+                <button class="acceptReturnMoveButton rounded p-2 hover:bg-gray-100 border-2 border-gray-500 mx-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+                <button class="declineReturnMoveButton rounded p-2 hover:bg-gray-100 border-2 border-gray-500 mx-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>`
         }
 
         this.$emit('create-alert', {

@@ -77,7 +77,7 @@ export default {
           </div>
           <div class="ml-3">
             <h2 class="text-xl font-semibold">${message.sentFrom.username}</h2>
-            <p class="text-gray-500">${message.text}</p>
+            <p class="text-gray-500 break-all">${message.text}</p>
           </div>
         </div>`
 
