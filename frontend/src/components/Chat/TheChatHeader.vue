@@ -8,7 +8,7 @@
     </button>
     <router-link
       :to="{ name: 'profile', params: { username: interlocutor.username } }"
-      class="flex items-center hover:bg-gray-100 mx-2 p-2 dark:hover:bg-main rounded"
+      class="flex items-center hover:bg-gray-100 mx-2 p-2 dark:hover:bg-main rounded w-full"
     >
       <div
         :style="'background-image: url(' + this.interlocutor.avatar + '); background-size: 100% 100%'"

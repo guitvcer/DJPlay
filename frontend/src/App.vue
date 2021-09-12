@@ -66,7 +66,7 @@ export default {
       if (this.$route.params.username === message.sentFrom.username) return
 
       const title = `
-        <div class="flex hover:bg-gray-100 p-2 rounded">
+        <div class="flex hover:bg-gray-100 p-2 rounded w-full">
           <div>
             <div
               style="background-image: url(${this.host}${message.sentFrom.avatar}); background-size: 100% 100%"
@@ -86,6 +86,7 @@ export default {
         level: 'simple',
         url: `/chat/${message.sentFrom.username}/`
       })
+      this.newMessageSound.currentTime = 0
       this.newMessageSound.play()
     },
     openChatSocket() {

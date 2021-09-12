@@ -5,9 +5,16 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.urls import resolve
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated, ParseError, NotFound
+from rest_framework.exceptions import (
+    PermissionDenied,
+    NotAuthenticated,
+    ParseError,
+    NotFound,
+    AuthenticationFailed,
+)
 from rest_framework.generics import get_object_or_404
 from rest_framework.serializers import SerializerMetaclass
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from social_core.backends.vk import VKOAuth2
 
@@ -18,10 +25,13 @@ from .models import User, FriendRequest, Game, UserView
 def get_user_by_token(access_token: str) -> User:
     """Получить пользователя по токену"""
 
-    access = AccessToken(access_token)
-    user = User.objects.get(id=access['user_id'])
+    try:
+        access = AccessToken(access_token)
+        user = User.objects.get(id=access['user_id'])
 
-    return user
+        return user
+    except TokenError:
+        raise AuthenticationFailed
 
 
 def generate_tokens(user: User) -> dict:
@@ -72,6 +82,9 @@ def create_or_delete_or_accept_friend_request(request_from: User, username_of_re
     """Создать|удалить|принять запрос на дружбу"""
 
     request_to = User.objects.get(username=username_of_request_to)
+
+    if request_from == request_to:
+        raise ParseError
 
     try:
         try:

@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import QuerySet
-from rest_framework.request import Request
 
 
 class UserManager(models.Manager):
@@ -66,12 +65,7 @@ class User(AbstractUser):
                 except FriendRequest.DoesNotExist:
                     pass
 
-        ids_friends = []
-
-        for fq in fqs:
-            for active_user in active_users:
-                if active_user.id in (fq.request_to.id, fq.request_from.id):
-                    ids_friends.append(active_user.id)
+        ids_friends = [fq.get_friend(self).id for fq in fqs]
 
         return User.objects.filter(id__in=ids_friends)
 
@@ -168,6 +162,9 @@ class FriendRequest(models.Model):
     is_active = models.BooleanField(default=False, verbose_name="Принят ли запрос?")
 
     def __str__(self): return f'От {self.request_from} к {self.request_to}'
+
+    def get_friend(self, user: User) -> User:
+        return self.request_from if user == self.request_to else self.request_to
 
     class Meta:
         verbose_name = 'Запрос на дружбу'

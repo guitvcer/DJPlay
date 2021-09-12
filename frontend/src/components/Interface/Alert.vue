@@ -4,9 +4,9 @@
       role="alert"
       v-for="(alert, index) in alerts"
       :key="index"
-      :class="'py-4 px-4 leading-normal rounded border-l-4 w-full flex justify-between my-1 dark:text-black ' + alert.level"
+      :class="'p-1 leading-normal rounded border-l-4 w-full flex justify-between my-1 dark:text-black ' + alert.level"
     >
-      <div class="flex items-center w-full">
+      <div class="flex items-center w-full pl-4">
         <information-circle-icon class="h-6 w-6 mr-2 flex-shrink-0" v-if="alert.level === 'simple'" />
         <exclamation-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'danger'" />
         <badge-check-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'success'" />
@@ -14,17 +14,22 @@
 
         <router-link
           v-if="alert.url"
-          @click="alerts.splice(index, 1)"
+          @click="clearSimilarAlerts(alert.url)"
           :to="alert.url"
-          class="flex flex-col justify-start items-center text-left mr-2"
+          class="flex flex-col justify-start items-center text-left mr-2 w-full"
           v-html="alert.title"
         />
-        <p v-else class="flex flex-col justify-start items-center text-left mr-2" v-html="alert.title" />
+        <p v-else class="flex flex-col justify-start items-center text-left mr-2 py-3" v-html="alert.title" />
       </div>
-      <button @click="alerts.splice(index, 1)">
+      <button @click="alerts.splice(index, 1)" class="pr-4">
         <x-icon class="w-4 h-4 fill-current" />
       </button>
     </div>
+    <button
+      v-if="alerts.length > 1"
+      class="py-2 px-4 leading-normal rounded w-full flex justify-center my-1 dark:text-black simple dark:bg-main dark:text-gray-200 dark:hover:bg-main-dark font-bold text-center hover:bg-gray-50"
+      @click="alerts.splice(0, alerts.length)"
+    >Очистить</button>
   </div>
 </template>
 
@@ -50,6 +55,19 @@ export default {
     InformationCircleIcon,
     ShieldExclamationIcon,
     XIcon
+  },
+  methods: {
+    clearSimilarAlerts(url) {
+      let deletedAlertsCount = 0
+      const alertsLength = this.alerts.length
+
+      for (let index = 0; index < alertsLength; index++) {
+        if (this.alerts[index - deletedAlertsCount].url === url) {
+          this.alerts.splice(index - deletedAlertsCount, 1)
+          deletedAlertsCount++
+        }
+      }
+    }
   }
 }
 </script>
@@ -75,6 +93,7 @@ export default {
 @media screen and (min-width: 1024px) {
   .alert-wrapper {
     top: 100px;
+    max-width: 500px;
   }
 }
 </style>

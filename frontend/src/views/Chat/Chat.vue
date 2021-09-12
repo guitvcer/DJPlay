@@ -77,7 +77,7 @@ export default {
       this.display = 'chats'
 
       try {
-        // this.chatSocket.close()
+        this.chatSocket.close()
       } catch (e) {}
     },
     setEventForEscape() {
@@ -86,6 +86,16 @@ export default {
       })
     },
     submitMessage(messageText) {
+      messageText = messageText.trim()
+
+      if (messageText === "") {
+        this.$emit('create-alert', {
+          title: 'Нельзя отправлять пустые сообщения.',
+          level: 'danger'
+        })
+        return
+      }
+
       this.chatSocket.send(JSON.stringify({
         messageText: messageText,
         chatId: this.chat.id
@@ -100,7 +110,7 @@ export default {
     chatSocketOnMessage(e) {
       const data = JSON.parse(e.data)
 
-      if (data.status === 400) return
+      if (data.status === 400 || !this.chat) return
 
       const newMessage = data.message
 

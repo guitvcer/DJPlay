@@ -35,9 +35,12 @@ export default {
         if (this.field.fieldValue === '') return 'Не указано'
         else if (this.field.fieldName === 'Был(-а) онлайн') return this.timeAgo.format(Date.parse(this.field.fieldValue))
         else if (this.field.fieldName === 'Дата рождения' || this.field.fieldName === 'Дата регистрации') {
-          return DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
-        }
-        else this.field.fieldValue.substr(0, 48)
+          const date = DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
+
+          if (this.field.fieldName === 'Дата регистрации') {
+            return date + ' ' + DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('H:m')
+          } else return date
+        } else this.field.fieldValue.substr(0, 48)
       }
 
       return this.field.fieldValue
