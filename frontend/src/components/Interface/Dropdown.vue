@@ -27,7 +27,7 @@
       <!-- Dropdown items is user is authorized -->
       <MenuItems
         class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
-        v-if="isAuthenticated()"
+        v-if="user.username !== 'Гость'"
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
@@ -129,7 +129,10 @@ export default {
   props: {
     user: {
       type: Object,
-      required: true
+      default: {
+        username: 'Гость',
+        avatar: '/media/user.png'
+      }
     }
   },
   components: {

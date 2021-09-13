@@ -37,9 +37,6 @@ export default {
           this.games = response.data
           this.loading = false
         })
-        .catch(error => {
-          this.$emit('api-error', error)
-        })
     }
   },
   async mounted() {

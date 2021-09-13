@@ -3,6 +3,7 @@ from asgiref.sync import sync_to_async
 from channels.exceptions import RequestAborted
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.utils import timezone
+from rest_framework.exceptions import AuthenticationFailed
 
 from account.services import get_user_by_token
 from .models import Chat, Message
@@ -44,6 +45,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.add_to_specific_chat_group(content)
             await self.create_message_and_notify_users(content)
         except RequestAborted:
+            await self.send_json({
+                'status': 400
+            })
+        except AuthenticationFailed:
             await self.send_json({
                 'status': 400
             })

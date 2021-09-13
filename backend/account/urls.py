@@ -11,6 +11,7 @@ urlpatterns = [
     path('change-password', views.UserChangePasswordAPIView.as_view(), name='change_password'),
     path('delete', views.UserDeleteAPIView.as_view(), name='delete_profile'),
     path('social-authorization', views.SocialAuthorizationAPIView.as_view(), name='social_authorization'),
+    path('refresh-token', views.RefreshTokenAPIView.as_view(), name='refresh_token'),
 
     path('games/', views.GamesListAPIView.as_view(), name='games'),
     path('users/', views.UsersListAPIView.as_view(), name='users_list'),

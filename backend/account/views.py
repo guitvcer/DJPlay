@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -164,3 +164,13 @@ class SocialAuthorizationAPIView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(credentials, status=status.HTTP_200_OK)
+
+
+class RefreshTokenAPIView(APIView):
+    """Получить новый access_token по старому refresh_token"""
+
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.RefreshTokenSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.save(), status=status.HTTP_200_OK)

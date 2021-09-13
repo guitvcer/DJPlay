@@ -10,7 +10,7 @@ from rest_framework.exceptions import (
     NotAuthenticated,
     ParseError,
     NotFound,
-    AuthenticationFailed,
+    AuthenticationFailed
 )
 from rest_framework.generics import get_object_or_404
 from rest_framework.serializers import SerializerMetaclass

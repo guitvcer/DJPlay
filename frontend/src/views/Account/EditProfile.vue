@@ -51,7 +51,7 @@ export default {
             this.$emit('api-error', error)
         })
     },
-    submitForm(event) {
+    async submitForm(event) {
       const editProfileData = new FormData()
 
       if (event.target.avatar.files[0])
@@ -67,7 +67,7 @@ export default {
       editProfileData.append('gender', event.target['gender'].value)
       editProfileData.append('isPrivate', event.target['isPrivate'].value)
 
-      axios
+      await axios
         .patch(this.action, editProfileData, {
           headers: {
             'Content-Type': 'multipart/form-data'

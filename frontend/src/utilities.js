@@ -7,10 +7,23 @@ function getCookie(name) {
     }
 }
 
-function isAuthenticated() {
-    let accessToken = getCookie('access')
+async function refreshToken() {
+    return axios
+        .post(`http://127.0.0.1:8000/account/refresh-token`, {
+            access: getCookie('access'),
+            refresh: getCookie('refresh')
+        })
+        .then(response => {
+            document.cookie = `access=${response.data.access}; path=/`
+            return true
+        })
+        .catch(error => false)
+}
 
-    return !(!accessToken || accessToken === '');
+async function isAuthenticated() {
+    const refreshToken = getCookie('access')
+
+    return !(refreshToken === undefined || refreshToken === '')
 }
 
 async function getUserInfo() {
@@ -40,4 +53,4 @@ function parseErrors(data, field) {
     return alertTitle
 }
 
-export { getCookie, isAuthenticated, getUserInfo, parseErrors }
+export { getCookie, isAuthenticated, getUserInfo, parseErrors, refreshToken }

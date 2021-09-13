@@ -2,6 +2,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.validators import validate_email
 from drf_recaptcha.fields import ReCaptchaV3Field
 from rest_framework import serializers
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from chat.services import get_or_create_chat
 from .models import User, Game
@@ -60,7 +62,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Пользователь с таким именем уже существует.')
         except User.DoesNotExist:
             if attrs['username'] in ('authorization', 'registration', 'games', 'users', 'edit', 'change-password',
-                                     'delete', 'friends', 'views', 'party-list', 'google-oauth2', 'vk-oauth2'):
+                                     'delete', 'friends', 'views', 'party-list', 'google-oauth2', 'vk-oauth2', 'Гость'):
                 raise serializers.ValidationError('Имя пользователя совпадает с ключевой фразой.')
 
             validate_password(attrs['password_1'])
@@ -174,3 +176,23 @@ class UserDeleteSerializer(serializers.Serializer):
     def delete(self):
         self.instance.is_active = False
         self.instance.save()
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    """Serializer для обновления access_token по refresh_token"""
+
+    refresh = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        try:
+            refresh = RefreshToken(attrs['refresh'])
+            self.access = str(refresh.access_token)
+        except TokenError:
+            raise serializers.ValidationError('Данные авторизации устарели.')
+
+        return attrs
+
+    def save(self):
+        return {
+            'access': self.access
+        }

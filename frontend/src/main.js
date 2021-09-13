@@ -2,14 +2,29 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './assets/tailwind.css'
 import router from './router'
-import { getCookie, isAuthenticated, getUserInfo, parseErrors } from './utilities'
+import { getCookie, isAuthenticated, getUserInfo, parseErrors, refreshToken } from './utilities'
 import axios from 'axios'
 import { VueReCaptcha } from 'vue-recaptcha-v3'
 import TimeAgo from 'javascript-time-ago'
 import ru from 'javascript-time-ago/locale/ru'
 
-axios.interceptors.request.use(config => {
-    if (isAuthenticated()) {
+axios.interceptors.request.use(async config => {
+    let isAuthorized
+
+    await isAuthenticated().then(value => isAuthorized = value)
+
+    if (isAuthorized) {
+        await fetch('http://127.0.0.1:8000/account/', {
+            headers: {
+                Authorization: `Bearer ${getCookie('access')}`
+            }
+        })
+            .then(response => {
+                if (response.status === 401) isAuthorized = false
+                else isAuthorized = true
+            })
+    }
+    if (isAuthorized) {
         config.headers['Authorization'] = `Bearer ${getCookie('access')}`
     }
     return config
@@ -24,6 +39,7 @@ app.config.globalProperties.getCookie = getCookie
 app.config.globalProperties.isAuthenticated = isAuthenticated
 app.config.globalProperties.getUserInfo = getUserInfo
 app.config.globalProperties.parseErrors = parseErrors
+app.config.globalProperties.refreshToken = refreshToken
 
 app.use(VueReCaptcha, { siteKey: '6LdAUyUcAAAAANujUGnroaWZd6C5woLmMVpQdRtD' })
 app.config.globalProperties.recaptcha = async function(action) {

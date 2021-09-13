@@ -94,6 +94,8 @@ export default {
           .get(`${this.host}/account/${this.party.player1}/`)
           .then(response => this.player1 = response.data)
           .catch(error => {
+            if (error.response.status === 401) this.$emit('api-error', error)
+
             this.player1 = {
               username: this.party.player1,
               avatar: '/media/user.png'
@@ -104,6 +106,8 @@ export default {
           .get(`${this.host}/account/${this.party.player2}/`)
           .then(response => this.player2 = response.data)
           .catch(error => {
+            if (error.response.status === 401) this.$emit('api-error', error)
+
             this.player2 = {
               username: this.party.player2,
               avatar: '/media/user.png'

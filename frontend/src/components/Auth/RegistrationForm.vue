@@ -116,7 +116,7 @@ export default {
                 level: 'danger'
               })
             }
-          }
+          } else this.$emit('api-error', error)
         })
 
       this.body.username = ''

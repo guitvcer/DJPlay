@@ -30,12 +30,13 @@ export default {
   data() {
     return {
       alerts: [],
-      user: {
+      chatSocket: null,
+      status: 200,
+      guest: {
         username: 'Гость',
         avatar: '/media/user.png'
       },
-      chatSocket: null,
-      status: 200,
+      user: this.guest,
       newMessageSound: new Audio(`${this.host}/media/sounds/message.mp3`)
     }
   },
@@ -47,9 +48,25 @@ export default {
       this.alerts.push(alert)
     },
     async setUserInfo() {
-      this.user = await this.getUserInfo()
+      if (await this.isAuthenticated()) {
+        this.user = await this.getUserInfo()
 
-      if (this.isAuthenticated()) this.openChatSocket()
+        if (this.user.username === 'Гость') {
+          if (await this.refreshToken()) {
+            this.alerts.push({
+              title: 'Данные авторизации были обновлены.',
+              level: 'success'
+            })
+            await this.setUserInfo()
+          } else {
+            this.alerts.push({
+              title: 'Данные авторизации устарели. Войдите в аккаунт заново.',
+              level: 'warning'
+            })
+          }
+          this.$router.push('/')
+        } else this.openChatSocket()
+      } else this.user = this.guest
     },
     chatSocketOnOpen() {
       this.chatSocket.send(JSON.stringify({
@@ -94,7 +111,7 @@ export default {
       this.chatSocket.onopen = this.chatSocketOnOpen
       this.chatSocket.onmessage = this.chatSocketOnMessage
     },
-    apiError(error) {
+    async apiError(error) {
       this.status = error.response.status
     }
   },
