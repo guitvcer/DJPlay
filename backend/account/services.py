@@ -209,17 +209,26 @@ def get_specific_or_current_user_info(
     raise NotAuthenticated
 
 
-def get_specific_or_current_users_party_list(user: (User, AnonymousUser), username: str, game: Game) -> QuerySet:
+def get_specific_or_current_users_party_list(
+        current_user: (User, AnonymousUser),
+        username: str,
+        game: Game
+) -> QuerySet:
     """Получить список сыгранных партии текущего или определенного пользователя"""
 
     # получить QuerySet из партии определенного пользователя
     if username:
         user = get_object_or_404(User.active.all(), username=username)
+
+        if ((not current_user.is_authenticated) and user.is_private) or \
+                (not user.has_access_to_view_data_of_another_user(current_user)):
+            raise PermissionDenied
+
         return user.get_party_list(game)
 
     # получить QuerySet из партии текущего пользователя
-    if user.is_authenticated:
-        return user.get_party_list(game)
+    if current_user.is_authenticated:
+        return current_user.get_party_list(game)
 
     raise NotAuthenticated
 

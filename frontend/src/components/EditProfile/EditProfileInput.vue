@@ -64,7 +64,7 @@ export default {
       }
 
     if (this.field.type === 'checkbox') {
-      let checkbox = document.querySelector('#is_private')
+      let checkbox = document.querySelector('#isPrivate')
 
       if (this.field.value === true) checkbox.setAttribute('checked', '')
     }

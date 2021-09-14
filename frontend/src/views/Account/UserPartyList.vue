@@ -8,39 +8,55 @@
   >
     <loading v-if="loading" />
     <div v-if="!loading" class="flex justify-between w-full mb-16">
-      <h2 class="text-3xl font-semibold">{{ title }} ({{ partyList.length }})</h2>
+      <h2 class="text-3xl font-semibold">{{ title }} ({{ partyListLength }})</h2>
       <select class="bg-white dark:bg-main border-2 border-main rounded" v-model="game">
         <option value="gomoku">Гомоку</option>
       </select>
     </div>
     <user-party-list-table
-      v-if="!loading && partyList.length > 0"
+      v-if="!loading && partyListLength > 0"
       :partyList="partyList"
       :currentUsername="username"
     />
-    <h3 v-else-if="partyList.length === 0 && !loading">Нет сыгранных партии</h3>
+    <paginator
+      v-if="!loading && partyListLength > 0"
+      class="mt-8"
+      :page="page"
+      :nextPage="nextPage"
+      :previousPage="previousPage"
+      @first="loadFirstPage"
+      @next="loadNextPage"
+      @prev="loadPrevPage"
+      @last="loadLastPage"
+    />
+    <h3 v-else-if="partyListLength === 0 && !loading">Нет сыгранных партии</h3>
   </section>
 </template>
 
 <script>
 import axios from 'axios'
 import UserPartyListTable from "@/components/UserPartyList/UserPartyListTable";
+import Paginator from '@/components/UserPartyList/Paginator'
 import Loading from '@/components/Interface/Loading'
 
 export default {
   components: {
-    UserPartyListTable, Loading
+    UserPartyListTable, Paginator, Loading
   },
   data() {
     return {
       loading: true,
       partyList: [],
       title: null,
-      game: 'gomoku'
+      game: 'gomoku',
+      page: 1,
+      partyListLength: null,
+      nextPage: null,
+      previousPage: null
     }
   },
   methods: {
-    async loadUserPartyList() {
+    getUrl() {
       let url = `${this.host}/account`
 
       if (this.$route.params.username)
@@ -48,10 +64,18 @@ export default {
 
       url += `/party-list/${this.game}/`
 
+      return url
+    },
+    async loadUserPartyList() {
+      this.$router.push(`?page=${this.page}`)
+
       await axios
-        .get(url)
+        .get(`${this.getUrl()}?page=${this.page}`)
         .then(response => {
-          this.partyList = response.data
+          this.partyListLength = response.data.count
+          this.nextPage = response.data.next
+          this.previousPage = response.data.previous
+          this.partyList = response.data.results
           this.loading = false
 
           if (this.$route.params.username) this.title = `Партии ${this.$route.params.username}`
@@ -60,8 +84,29 @@ export default {
           document.title = this.title
         })
         .catch(error => {
-          if (error.response.status === 404) this.$emit('api-error', error)
+          this.$emit('api-error', error)
         })
+    },
+    async loadFirstPage() {
+      this.page = 1
+      await this.loadUserPartyList()
+    },
+    async loadNextPage() {
+      if (this.nextPage != null) {
+        this.page = new URL(this.nextPage).searchParams.get('page')
+        await this.loadUserPartyList()
+      }
+    },
+    async loadPrevPage() {
+      if (this.previousPage != null) {
+        this.page = new URL(this.previousPage).searchParams.get('page')
+        if (this.page == null) this.page = 1
+        await this.loadUserPartyList()
+      }
+    },
+    async loadLastPage() {
+      this.page = Math.ceil(this.partyListLength / 15)
+      await this.loadUserPartyList()
     }
   },
   mounted() {

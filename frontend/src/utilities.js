@@ -41,7 +41,7 @@ async function getUserInfo() {
 function parseErrors(data, field) {
     let alertTitle = ``
 
-    if (field !== 'non_field_errors') alertTitle = `<b>${field}:</b>`
+    if (field !== 'nonFieldErrors') alertTitle = `<b>${field}:</b>`
 
     alertTitle += `<ul>`
 

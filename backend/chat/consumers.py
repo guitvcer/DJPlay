@@ -44,11 +44,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.get_user_and_add_to_group(content)
             await self.add_to_specific_chat_group(content)
             await self.create_message_and_notify_users(content)
-        except RequestAborted:
-            await self.send_json({
-                'status': 400
-            })
-        except AuthenticationFailed:
+        except (RequestAborted, AuthenticationFailed):
             await self.send_json({
                 'status': 400
             })

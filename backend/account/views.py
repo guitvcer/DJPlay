@@ -1,11 +1,13 @@
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import PermissionDenied
 
 from gomoku.serializers import GomokuPartyListSerializer
+from .paginations import PartyListPagination
 from .services import (
     add_user_view,
     create_or_delete_or_accept_friend_request,
@@ -111,16 +113,15 @@ class UserFriendRequestAPIView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class UserPartyListAPIView(APIView):
+class UserPartyListAPIView(ListAPIView):
     """Список сыгранных партии пользователя"""
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        game = get_object_or_404(get_games(), app_name=kwargs.get('game_name'))
-        user_party_list = get_specific_or_current_users_party_list(request.user, kwargs.get('username'), game)
-        serializer = GomokuPartyListSerializer(user_party_list, many=True)
+    serializer_class = GomokuPartyListSerializer
+    pagination_class = PartyListPagination
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        game = get_object_or_404(get_games(), app_name=self.kwargs.get('game_name'))
+        return get_specific_or_current_users_party_list(self.request.user, self.kwargs.get('username'), game)
 
 
 class AuthorizationAPIView(APIView):
