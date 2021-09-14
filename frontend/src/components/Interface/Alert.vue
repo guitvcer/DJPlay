@@ -27,7 +27,7 @@
     </div>
     <button
       v-if="alerts.length > 1"
-      class="py-2 px-4 leading-normal rounded w-full flex justify-center my-1 dark:text-black simple dark:bg-main dark:text-gray-200 dark:hover:bg-main-dark font-bold text-center hover:bg-gray-50"
+      class="py-2 px-4 leading-normal rounded w-full flex justify-center my-1 bg-gray-50 hover:bg-gray-200 dark:text-black dark:text-gray-200 dark:bg-main-dark dark:hover:bg-main font-bold text-center"
       @click="alerts.splice(0, alerts.length)"
     >Очистить</button>
   </div>

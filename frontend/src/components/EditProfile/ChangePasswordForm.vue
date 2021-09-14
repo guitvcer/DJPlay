@@ -46,7 +46,7 @@ export default {
       inputs: [
         {
           placeholder: 'Старый пароль',
-          name: 'oldpassword'
+          name: 'oldPassword'
         },
         {
           placeholder: 'Новый пароль',
@@ -64,8 +64,6 @@ export default {
       await axios
         .patch(this.action, this.body)
         .then(response => {
-          this.$parent.$parent.chatSocket.close()
-
           document.cookie = 'access=; Max-Age=0; path=/'
           document.cookie = 'refresh=; Max-Age=0; path=/'
 

@@ -66,7 +66,13 @@ export default {
           }
           this.$router.push('/')
         } else this.openChatSocket()
-      } else this.user = this.guest
+      } else {
+        this.user = this.guest
+
+        if (this.chatSocket != null && this.chatSocket.readyState === 1) {
+          this.chatSocket.close()
+        }
+      }
     },
     chatSocketOnOpen() {
       this.chatSocket.send(JSON.stringify({

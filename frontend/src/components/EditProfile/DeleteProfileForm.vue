@@ -48,7 +48,6 @@ export default {
           }
         })
         .then(response => {
-          this.$parent.$parent.chatSocket.close()
           this.$emit('create-alert', {
             level: 'success',
             title: 'Вы успешно удалили профиль.'

@@ -152,9 +152,6 @@ class UserChangePasswordSerializer(serializers.Serializer):
         if password_1 != password_2:
             raise serializers.ValidationError('Пароли не совпадают.')
 
-        self.instance.set_password(password_1)
-        self.instance.save()
-
         return attrs
 
     def save(self):
