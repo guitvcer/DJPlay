@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import QuerySet
+from easy_thumbnails.fields import ThumbnailerImageField
 
 
 class UserManager(models.Manager):
@@ -24,7 +25,12 @@ class User(AbstractUser):
     )
 
     id = models.AutoField(primary_key=True)
-    avatar = models.ImageField(default="/user.png", verbose_name="Фото профиля")
+    avatar = ThumbnailerImageField(default="/user.png", verbose_name="Фото профиля", resize_source={
+        'quality': 95,
+        'size': (256, 256),
+        'sharpen': True,
+        'crop': 'square'
+    })
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=GENDERS, verbose_name="Пол")
     email = models.EmailField(null=True, blank=True, max_length=64, verbose_name="Эл.почта")

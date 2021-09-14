@@ -281,6 +281,18 @@ django-ipware = ">=2.1,<4.0"
 djangorestframework = ">=3.9,<4.0"
 
 [[package]]
+name = "easy-thumbnails"
+version = "2.7.1"
+description = "Easy thumbnails for Django"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+django = ">=1.11,<4.0"
+pillow = "*"
+
+[[package]]
 name = "hyperlink"
 version = "21.0.0"
 description = "A featureful, immutable, and correct URL for Python."
@@ -776,7 +788,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ccf1dda3025dad67525bd1520dea99be83cc0b92a3abd58c6711b6366a2be0c1"
+content-hash = "df9fd51ecc9e780879effd801071ab8ec832435280baabc930cfe6a092c5513c"
 
 [metadata.files]
 appnope = [
@@ -924,6 +936,9 @@ djangorestframework-simplejwt = [
 drf-recaptcha = [
     {file = "drf-recaptcha-2.0.4.tar.gz", hash = "sha256:758d5e026516d5821799de7cdf369b13a1a13d4d80f20a2d91f35ff1f372555d"},
     {file = "drf_recaptcha-2.0.4-py3-none-any.whl", hash = "sha256:ded63a89a91efe41064aac9069959abb879921bf37434fb405422adb46169153"},
+]
+easy-thumbnails = [
+    {file = "easy-thumbnails-2.7.1.tar.gz", hash = "sha256:f862949208d9066cd3d84ffcf9c2dbe9c7344ea6152b741e440f861eca46855c"},
 ]
 hyperlink = [
     {file = "hyperlink-21.0.0-py2.py3-none-any.whl", hash = "sha256:e6b14c37ecb73e89c77d78cdb4c2cc8f3fb59a885c5b3f819ff4ed80f25af1b4"},

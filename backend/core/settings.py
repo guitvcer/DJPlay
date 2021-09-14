@@ -24,11 +24,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
 
+    'channels',
+    'corsheaders',
+    'drf_recaptcha',
+    'easy_thumbnails',
     'rest_framework',
     'rest_framework.authtoken',
-    'drf_recaptcha',
-    'corsheaders',
-    'channels',
     'social_django',
 
     'account',

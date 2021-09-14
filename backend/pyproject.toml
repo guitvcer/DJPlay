@@ -18,6 +18,7 @@ drf-recaptcha = "^2.0.4"
 ipython = "^7.27.0"
 djangorestframework-camel-case = "^1.2.0"
 pyhumps = "^3.0.2"
+easy-thumbnails = "^2.7.1"
 
 [tool.poetry.dev-dependencies]
 
