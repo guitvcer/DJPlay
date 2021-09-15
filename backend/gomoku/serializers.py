@@ -15,8 +15,8 @@ class GomokuMoveSerializer(serializers.ModelSerializer):
 class GomokuPartySerializer(serializers.ModelSerializer):
     """Serializer ходов партии Гомоку"""
 
-    player1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
-    player2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player_1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player_2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
     moves = serializers.SerializerMethodField('get_moves')
 
     @staticmethod
@@ -32,8 +32,8 @@ class GomokuPartySerializer(serializers.ModelSerializer):
 class GomokuPartyListSerializer(serializers.ModelSerializer):
     """Serializer партии Гомоку"""
 
-    player1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
-    player2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player_1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player_2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
     moves_count = serializers.SerializerMethodField('get_moves_count')
 
     @staticmethod

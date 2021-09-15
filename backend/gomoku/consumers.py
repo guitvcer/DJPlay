@@ -48,8 +48,8 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
                 {
                     'type': 'notify_room',
                     'party_id': new_party.id,
-                    'player_1': new_party.player1.username,
-                    'player_2': new_party.player2.username,
+                    'player_1': new_party.player_1.username,
+                    'player_2': new_party.player_2.username,
                 }
             )
 

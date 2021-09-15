@@ -10,10 +10,10 @@ def player_gives_up(party_id: id, loser: User) -> None:
     if party.winner is not None:
         return
 
-    if party.player1 == loser:
-        party.winner = party.player2.username
+    if party.player_1 == loser:
+        party.winner = party.player_2.username
     else:
-        party.winner = party.player1.username
+        party.winner = party.player_1.username
 
     party.save()
 
@@ -69,14 +69,16 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
 
             # диагональ 1
             try:
-                move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{int(y) + i - n}')
+                move = Move.objects.get(party=party, player=player,
+                                        coordinate=f'{get_letter(x, n - i)}{int(y) + i - n}')
                 z_moves_1.append(move.coordinate)
             except Move.DoesNotExist:
                 pass
 
             # диагональ 2
             try:
-                move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{int(y) - i + n}')
+                move = Move.objects.get(party=party, player=player,
+                                        coordinate=f'{get_letter(x, n - i)}{int(y) - i + n}')
                 z_moves_2.append(move.coordinate)
             except Move.DoesNotExist:
                 pass
@@ -106,6 +108,7 @@ def register_move(coordinate: str, party_id: int, player: User) -> (list, None):
             move = Move.objects.get(coordinate=coordinate, player=player, party=party)
         except Move.DoesNotExist:
             move = Move.objects.create(coordinate=coordinate, player=player, party=party)
+
         return check_row(move, party, player)
 
 

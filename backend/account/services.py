@@ -304,8 +304,8 @@ def vk_authorization(access_token: str) -> dict:
         raise NotFound
 
     vk_user_data = requests.get(
-        f'https://api.vk.com/method/users.get?v=5.131&fields=screen_name&access_token={access_token}'
-    ).json()['response'][0]
+        f'https://api.vk.com/method/users.get?v=5.131&fields=screen_name,photo_max_orig,has_photo'
+        f'&access_token={access_token}').json()['response'][0]
 
     try:
         user = User.objects.get(username=vk_user_data['screen_name'])
@@ -313,8 +313,11 @@ def vk_authorization(access_token: str) -> dict:
         if not user.is_active:
             raise NotFound
     except User.DoesNotExist:
-        avatar_url = f"{vk_user_data['screen_name']}.png"
-        download_file_by_url(vk_user_data['photo'], avatar_url)
+        if vk_user_data['has_photo']:
+            avatar_url = f"{vk_user_data['screen_name']}.png"
+            download_file_by_url(vk_user_data['photo_max_orig'], avatar_url)
+        else:
+            avatar_url = '/media/user.png'
 
         user = User.objects.create(
             username=vk_user_data['screen_name'],

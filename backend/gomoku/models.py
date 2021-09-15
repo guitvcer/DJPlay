@@ -12,7 +12,7 @@ class Move(models.Model):
                                verbose_name="Игрок", related_name="gomoku_move_player")
     party = models.ForeignKey('Party', on_delete=models.CASCADE, verbose_name="Партия")
 
-    def __str__(self) -> str: return self.party.__str__()
+    def __str__(self): return self.party.__str__()
 
     class Meta:
         verbose_name = 'Ход партии Гомоку'
@@ -25,14 +25,14 @@ class Party(models.Model):
 
     id = models.AutoField(primary_key=True)
     game = models.ForeignKey(Game, on_delete=models.PROTECT, verbose_name="Игра")
-    player1 = models.ForeignKey(User, on_delete=models.PROTECT,
-                                verbose_name="Игрок 1", related_name="gomokus_first_player")
-    player2 = models.ForeignKey(User, on_delete=models.PROTECT,
-                                verbose_name="Игрок 2", related_name="gomokus_second_player")
+    player_1 = models.ForeignKey(User, on_delete=models.PROTECT,
+                                 verbose_name="Игрок 1", related_name="gomoku_first_player")
+    player_2 = models.ForeignKey(User, on_delete=models.PROTECT,
+                                 verbose_name="Игрок 2", related_name="gomoku_second_player")
     winner = models.CharField(max_length=64, null=True, verbose_name="Победивший игрок")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата начала")
 
-    def __str__(self) -> str: return f'id={self.id}, {self.player1}, {self.player2}, {self.date.date()}'
+    def __str__(self): return f'id={self.id}, {self.player_1}, {self.player_2}, {self.date.date()}'
 
     def get_moves(self) -> QuerySet:
         """Получить ходы партии"""

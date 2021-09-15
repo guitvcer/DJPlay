@@ -6,11 +6,13 @@ class Chat(models.Model):
     """Модель чата"""
 
     id = models.AutoField(primary_key=True)
-    user1 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 1', related_name='chat_user1')
-    user2 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 2', related_name='chat_user2')
+    user_1 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 1',
+                               related_name='chat_user_1')
+    user_2 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 2',
+                               related_name='chat_user_2')
 
     def get_interlocutor(self, user: User) -> User:
-        return self.user2 if user == self.user1 else self.user1
+        return self.user_2 if user == self.user_1 else self.user_1
 
     class Meta:
         verbose_name = 'Чат'

@@ -16,8 +16,8 @@ class MessageSerializer(serializers.ModelSerializer):
 class ChatListSerializer(serializers.ModelSerializer):
     """Serializer для списка чатов"""
 
-    user1 = UserInfoSerializer()
-    user2 = UserInfoSerializer()
+    user_1 = UserInfoSerializer()
+    user_2 = UserInfoSerializer()
     last_message = serializers.SerializerMethodField('get_last_message')
 
     @staticmethod
@@ -35,8 +35,8 @@ class ChatListSerializer(serializers.ModelSerializer):
 class ChatSerializer(serializers.ModelSerializer):
     """Serializer чата"""
 
-    user1 = UserInfoSerializer()
-    user2 = UserInfoSerializer()
+    user_1 = UserInfoSerializer()
+    user_2 = UserInfoSerializer()
     messages = serializers.SerializerMethodField('get_messages')
 
     @staticmethod

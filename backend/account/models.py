@@ -49,7 +49,7 @@ class User(AbstractUser):
 
         from chat.models import Chat
 
-        list_of_ids = [chat.id for chat in Chat.objects.all() if self in (chat.user1, chat.user2)]
+        list_of_ids = [chat.id for chat in Chat.objects.all() if self in (chat.user_1, chat.user_2)]
         queryset = Chat.objects.filter(id__in=list_of_ids)
 
         return queryset
@@ -81,7 +81,7 @@ class User(AbstractUser):
         if game.app_name == 'gomoku':
             from gomoku.models import Party
 
-            return Party.objects.filter(player1=self).union(Party.objects.filter(player2=self)).order_by('-date')
+            return Party.objects.filter(player_1=self).union(Party.objects.filter(player_2=self)).order_by('-date')
 
     def get_viewers(self) -> QuerySet:
         """Получить пользователей, которое просматривали страницу этого пользователя"""
@@ -125,29 +125,29 @@ class Queue(models.Model):
 
     id = models.AutoField(primary_key=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name="Очередь для")
-    player1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
+    player_1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
 
     def __str__(self): return self.game.name
 
     @staticmethod
     def update_queue(queue, player: User):
         if player is None:
-            queue.player1 = None
+            queue.player_1 = None
             queue.save()
             return
 
-        if queue.player1 is None:
-            queue.player1 = player
+        if queue.player_1 is None:
+            queue.player_1 = player
             queue.save()
-        elif queue.player1 == player:
-            queue.player1 = None
+        elif queue.player_1 == player:
+            queue.player_1 = None
             queue.save()
         else:
             # если очередь заполнена, создается игра и очищается очередь
 
             gomoku = Game.objects.get(app_name="gomoku")
-            party = queue.game.party_set.create(player1=queue.player1, player2=player, game=gomoku)
-            queue.player1 = None
+            party = queue.game.party_set.create(player_1=queue.player_1, player_2=player, game=gomoku)
+            queue.player_1 = None
             queue.save()
 
             return party

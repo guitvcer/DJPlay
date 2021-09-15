@@ -32,8 +32,7 @@ axios.interceptors.request.use(async config => {
             }
         })
             .then(response => {
-                if (response.status === 401) isAuthorized = false
-                else isAuthorized = true
+                isAuthorized = response.status !== 401;
             })
     }
     if (isAuthorized) {

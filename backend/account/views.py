@@ -169,7 +169,8 @@ class SocialAuthorizationAPIView(APIView):
 class RefreshTokenAPIView(APIView):
     """Получить новый access_token по старому refresh_token"""
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         serializer = serializers.RefreshTokenSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
