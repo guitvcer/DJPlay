@@ -36,7 +36,7 @@
 <script>
 import axios from 'axios'
 import UserPartyListTable from "@/components/UserPartyList/UserPartyListTable";
-import Paginator from '@/components/UserPartyList/Paginator'
+import Paginator from '@/components/Interface/Paginator'
 import Loading from '@/components/Interface/Loading'
 
 export default {

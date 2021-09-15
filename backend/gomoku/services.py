@@ -45,14 +45,14 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
     x = get_x(move)
     y = get_y(move)
 
-    for n in range(5):
+    for n in range(10):
 
         x_moves = []
         y_moves = []
         z_moves1 = []
         z_moves2 = []
 
-        for i in range(5):
+        for i in range(10):
 
             # горизонталь
             try:
@@ -87,6 +87,9 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
                 pass
 
         for moves in (x_moves, y_moves, z_moves1, z_moves2):
+            print(x_moves)
+            print()
+
             if len(moves) == 5:
                 return moves
 
