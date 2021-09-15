@@ -16,7 +16,6 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.serializers import SerializerMetaclass
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from social_core.backends.vk import VKOAuth2
 
 from chat.services import get_or_create_chat
 from .models import User, FriendRequest, Game, UserView
@@ -304,7 +303,9 @@ def vk_authorization(access_token: str) -> dict:
     if access_token is None:
         raise NotFound
 
-    vk_user_data = VKOAuth2().user_data(access_token=access_token)
+    vk_user_data = requests.get(
+        f'https://api.vk.com/method/users.get?v=5.131&fields=screen_name&access_token={access_token}'
+    ).json()['response'][0]
 
     try:
         user = User.objects.get(username=vk_user_data['screen_name'])

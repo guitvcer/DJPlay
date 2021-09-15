@@ -8,13 +8,25 @@ import { VueReCaptcha } from 'vue-recaptcha-v3'
 import TimeAgo from 'javascript-time-ago'
 import ru from 'javascript-time-ago/locale/ru'
 
+
+const app = createApp(App)
+const domain = '127.0.0.1:8000'
+
+app.config.globalProperties.host = 'http://' + domain
+app.config.globalProperties.webSocketHost = 'ws://' + domain
+app.config.globalProperties.getCookie = getCookie
+app.config.globalProperties.isAuthenticated = isAuthenticated
+app.config.globalProperties.getUserInfo = getUserInfo
+app.config.globalProperties.parseErrors = parseErrors
+app.config.globalProperties.refreshToken = refreshToken
+
 axios.interceptors.request.use(async config => {
     let isAuthorized
 
     await isAuthenticated().then(value => isAuthorized = value)
 
     if (isAuthorized) {
-        await fetch('http://127.0.0.1:8000/account/', {
+        await fetch(`${app.config.globalProperties.host}/account/`, {
             headers: {
                 Authorization: `Bearer ${getCookie('access')}`
             }
@@ -30,18 +42,7 @@ axios.interceptors.request.use(async config => {
     return config
 })
 
-const app = createApp(App)
-const domain = '127.0.0.1:8000'
-
-app.config.globalProperties.host = 'http://' + domain
-app.config.globalProperties.webSocketHost = 'ws://' + domain
-app.config.globalProperties.getCookie = getCookie
-app.config.globalProperties.isAuthenticated = isAuthenticated
-app.config.globalProperties.getUserInfo = getUserInfo
-app.config.globalProperties.parseErrors = parseErrors
-app.config.globalProperties.refreshToken = refreshToken
-
-app.use(VueReCaptcha, { siteKey: '6LdAUyUcAAAAANujUGnroaWZd6C5woLmMVpQdRtD' })
+app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"] })
 app.config.globalProperties.recaptcha = async function(action) {
     await this.$recaptchaLoaded()
     return await this.$recaptcha(action)
@@ -50,7 +51,9 @@ app.config.globalProperties.recaptcha = async function(action) {
 TimeAgo.addDefaultLocale(ru)
 app.config.globalProperties.timeAgo = new TimeAgo()
 
-app.config.globalProperties.GOOGLE_CLIENT_ID = '568731334008-liiq5eghbc2icnc51c4mrfcdcldsstvn.apps.googleusercontent.com'
-app.config.globalProperties.VK_CLIENT_ID = '7938245'
+app.config.globalProperties.GOOGLE_CLIENT_ID = process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"]
+app.config.globalProperties.VK_CLIENT_ID = process.env["VUE_APP_VK_OAUTH2_PUBLIC"]
 
 app.use(router).mount('#app')
+
+export default app.config.globalProperties.host

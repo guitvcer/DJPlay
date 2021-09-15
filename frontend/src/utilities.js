@@ -1,4 +1,5 @@
 import axios from 'axios'
+import host from './main.js'
 
 function getCookie(name) {
     for (let i of document.cookie.split('; ')) {
@@ -9,7 +10,7 @@ function getCookie(name) {
 
 async function refreshToken() {
     return axios
-        .post(`http://127.0.0.1:8000/account/refresh-token`, {
+        .post(`${host}/account/refresh-token`, {
             access: getCookie('access'),
             refresh: getCookie('refresh')
         })
@@ -28,7 +29,7 @@ async function isAuthenticated() {
 
 async function getUserInfo() {
     return axios
-        .get(this.host + '/account/')
+        .get(`${host}/account/`)
         .then(response => response.data)
         .catch(error => {
             return {

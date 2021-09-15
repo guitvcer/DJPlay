@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'rest_framework',
     'rest_framework.authtoken',
-    'social_django',
 
     'account',
     'chat',

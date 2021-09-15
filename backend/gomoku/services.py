@@ -102,7 +102,10 @@ def register_move(coordinate: str, party_id: int, player: User) -> (list, None):
     if coordinate == 'give_up':
         player_gives_up(party_id, player)
     else:
-        move = Move.objects.create(coordinate=coordinate, player=player, party=party)
+        try:
+            move = Move.objects.get(coordinate=coordinate, player=player, party=party)
+        except Move.DoesNotExist:
+            move = Move.objects.create(coordinate=coordinate, player=player, party=party)
         return check_row(move, party, player)
 
 

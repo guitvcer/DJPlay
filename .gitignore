@@ -11,3 +11,4 @@ backend/*/__pycache__/
 backend/account/management/commands/__pycache__/
 
 frontend/node_modules/
+frontend/.env
