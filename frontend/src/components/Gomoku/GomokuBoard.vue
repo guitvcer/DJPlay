@@ -175,6 +175,7 @@ export default {
   width: 35px;
   height: 35px;
   cursor: pointer;
+  z-index: 0;
 }
 .dot:not(.bg-white, .bg-main .bg-red-400):hover {
   background: #393e46;

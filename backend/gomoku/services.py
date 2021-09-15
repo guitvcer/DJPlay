@@ -45,53 +45,50 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
     x = get_x(move)
     y = get_y(move)
 
-    for n in range(10):
+    for n in range(5):
 
         x_moves = []
         y_moves = []
-        z_moves1 = []
-        z_moves2 = []
+        z_moves_1 = []
+        z_moves_2 = []
 
-        for i in range(10):
-
+        for i in range(5):
             # горизонталь
             try:
-                move = Move.objects.get(
-                    coordinate=get_letter(x, i - n) + y, party=party, player=player)
+                move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{y}')
                 x_moves.append(move.coordinate)
             except Move.DoesNotExist:
                 pass
 
             # вертикаль
             try:
-                move = Move.objects.get(
-                    coordinate=x + str(int(y) + i - n), party=party, player=player)
+                move = Move.objects.get(party=party, player=player, coordinate=f'{x}{int(y) - n + i}')
                 y_moves.append(move.coordinate)
             except Move.DoesNotExist:
                 pass
 
             # диагональ 1
             try:
-                move = Move.objects.get(
-                    coordinate=get_letter(x, i - n) + str(int(y) + i - n), party=party, player=player)
-                z_moves1.append(move.coordinate)
+                move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{int(y) + i - n}')
+                z_moves_1.append(move.coordinate)
             except Move.DoesNotExist:
                 pass
 
             # диагональ 2
             try:
-                move = Move.objects.get(
-                    coordinate=get_letter(x, n - i) + str(int(y) + i - n), party=party, player=player)
-                z_moves2.append(move.coordinate)
+                move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{int(y) - i + n}')
+                z_moves_2.append(move.coordinate)
             except Move.DoesNotExist:
                 pass
 
-        for moves in (x_moves, y_moves, z_moves1, z_moves2):
-            print(x_moves)
-            print()
-
-            if len(moves) == 5:
-                return moves
+        if len(x_moves) == 5:
+            return x_moves
+        elif len(y_moves) == 5:
+            return y_moves
+        elif len(z_moves_1) == 5:
+            return z_moves_1
+        elif len(z_moves_2) == 5:
+            return z_moves_2
 
 
 def register_move(coordinate: str, party_id: int, player: User) -> (list, None):
