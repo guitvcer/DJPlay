@@ -49,7 +49,7 @@ export default {
       partyList: [],
       title: null,
       game: 'gomoku',
-      page: 1,
+      page: new URL(window.location.href).searchParams.get('page'),
       partyListLength: null,
       nextPage: null,
       previousPage: null
@@ -67,10 +67,15 @@ export default {
       return url
     },
     async loadUserPartyList() {
+      let url = this.getUrl()
+
+      if (this.page == null) this.page = 1
+      else url += `?page=${this.page}`
+
       this.$router.push(`?page=${this.page}`)
 
       await axios
-        .get(`${this.getUrl()}?page=${this.page}`)
+        .get(url)
         .then(response => {
           this.partyListLength = response.data.count
           this.nextPage = response.data.next

@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.utils import timezone
 from rest_framework.exceptions import AuthenticationFailed
 
+from account.models import User
 from account.services import get_user_by_token
 from .models import Chat, Message
 from .serializers import MessageSerializer
@@ -30,6 +31,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, code):
         if self.user is not None:
+            # получаем обновленный (если) user из БД и его обновляем поля is_online, last_online
+            self.user = await sync_to_async(User.objects.get)(id=self.user.id)
             self.user.is_online = False
             self.user.last_online = timezone.now()
             await sync_to_async(self.user.save)()

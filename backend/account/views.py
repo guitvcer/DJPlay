@@ -4,7 +4,6 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied
 
 from gomoku.serializers import GomokuPartyListSerializer
 from .paginations import PartyListPagination
