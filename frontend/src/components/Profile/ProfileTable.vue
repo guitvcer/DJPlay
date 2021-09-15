@@ -43,7 +43,8 @@ export default {
     if (this.user) {
       this.mainInformation = [
         {
-          fieldName: (this.user.isOnline) ? 'Статус' : 'Был(-а) онлайн',
+          fieldName: (this.user.isOnline) ? 'Статус' : (
+              this.user['gender'] === 'M' ? 'Был' : (this.user.gender === 'F' ? 'Была' : 'Был(-а)')) + ' онлайн',
           fieldValue: (this.user.isOnline) ? 'Онлайн' : this.user['lastOnline']
         },
         {

@@ -19,7 +19,7 @@
       <div class="ml-3">
         <h2 class="text-xl font-semibold">{{ interlocutor.username }}</h2>
         <p class="text-gray-500" v-if="interlocutor['isOnline']">В сети</p>
-        <p class="text-gray-500" v-else>Был(-а) в сети {{ parseDate(interlocutor['lastOnline']) }}</p>
+        <p class="text-gray-500" v-else>{{ lastOnline() }}{{ parseDate(interlocutor['lastOnline']) }}</p>
       </div>
     </router-link>
   </div>
@@ -43,6 +43,11 @@ export default {
       if (date == null) return 'никогда'
 
       return this.timeAgo.format(Date.parse(date))
+    },
+    lastOnline() {
+      if (this.interlocutor.gender === 'M') return 'Был в сети '
+      else if (this.interlocutor.gender === 'F') return 'Была в сети '
+      else return 'Был(-а) в сети '
     }
   }
 }

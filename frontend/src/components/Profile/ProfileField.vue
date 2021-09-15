@@ -13,7 +13,11 @@
     >
       <router-link :to="$route.path + 'friends/'">{{ getFieldValue }}</router-link>
     </p>
-    <p class="font-bold w-full sm:w-6/12 flex-shrink-0" style="word-wrap: break-word" v-else>{{ getFieldValue }}</p>
+    <p
+      v-else
+      class="font-bold w-full sm:w-6/12 flex-shrink-0"
+      style="word-wrap: break-word"
+    >{{ getFieldValue }}</p>
   </div>
 </template>
 
@@ -33,7 +37,10 @@ export default {
 
       if (typeof this.field.fieldValue === 'string') {
         if (this.field.fieldValue === '') return 'Не указано'
-        else if (this.field.fieldName === 'Был(-а) онлайн') return this.timeAgo.format(Date.parse(this.field.fieldValue))
+        else if (this.field.fieldName === 'Был(-а) онлайн' ||
+            this.field.fieldName === 'Был онлайн' ||
+            this.field.fieldName === 'Была онлайн'
+        ) return this.timeAgo.format(Date.parse(this.field.fieldValue))
         else if (this.field.fieldName === 'Дата рождения' || this.field.fieldName === 'Дата регистрации') {
           const date = DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
 
