@@ -201,6 +201,10 @@ export default {
 
           if (this.moves.length === 1) this.currentColor = 'blue'
         }
+
+        try {
+          document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
+        } catch (e) {}
       }
     },
     gomokuPartySocketOnOpen() {

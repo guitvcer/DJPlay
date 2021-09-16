@@ -131,7 +131,6 @@ export default {
       await this.$router.push('/')
     } else {
       document.title = 'Сообщения'
-
       await this.loadChats()
       this.setEventForEscape()
 
@@ -142,3 +141,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.grecaptcha-badge {
+  opacity: 0
+}
+</style>

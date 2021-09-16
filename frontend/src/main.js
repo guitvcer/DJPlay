@@ -7,6 +7,7 @@ import axios from 'axios'
 import { VueReCaptcha } from 'vue-recaptcha-v3'
 import TimeAgo from 'javascript-time-ago'
 import ru from 'javascript-time-ago/locale/ru'
+import { load } from 'recaptcha-v3'
 
 
 const app = createApp(App)
@@ -43,6 +44,7 @@ axios.interceptors.request.use(async config => {
 
 app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"] })
 app.config.globalProperties.recaptcha = async function(action) {
+    console.log(this.$recaptchaInstance)
     await this.$recaptchaLoaded()
     return await this.$recaptcha(action)
 }

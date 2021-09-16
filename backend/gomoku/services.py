@@ -58,14 +58,14 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
                 move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{y}')
                 x_moves.append(move.coordinate)
             except Move.DoesNotExist:
-                pass
+                x_moves = []
 
             # вертикаль
             try:
                 move = Move.objects.get(party=party, player=player, coordinate=f'{x}{int(y) - n + i}')
                 y_moves.append(move.coordinate)
             except Move.DoesNotExist:
-                pass
+                y_moves = []
 
             # диагональ 1
             try:
@@ -73,7 +73,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
                                         coordinate=f'{get_letter(x, n - i)}{int(y) + i - n}')
                 z_moves_1.append(move.coordinate)
             except Move.DoesNotExist:
-                pass
+                z_moves_1 = []
 
             # диагональ 2
             try:
@@ -81,7 +81,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
                                         coordinate=f'{get_letter(x, n - i)}{int(y) - i + n}')
                 z_moves_2.append(move.coordinate)
             except Move.DoesNotExist:
-                pass
+                z_moves_2 = []
 
         if len(x_moves) == 5:
             return x_moves

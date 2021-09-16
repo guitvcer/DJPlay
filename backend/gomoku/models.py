@@ -12,7 +12,7 @@ class Move(models.Model):
                                verbose_name="Игрок", related_name="gomoku_move_player")
     party = models.ForeignKey('Party', on_delete=models.CASCADE, verbose_name="Партия")
 
-    def __str__(self): return self.party.__str__()
+    def __str__(self): return f'{self.coordinate, self.player, self.party.id}'
 
     class Meta:
         verbose_name = 'Ход партии Гомоку'
