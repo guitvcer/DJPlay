@@ -19,7 +19,7 @@
       :currentUsername="username"
     />
     <paginator
-      v-if="!loading && partyListLength > 0"
+      v-if="!loading && partyListLength > 0 && partyListLength !== partyList.length"
       class="mt-8"
       :page="page"
       :nextPage="nextPage"

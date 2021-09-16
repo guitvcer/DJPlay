@@ -56,6 +56,17 @@
           <img :src="this.host + '/media/icons/vk.svg'" alt="VK" class="w-8 h-8">
         </a>
       </div>
+      <div class="text-sm">
+        Этот сайт защищен Google reCAPTCHA<br>
+        <a
+          href="https://policies.google.com/privacy"
+          class="text-blue-500 hover:underline cursor-pointer"
+        >Политика конфиденциальности</a> и
+        <a
+          href="https://policies.google.com/terms"
+          class="text-blue-500 hover:underline cursor-pointer"
+        >Условия использования.</a>
+      </div>
     </div>
     <div class="bg-gray-50 dark:bg-main-dark py-3 px-6 flex flex-row-reverse">
       <button
