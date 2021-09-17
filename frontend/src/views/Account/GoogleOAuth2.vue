@@ -10,6 +10,7 @@ export default {
       await axios
         .post(`${this.host}/account/social-authorization`, {
           'code': code,
+          'google_client_id': this.GOOGLE_CLIENT_ID,
           'provider': 'Google'
         })
         .then(response => {

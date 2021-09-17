@@ -251,10 +251,10 @@ def download_file_by_url(url: str, file_name: str) -> None:
         downloaded_file.close()
 
 
-def google_authorization(code: str) -> dict:
+def google_authorization(code: str, google_client_id: str) -> dict:
     """Получить JWT токены авторизации и создать пользователя (если нету) по токену Google"""
 
-    if code is None:
+    if code is None or google_client_id is None:
         raise ParseError
 
     google_tokens = requests.post('https://www.googleapis.com/oauth2/v4/token', headers={
@@ -262,7 +262,7 @@ def google_authorization(code: str) -> dict:
     }, data={
         'code': code,
         'redirect_uri': f'{settings.CORS_ALLOWED_ORIGINS[0]}/account/google-oauth2/',
-        'client_id': settings.SOCIAL_AUTH_GOOGLE_OAUTH_KEY,
+        'client_id': google_client_id,
         'client_secret': settings.SOCIAL_AUTH_GOOGLE_OAUTH_SECRET,
         'scope': '',
         'grant_type': 'authorization_code',

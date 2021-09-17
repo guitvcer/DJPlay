@@ -38,7 +38,7 @@
           <img :src="this.host + '/media/icons/vk.svg'" alt="VK" class="w-8 h-8">
         </a>
       </div>
-      <div class="text-sm">
+      <div class="text-sm pb-4">
         Этот сайт защищен Google reCAPTCHA<br>
         <a
           href="https://policies.google.com/privacy"

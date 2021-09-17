@@ -10,10 +10,12 @@ import ru from 'javascript-time-ago/locale/ru'
 
 
 const app = createApp(App)
-const domain = '127.0.0.1:8000'
+const domain = process.env["VUE_APP_BACKEND_HOST"] ?? '127.0.0.1:8000'
+const httpProtocol = process.env["VUE_APP_HTTP_PROTOCOL"] ?? 'http'
+const webSocketProtocol = process.env["VUE_APP_WEBSOCKET_PROTOCOL"] ?? 'ws'
 
-app.config.globalProperties.host = 'http://' + domain
-app.config.globalProperties.webSocketHost = 'ws://' + domain
+app.config.globalProperties.host = `${httpProtocol}://${domain}`
+app.config.globalProperties.webSocketHost = `${webSocketProtocol}://${domain}`
 app.config.globalProperties.getCookie = getCookie
 app.config.globalProperties.isAuthenticated = isAuthenticated
 app.config.globalProperties.getUserInfo = getUserInfo
