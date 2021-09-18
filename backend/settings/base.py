@@ -7,9 +7,6 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = '^bll0r6(epnd9il893d409-j7^j0#0^9)srjc$4h@msh3vd9gh'
-
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -95,12 +92,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
 }
-
-DRF_RECAPTCHA_SECRET_KEY = os.getenv("DRF_RECAPTCHA_SECRET_KEY")
-
-SOCIAL_AUTH_VK_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH_SECRET")
-
-SOCIAL_AUTH_GOOGLE_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH_SECRET")
 
 AUTHENTICATION_BACKENDS = {
     'django.contrib.auth.backends.ModelBackend',

@@ -7,7 +7,6 @@ urlpatterns = [
     path('account/', include('account.urls', namespace='account')),
     path('chat/', include('chat.urls')),
     path('gomoku/', include('gomoku.urls')),
-    path('api/', include('rest_framework.urls'))
 ]
 
 if settings.DEBUG:

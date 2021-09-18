@@ -1,0 +1,6 @@
+db.sqlite3
+ngrok
+.env
+*/migrations/
+__pycache__/
+account/managements/commands/__pycache__/

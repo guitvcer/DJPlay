@@ -11,11 +11,11 @@
 @layer utilities {
     @variants dark {
         .bg-board-background {
-            background-image: url('http://127.0.0.1:8000/media/gomoku/board_background.png');
+            background-image: url('http://localhost:8000/media/gomoku/board_background.png');
             background-size: 100%;
         }
         .bg-board-background-dark {
-            background-image: url('http://127.0.0.1:8000/media/gomoku/board_background_dark.png');
+            background-image: url('http://localhost:8000/media/gomoku/board_background_dark.png');
             background-size: 100%;
         }
     }

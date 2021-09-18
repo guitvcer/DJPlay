@@ -1,6 +1,8 @@
 from .base import *
 
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+
 DEBUG = False
 
 ALLOWED_HOSTS = [os.getenv('BACKEND_HOST'), '127.0.0.1', 'localhost']
@@ -12,7 +14,12 @@ PROTOCOL = os.getenv('PROTOCOL')
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [
+                (os.getenv('REDIS_SERVER_NAME'), os.getenv('REDIS_SERVER_PORT')),
+            ]
+        }
     },
 }
 
@@ -27,3 +34,8 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT')
     }
 }
+
+
+DRF_RECAPTCHA_SECRET_KEY = os.getenv("DRF_RECAPTCHA_SECRET_KEY")
+SOCIAL_AUTH_VK_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH_SECRET")

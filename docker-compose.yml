@@ -1,0 +1,20 @@
+version: '3'
+services:
+  backend:
+    image: guitvcer/djplay_backend_image:local
+    build: backend/
+    container_name: djplay_backend_container
+    ports:
+      - 8000:8000
+    restart: always
+  frontend:
+    image: guitvcer/djplay_frontend_image:local
+    build: frontend/
+    container_name: djplay_frontend_container
+    ports:
+      - 8080:8080
+    environment:
+      VUE_APP_BACKEND_HOST: localhost:8000
+    links:
+      - backend
+    restart: always
