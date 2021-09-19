@@ -5,11 +5,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv('BACKEND_HOST'), '127.0.0.1', 'localhost']
-
-CORS_ALLOWED_ORIGINS = [os.getenv('FRONTEND_HOST')]
-
+ALLOWED_HOSTS = [os.getenv('HOST'), '127.0.0.1', 'localhost']
 PROTOCOL = os.getenv('PROTOCOL')
+CORS_ALLOWED_ORIGINS = [f'{PROTOCOL}://${ALLOWED_HOSTS[0]}']
+
 
 
 CHANNEL_LAYERS = {
