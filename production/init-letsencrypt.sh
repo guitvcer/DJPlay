@@ -7,7 +7,7 @@ fi
 
 domains=(djplay.space www.djplay.space)
 rsa_key_size=4096
-data_path="./production/certbot"
+data_path="./certbot"
 email="abdrakhman.galaxy.s2@gmail.com" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
