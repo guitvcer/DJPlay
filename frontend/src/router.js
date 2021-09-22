@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Account/Home.vue'
 
 const routes = [
@@ -9,43 +9,43 @@ const routes = [
     },
     {
         path: '/gomoku/',
-        component: import('./views/Gomoku/Gomoku.vue'),
+        component: () => import('./views/Gomoku/Gomoku.vue'),
         name: 'gomoku'
     },
     {
         path: '/gomoku/:id/',
-        component: import('./views/Gomoku/GomokuParty'),
+        component: () => import('./views/Gomoku/GomokuParty'),
         name: 'gomokuParty'
     },
     {
         path: '/account/',
-        component: import('./views/Account/Profile'),
+        component: () => import('./views/Account/Profile'),
         name: 'userProfile'
     },
     {
         path: '/account/friends/',
-        component: import('./views/Account/UsersList'),
+        component: () => import('./views/Account/UsersList'),
         name: 'friends'
     },
     {
         path: '/account/views/',
-        component: import('./views/Account/UsersList'),
+        component: () => import('./views/Account/UsersList'),
         name: 'viewers'
     },
     {
         path: '/account/:username/',
         name: 'profile',
-        component: import('./views/Account/Profile.vue')
+        component: () => import('./views/Account/Profile.vue')
     },
     {
         path: '/account/:username/views/',
         name: 'usersViewers',
-        component: import('./views/Account/UsersList.vue')
+        component: () => import('./views/Account/UsersList.vue')
     },
     {
         path: '/account/:username/friends/',
         name: 'usersFriends',
-        component: import('./views/Account/UsersList.vue')
+        component: () => import('./views/Account/UsersList.vue')
     },
     {
         path: '/account/:username/friend-request',
@@ -60,50 +60,50 @@ const routes = [
     {
         path: '/account/:username/party-list/',
         name: 'userPartyList',
-        component: import('./views/Account/UserPartyList.vue')
+        component: () => import('./views/Account/UserPartyList.vue')
     },
     {
         path: '/account/users/',
         name: 'users',
-        component: import('./views/Account/UsersList.vue')
+        component: () => import('./views/Account/UsersList.vue')
     },
     {
         path: '/account/edit/',
         name: 'editProfile',
-        component: import('./views/Account/EditProfile.vue')
+        component: () => import('./views/Account/EditProfile.vue')
     },
     {
         path: '/account/party-list/',
         name: 'partyList',
-        component: import('./views/Account/UserPartyList')
+        component: () => import('./views/Account/UserPartyList')
     },
     {
         path: '/account/google-oauth2/',
         name: 'googleOAuth2',
-        component: import('./views/Account/GoogleOAuth2')
+        component: () => import('./views/Account/GoogleOAuth2')
     },
     {
         path: '/account/vk-oauth2/',
         name: 'vkOAuth2',
-        component: import('./views/Account/VKOAuth2')
+        component: () => import('./views/Account/VKOAuth2')
     },
     {
         path: '/chat/',
         name: 'chats',
-        component: import('./views/Chat/Chat')
+        component: () => import('./views/Chat/Chat')
     },
     {
         path: '/chat/:username/',
         name: 'chat',
-        component: import('./views/Chat/Chat')
+        component: () => import('./views/Chat/Chat')
     },
     {
         path: '/:catchAll(.*)',
-        component: import('./components/ErrorPages/NotFound')
+        component: () => import('./components/ErrorPages/NotFound')
     }
 ]
 
-const router = createRouter({
+const router = new createRouter({
     history: createWebHistory(),
     routes
 })

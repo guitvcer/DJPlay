@@ -26,7 +26,7 @@
     >
       <!-- Dropdown items is user is authorized -->
       <MenuItems
-        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
+        class="origin-top-right absolute right-0 mt-3.5 px-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
         v-if="user.username !== 'Гость'"
       >
         <div class="py-1">
@@ -68,7 +68,7 @@
 
       <!-- and if user is not authorized -->
       <MenuItems
-        class="origin-top-right absolute right-0 mt-3.5 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
+        class="origin-top-right absolute right-0 mt-3.5 px-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none dark:bg-main-dark border-gray-600 border"
         v-else
       >
         <div class="py-1">
@@ -123,7 +123,7 @@ export default {
       open: ref(false),
       showAuthorizationModal: false,
       showRegistrationModal: false,
-      dropdownItemClass: 'hover:bg-gray-50 hover:text-gray-900 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main w-full text-left'
+      dropdownItemClass: 'hover:bg-main rounded hover:text-gray-200 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main-dark2 w-full text-left'
     }
   },
   props: {

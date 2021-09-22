@@ -32,7 +32,7 @@ export default {
   methods: {
     async loadGameList() {
       await axios
-        .get(this.host + '/account/games/')
+        .get(this.host + '/api/account/games/')
         .then(response => {
           this.games = response.data
           this.loading = false

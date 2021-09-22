@@ -96,7 +96,7 @@ export default {
         email: '',
         recaptcha: ''
       },
-      action: this.host + '/account/registration',
+      action: this.host + '/api/account/registration',
       origin: window.location.origin
     }
   },

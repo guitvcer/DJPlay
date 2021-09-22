@@ -86,12 +86,12 @@ export default {
   },
   async mounted() {
     await axios
-      .get(`${this.host}/gomoku/${this.$route.params.id}/`)
+      .get(`${this.host}/api/gomoku/${this.$route.params.id}/`)
       .then(async response => {
         this.party = response.data
 
         await axios
-          .get(`${this.host}/account/${this.party.player1}/`)
+          .get(`${this.host}/api/account/${this.party.player1}/`)
           .then(response => this.player1 = response.data)
           .catch(error => {
             if (error.response.status === 401) this.$emit('api-error', error)
@@ -103,7 +103,7 @@ export default {
           })
 
         await axios
-          .get(`${this.host}/account/${this.party.player2}/`)
+          .get(`${this.host}/api/account/${this.party.player2}/`)
           .then(response => this.player2 = response.data)
           .catch(error => {
             if (error.response.status === 401) this.$emit('api-error', error)

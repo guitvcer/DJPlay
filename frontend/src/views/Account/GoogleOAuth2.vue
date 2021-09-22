@@ -8,7 +8,7 @@ export default {
 
     if (code) {
       await axios
-        .post(`${this.host}/account/social-authorization`, {
+        .post(`${this.host}/api/account/social-authorization`, {
           'code': code,
           'google_client_id': this.GOOGLE_CLIENT_ID,
           'provider': 'Google'

@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     getUrl() {
-      let url = `${this.host}/account`
+      let url = `${this.host}/api/account`
 
       if (this.$route.params.username)
         url += `/${this.$route.params.username}`

@@ -76,7 +76,7 @@ export default {
         password: '',
         recaptcha: ''
       },
-      action: this.host + '/account/authorization',
+      action: this.host + '/api/account/authorization',
       origin: window.location.origin
     }
   },

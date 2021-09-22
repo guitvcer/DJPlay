@@ -1,0 +1,52 @@
+version: '3'
+services:
+  db:
+    image: postgres:13.4
+    container_name: postgres_container
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_DB:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+  redis:
+    image: redis:6.2.5
+    container_name: redis_container
+    ports:
+      - "6379:6379"
+    restart: always
+  backend:
+    image: guitvcer/djplay_backend_image:production
+    container_name: djplay_backend_container
+    build: ../backend/
+    ports:
+      - "8001:8001"
+    command: bash -c "poetry run python3 manage.py makemigrations &&
+      poetry run python3 manage.py migrate &&
+      poetry run python3 manage.py setup &&
+      poetry run daphne -b 0.0.0.0 -p 8001 core.asgi:application"
+    env_file: ../backend/.env.production
+    volumes:
+      - ../backend:/app/backend/
+    links:
+      - db
+    restart: always
+  nginx:
+    image: nginx
+    container_name: nginx_container
+    ports:
+      - "80:80"
+    environment:
+      - REDIS_SERVER_NAME=redis
+      - REDIS_SERVER_PORT=6379
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ../backend/media:/app/media
+      - ../frontend/dist/:/app/frontend/dist/
+    links:
+      - backend
+    restart: unless-stopped

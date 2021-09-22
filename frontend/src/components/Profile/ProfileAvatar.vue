@@ -86,10 +86,10 @@ export default {
     Modal, ProfileButton
   },
   methods: {
-    friendRequest() {
+    async friendRequest() {
       if (this.isAuthenticated()) {
-        axios
-          .get(this.host + window.location.pathname + 'friend-request')
+        await axios
+          .get(this.host + '/api' + window.location.pathname + 'friend-request')
           .then(response => {
             this.$emit('create-alert', {
               title: response.data.title,

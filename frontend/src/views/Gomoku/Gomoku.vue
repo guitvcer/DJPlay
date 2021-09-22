@@ -64,7 +64,7 @@ export default {
   methods: {
     async loadGame() {
       await axios
-        .get( this.host + '/gomoku/')
+        .get( this.host + '/api/gomoku/')
         .then(response => {
           this.game = response.data
           this.loading = false

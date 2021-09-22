@@ -42,7 +42,7 @@ export default {
   methods: {
     async loadChats() {
       await axios
-        .get(`${this.host}/chat/`)
+        .get(`${this.host}/api/chat/`)
         .then(response => {
           this.chats = response.data
           this.loading = false
@@ -52,7 +52,7 @@ export default {
     async loadChat() {
       setTimeout(async () => {
         await axios
-          .get(`${this.host}/chat/${this.$route.params.username}`)
+          .get(`${this.host}/api/chat/${this.$route.params.username}`)
           .then(response => {
             this.chat = response.data
             this.display = 'chat'

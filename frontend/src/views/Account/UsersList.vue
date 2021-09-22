@@ -41,7 +41,7 @@ export default {
       this.$emit('api-error', error)
     },
     async loadUsersList() {
-      let url = this.host
+      let url = this.host + '/api'
 
       if (
         this.$route.name === 'usersFriends' ||

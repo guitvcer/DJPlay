@@ -1,65 +1,30 @@
 version: '3'
 services:
-  db:
-    image: postgres:13.4
-    container_name: postgres_container
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./production/pgdata:/var/lib/postgresql/data/pgdata
-    environment:
-      POSTGRES_DB:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      PGDATA: /var/lib/postgresql/data/pgdata
-    restart: always
-  redis:
-    image: redis:6.2.5
-    container_name: redis_container
-    ports:
-      - "6380:6380"
-    restart: always
   backend:
-    image: guitvcer/djplay_backend_image:production
+    image: guitvcer/djplay_backend_image:local
     container_name: djplay_backend_container
     build: backend/
     ports:
       - "8001:8001"
-    environment:
-      - DB_HOST=db
-      - DB_NAME=
-      - DB_USER=
-      - DB_PASSWORD=
-      - DJANGO_SETTINGS_MODULE=settings.production
-    links:
-      - db
-      - redis
+    volumes:
+      - ./backend:/app/backend/
+    command: bash -c "poetry run python3 manage.py makemigrations account gomoku chat &&
+      poetry run python3 manage.py migrate &&
+      poetry run python3 manage.py setup &&
+      poetry run python3 manage.py runserver 0.0.0.0:8001"
     restart: always
   frontend:
-    image: guitvcer/djplay_frontend_image:production
+    image: guitvcer/djplay_frontend_image:local
     build: frontend/
     container_name: djplay_frontend_container
+    ports:
+      - "8080:8080"
+    command: npm run serve
+    environment:
+      - VUE_APP_BACKEND_HOST=localhost:8001
+      - VUE_APP_RECAPTCHA_PUBLIC=6LdAUyUcAAAAANujUGnroaWZd6C5woLmMVpQdRtD
+      - VUE_APP_GOOGLE_OAUTH2_PUBLIC=568731334008-liiq5eghbc2icnc51c4mrfcdcldsstvn.apps.googleusercontent.com
+      - VUE_APP_VK_OAUTH2_PUBIC=7938245
     links:
       - backend
     restart: always
-  nginx:
-    image: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./production/nginx:/etc/nginx/conf.d
-      - ./production/certbot/conf:/etc/letsencrypt
-      - ./production/certbot/www:/var/www/certbot
-    links:
-      - backend
-      - frontend
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    restart: unless-stopped
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./production/certbot/conf:/etc/letsencrypt
-      - ./production/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    restart: unless-stopped

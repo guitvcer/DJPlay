@@ -4,9 +4,9 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('account/', include('account.urls', namespace='account')),
-    path('chat/', include('chat.urls')),
-    path('gomoku/', include('gomoku.urls')),
+    path('api/account/', include('account.urls', namespace='account')),
+    path('api/chat/', include('chat.urls')),
+    path('api/gomoku/', include('gomoku.urls')),
 ]
 
 if settings.DEBUG:

@@ -25,7 +25,7 @@ import Loading from '@/components/Interface/Loading'
 export default {
   data() {
     return {
-      action: this.host + '/account/edit/',
+      action: this.host + '/api/account/edit/',
       user: {},
       loading: true
     }
@@ -41,7 +41,7 @@ export default {
     },
     async setUserProfileInfo() {
       await axios
-        .get(this.host + '/account/')
+        .get(this.host + '/api/account/')
         .then(response => {
           this.user = response.data
           this.loading = false

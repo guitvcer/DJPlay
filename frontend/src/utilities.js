@@ -10,7 +10,7 @@ function getCookie(name) {
 
 async function refreshToken() {
     return axios
-        .post(`${host}/account/refresh-token`, {
+        .post(`${host}/api/account/refresh-token`, {
             access: getCookie('access'),
             refresh: getCookie('refresh')
         })
@@ -29,7 +29,7 @@ async function isAuthenticated() {
 
 async function getUserInfo() {
     return axios
-        .get(`${host}/account/`)
+        .get(`${host}/api/account/`)
         .then(response => response.data)
         .catch(error => {
             return {

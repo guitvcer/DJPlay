@@ -52,7 +52,7 @@ export default {
   methods: {
     async submitForm() {
       await axios
-        .post(this.host + window.location.pathname, this.body)
+        .post(this.host + '/api/' + window.location.pathname, this.body)
         .then(response => this.$emit('sent', response.data))
         .catch(error => this.$emit('api-error', error))
     }

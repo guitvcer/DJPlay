@@ -6,9 +6,6 @@ from account.models import Game, Queue
 from account.services import get_user_by_token
 from .services import register_move, delete_returnable_move
 
-game = Game.objects.get(name='Гомоку')
-queue = Queue.objects.get(game=game)
-
 
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
     """Consumer поиска соперника"""
@@ -17,10 +14,14 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
         super().__init__(args, kwargs)
         self.room_name = None
         self.room_group_name = None
+        self.queue = None
 
     async def connect(self):
         self.room_name = 'party'
         self.room_group_name = 'find_%s' % self.room_name
+
+        gomoku = await sync_to_async(Game.objects.get)(name='Гомоку')
+        self.queue = await sync_to_async(Queue.objects.get)(game=gomoku)
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -30,7 +31,7 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        await sync_to_async(Queue.update_queue)(queue, None)
+        await sync_to_async(Queue.update_queue)(self.queue, None)
 
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -40,7 +41,7 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content, **kwargs):
         token = content.get('access_token')
         player = await sync_to_async(get_user_by_token)(token)
-        new_party = await sync_to_async(Queue.update_queue)(queue, player)
+        new_party = await sync_to_async(Queue.update_queue)(self.queue, player)
 
         if new_party:
             await self.channel_layer.group_send(

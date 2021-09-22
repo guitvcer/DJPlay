@@ -7,7 +7,7 @@ export default {
 
     if (access_token) {
       await axios
-        .post(`${this.host}/account/social-authorization`, {
+        .post(`${this.host}/api/account/social-authorization`, {
           access_token: access_token,
           provider: 'VK'
         })

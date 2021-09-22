@@ -15,7 +15,7 @@ const httpProtocol = process.env["VUE_APP_HTTP_PROTOCOL"] ?? 'http'
 const webSocketProtocol = process.env["VUE_APP_WEBSOCKET_PROTOCOL"] ?? 'ws'
 
 app.config.globalProperties.host = `${httpProtocol}://${domain}`
-app.config.globalProperties.webSocketHost = `${webSocketProtocol}://${domain}`
+app.config.globalProperties.webSocketHost = `${webSocketProtocol}://${domain}/api`
 app.config.globalProperties.getCookie = getCookie
 app.config.globalProperties.isAuthenticated = isAuthenticated
 app.config.globalProperties.getUserInfo = getUserInfo
@@ -43,7 +43,7 @@ axios.interceptors.request.use(async config => {
     return config
 })
 
-app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"] })
+app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"] ?? "6LdAUyUcAAAAANujUGnroaWZd6C5woLmMVpQdRtD" })
 app.config.globalProperties.recaptcha = async function(action) {
     await this.$recaptchaLoaded()
     return await this.$recaptcha(action)
@@ -52,8 +52,8 @@ app.config.globalProperties.recaptcha = async function(action) {
 TimeAgo.addDefaultLocale(ru)
 app.config.globalProperties.timeAgo = new TimeAgo()
 
-app.config.globalProperties.GOOGLE_CLIENT_ID = process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"]
-app.config.globalProperties.VK_CLIENT_ID = process.env["VUE_APP_VK_OAUTH2_PUBLIC"]
+app.config.globalProperties.GOOGLE_CLIENT_ID = process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"] ?? "568731334008-liiq5eghbc2icnc51c4mrfcdcldsstvn.apps.googleusercontent.com"
+app.config.globalProperties.VK_CLIENT_ID = process.env["VUE_APP_VK_OAUTH2_PUBLIC"] ?? "7938245"
 
 app.use(router).mount('#app')
 
