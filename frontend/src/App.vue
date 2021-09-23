@@ -34,7 +34,7 @@ export default {
       status: 200,
       guest: {
         username: 'Гость',
-        avatar: '/media/user.png'
+        avatar: '/media/avatars/user.png'
       },
       user: this.guest,
       newMessageSound: new Audio(`${this.host}/media/sounds/message.mp3`)

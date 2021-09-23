@@ -98,7 +98,7 @@ export default {
 
             this.player1 = {
               username: this.party.player1,
-              avatar: '/media/user.png'
+              avatar: '/media/avatars/user.png'
             }
           })
 
@@ -110,7 +110,7 @@ export default {
 
             this.player2 = {
               username: this.party.player2,
-              avatar: '/media/user.png'
+              avatar: '/media/avatars/user.png'
             }
           })
 

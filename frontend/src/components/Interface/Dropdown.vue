@@ -131,7 +131,7 @@ export default {
       type: Object,
       default: {
         username: 'Гость',
-        avatar: '/media/user.png'
+        avatar: '/media/avatars/user.png'
       }
     }
   },

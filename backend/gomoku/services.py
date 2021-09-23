@@ -1,4 +1,4 @@
-from account.models import User
+from account.models import User, Game, Queue
 from .models import Party, Move
 
 
@@ -118,3 +118,27 @@ def delete_returnable_move(party_id: int, coordinate: str) -> None:
     party = Party.objects.get(id=party_id)
     move = Move.objects.get(coordinate=coordinate, party=party)
     move.delete()
+
+
+def add_gomoku_into_database() -> None:
+    """Добавить Гомоку в БД, если нету"""
+
+    gomoku = None
+
+    try:
+        gomoku = Game.objects.get(name="Гомоку")
+        Queue.objects.get(game=gomoku)
+    except Game.DoesNotExist:
+        gomoku = Game.objects.create(
+            name="Гомоку",
+            app_name="gomoku",
+            rules="Гомоку — настольная логическая игра для двух игроков."
+                  " На квадратной доске размером 15×15 пунктов игроки поочерёдно выставляют камни двух цветов."
+                  " Выигрывает тот, кто первым построит непрерывный ряд из пяти камней своего цвета по"
+                  " вертикали, горизонтали или диагонали.",
+            image="/gomoku/gomoku.png",
+            is_released=True
+        )
+        Queue.objects.create(game=gomoku)
+    except Queue.DoesNotExist:
+        Queue.objects.create(game=gomoku)

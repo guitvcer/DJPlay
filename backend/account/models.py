@@ -25,12 +25,13 @@ class User(AbstractUser):
     )
 
     id = models.AutoField(primary_key=True)
-    avatar = ThumbnailerImageField(default="/user.png", verbose_name="Фото профиля", resize_source={
-        'quality': 95,
-        'size': (256, 256),
-        'sharpen': True,
-        'crop': 'square'
-    })
+    avatar = ThumbnailerImageField(default="/avatars/user.png", verbose_name="Фото профиля", upload_to='avatars',
+                                   resize_source={
+                                       'quality': 95,
+                                       'size': (256, 256),
+                                       'sharpen': True,
+                                       'crop': 'square'
+                                   })
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=GENDERS, verbose_name="Пол")
     email = models.EmailField(null=True, blank=True, max_length=64, verbose_name="Эл.почта")
@@ -39,6 +40,7 @@ class User(AbstractUser):
     last_online = models.DateTimeField(null=True, blank=True, verbose_name="Был онлайн в")
     is_online = models.BooleanField(default=False, verbose_name="Онлайн?")
     is_private = models.BooleanField(default=False, verbose_name="Приватный аккаунт?")
+    is_active = models.BooleanField(default=True, verbose_name="Активный аккаунт?")
 
     active = UserManager()
 

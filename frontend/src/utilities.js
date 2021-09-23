@@ -34,7 +34,7 @@ async function getUserInfo() {
         .catch(error => {
             return {
                 username: 'Гость',
-                avatar: '/media/user.png'
+                avatar: '/media/avatars/user.png'
             }
         })
 }
