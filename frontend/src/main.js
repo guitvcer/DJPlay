@@ -28,7 +28,7 @@ axios.interceptors.request.use(async config => {
     await isAuthenticated().then(value => isAuthorized = value)
 
     if (isAuthorized) {
-        await fetch(`${app.config.globalProperties.host}/account/`, {
+        await fetch(`${app.config.globalProperties.host}/api/account/`, {
             headers: {
                 Authorization: `Bearer ${getCookie('access')}`
             }

@@ -25,7 +25,7 @@ services:
     build: ../backend/
     ports:
       - "8001:8001"
-    command: bash -c "poetry run python3 manage.py makemigrations &&
+    command: bash -c "poetry run python3 manage.py makemigrations account gomoku chat &&
       poetry run python3 manage.py migrate &&
       poetry run python3 manage.py setup &&
       poetry run daphne -b 0.0.0.0 -p 8001 core.asgi:application"
@@ -41,9 +41,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      - REDIS_SERVER_NAME=redis
-      - REDIS_SERVER_PORT=6379
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ../backend/media:/app/media
@@ -56,8 +53,9 @@ services:
     restart: unless-stopped
   certbot:
     image: certbot/certbot
+    container_name: certbot_container
     restart: unless-stopped
     volumes:
       - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/letsencrypt
+      - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'"
