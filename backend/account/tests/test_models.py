@@ -4,17 +4,30 @@ from PIL import Image
 from django.core.files.images import get_image_dimensions
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
+from django.db.models import QuerySet
 from django.test import TestCase
 from easy_thumbnails.fields import ThumbnailerImageField
 
-from account.models import User
+from account.models import User, FriendRequest, Game, UserView
+from gomoku.models import Party as GomokuParty
+from gomoku.services import add_gomoku_into_database
+from chat.models import Chat
 
 
 class UserModelFieldsTest(TestCase):
     """Тесты для полей модели пользователя"""
 
     def setUp(self) -> None:
-        self.user = User.objects.create(username="testUser", email="testUser@example.com")
+        self.user = User.objects.create(username="testUser")
+
+    def test_verbose_name(self):
+        self.assertEquals('Пользователь', self.user._meta.verbose_name)
+
+    def test_verbose_name_plural(self):
+        self.assertEquals('Пользователи', self.user._meta.verbose_name_plural)
+
+    def test_ordering(self):
+        self.assertEquals(('username', ), self.user._meta.ordering)
 
     def test_avatar_type(self):
         field_type = type(self.user._meta.get_field('avatar'))
@@ -35,15 +48,6 @@ class UserModelFieldsTest(TestCase):
         image.seek(0)
 
         return SimpleUploadedFile('avatar.png', image.getvalue())
-
-    # def test_avatar_upload_small_image(self):
-    #     user = self.user
-    #
-    #     user.avatar = self.upload_image(64, 32)
-    #     user.save()
-    #     width, height = get_image_dimensions(user.avatar)
-    #
-    #     self.assertEquals((32, 32), (width, height))
 
     def test_avatar_upload_large_image(self):
         image_file = self.upload_image(512, 512)
@@ -100,6 +104,18 @@ class UserModelFieldsTest(TestCase):
     def test_gender_max_length(self):
         field_max_length = self.user._meta.get_field('gender').max_length
         self.assertEquals(1, field_max_length)
+
+    def test_email_type(self):
+        field_type = type(self.user._meta.get_field('email'))
+        self.assertEquals(models.EmailField, field_type)
+
+    def test_email_label(self):
+        field_label = self.user._meta.get_field('email').verbose_name
+        self.assertEquals('Эл. почта', field_label)
+
+    def test_email_default(self):
+        field_value = self.user.email
+        self.assertEquals(None, field_value)
 
     def test_provider_type(self):
         field_type = type(self.user._meta.get_field('provider'))
@@ -173,3 +189,341 @@ class UserModelFieldsTest(TestCase):
     def test_is_active_default(self):
         field_value = self.user.is_active
         self.assertTrue(field_value)
+
+
+class UserModelMethodsTest(TestCase):
+    """Тесты для методов модели пользователей"""
+
+    def setUp(self) -> None:
+        self.user = User.objects.create(username="testUser")
+
+    def test_str(self):
+        self.assertEquals(self.user.username, str(self.user))
+
+    def test_get_chats_type(self):
+        get_chats_type = type(self.user.get_chats())
+        self.assertEquals(QuerySet, get_chats_type)
+
+    def test_get_chats_with_self(self):
+        chat = Chat.objects.create(user_1=self.user, user_2=self.user)
+        self.assertTrue(chat in self.user.get_chats())
+
+    def test_get_chats_with_another_user_1(self):
+        test_user_2 = User.objects.create(username="testUser_2")
+        chat = Chat.objects.create(user_1=self.user, user_2=test_user_2)
+        self.assertTrue(chat in self.user.get_chats())
+
+    def test_get_chats_with_another_user_2(self):
+        test_user_2 = User.objects.create(username="testUser_2")
+        chat = Chat.objects.create(user_1=test_user_2, user_2=self.user)
+        self.assertTrue(chat in self.user.get_chats())
+
+    def test_get_chats_with_many_users(self):
+        test_user_2 = User.objects.create(username="testUser_2")
+        test_user_3 = User.objects.create(username="testUser_3")
+        test_user_4 = User.objects.create(username="testUser_4")
+
+        ids_of_user_chats = [
+            Chat.objects.create(user_1=self.user, user_2=test_user_2).id,
+            Chat.objects.create(user_1=test_user_3, user_2=self.user).id,
+            Chat.objects.create(user_1=self.user, user_2=self.user).id
+        ]
+
+        Chat.objects.create(user_1=test_user_2, user_2=test_user_3)
+        Chat.objects.create(user_1=test_user_3, user_2=test_user_2)
+        Chat.objects.create(user_1=test_user_4, user_2=test_user_4)
+
+        user_chats = Chat.objects.filter(id__in=ids_of_user_chats)
+        get_chats_is_correct = True
+
+        if user_chats.count() != self.user.get_chats().count():
+            get_chats_is_correct = False
+        else:
+            for chat in user_chats:
+                if chat not in self.user.get_chats():
+                    get_chats_is_correct = False
+                    break
+
+        self.assertTrue(get_chats_is_correct)
+
+    def test_get_friends_type(self):
+        get_friends_type = type(self.user.get_friends())
+        self.assertEquals(QuerySet, get_friends_type)
+
+    def test_get_friends_request_from_self_to_self(self):
+        FriendRequest.objects.create(request_from=self.user, request_to=self.user, is_active=True)
+        self.assertFalse(self.user in self.user.get_friends())
+
+    def test_get_friends_not_active_request_from_self_to_self(self):
+        FriendRequest.objects.create(request_from=self.user, request_to=self.user)
+        self.assertFalse(self.user in self.user.get_friends())
+
+    def test_get_friends_request_from_not_active_self_to_self(self):
+        self.user.is_active = False
+        self.user.save()
+
+        FriendRequest.objects.create(request_from=self.user, request_to=self.user, is_active=True)
+        self.assertFalse(self.user in self.user.get_friends())
+
+    def test_get_friends_not_active_request_from_not_active_self_to_not_active_self(self):
+        self.user.is_active = False
+        self.user.save()
+
+        FriendRequest.objects.create(request_from=self.user, request_to=self.user)
+        self.assertFalse(self.user in self.user.get_friends())
+
+    def test_get_friends_request_to_another_user(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=self.user, request_to=test_user_2, is_active=True)
+        self.assertTrue(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_request_from_another_user(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
+        self.assertTrue(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_not_active_request_to_user(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=self.user, request_to=test_user_2)
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_not_active_request_from_user(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user)
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_request_to_not_active_user(self):
+        test_user_2 = User.objects.create(username="testUser2", is_active=False)
+        FriendRequest.objects.create(request_from=self.user, request_to=test_user_2)
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_request_from_not_active_user(self):
+        test_user_2 = User.objects.create(username="testUser2", is_active=False)
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user)
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_request_to_not_active_self(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
+
+        self.user.is_active = False
+        self.user.save()
+
+        self.assertTrue(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_not_active_request_to_not_active_self(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user)
+
+        self.user.is_active = False
+        self.user.save()
+
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_request_from_not_active_self_to_not_active_user(self):
+        test_user_2 = User.objects.create(username="testUser2", is_active=False)
+        FriendRequest.objects.create(request_from=self.user, request_to=test_user_2)
+
+        self.user.is_active = False
+        self.user.save()
+
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_not_active_request_from_not_active_self_to_not_active_user(self):
+        test_user_2 = User.objects.create(username="testUser2", is_active=False)
+        FriendRequest.objects.create(request_from=self.user, request_to=test_user_2, is_active=False)
+
+        self.user.is_active = False
+        self.user.save()
+
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_request_from_not_active_user_to_not_active_self(self):
+        test_user_2 = User.objects.create(username="testUser2", is_active=False)
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user)
+
+        self.user.is_active = False
+        self.user.save()
+
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_not_active_request_from_not_active_user_to_not_active_self(self):
+        test_user_2 = User.objects.create(username="testUser2", is_active=False)
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=False)
+
+        self.user.is_active = False
+        self.user.save()
+
+        self.assertFalse(test_user_2 in self.user.get_friends())
+
+    def test_get_friends_with_many_users(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        test_user_3 = User.objects.create(username="testUser3")
+        test_user_4 = User.objects.create(username="testUser4", is_active=False)
+        test_user_5 = User.objects.create(username="testUser5")
+
+        ids_of_friends = []
+
+        FriendRequest.objects.create(request_from=test_user_2, request_to=test_user_3, is_active=True)
+        FriendRequest.objects.create(request_from=test_user_3, request_to=test_user_4, is_active=True)
+        ids_of_friends.append(
+            FriendRequest.objects.create(request_from=self.user, request_to=test_user_2, is_active=True).id
+        )
+        FriendRequest.objects.create(request_from=test_user_4, request_to=self.user, is_active=True)
+        FriendRequest.objects.create(request_from=self.user, request_to=test_user_3)
+        FriendRequest.objects.create(request_from=self.user, request_to=self.user, is_active=True)
+        FriendRequest.objects.create(request_from=test_user_5, request_to=test_user_2)
+        ids_of_friends.append(
+            FriendRequest.objects.create(request_from=test_user_5, request_to=self.user, is_active=True).id
+        )
+
+        is_get_friends_correct = True
+        get_friends_queryset = self.user.get_friends()
+        correct_friends_request_queryset = FriendRequest.objects.filter(id__in=ids_of_friends)
+
+        self.assertEquals(correct_friends_request_queryset.count(), get_friends_queryset.count())
+
+        if correct_friends_request_queryset.count() != get_friends_queryset.count():
+            is_get_friends_correct = False
+        else:
+            for fq in correct_friends_request_queryset:
+                if fq.get_friend(self.user) not in get_friends_queryset:
+                    is_get_friends_correct = False
+                    break
+
+        self.assertTrue(is_get_friends_correct)
+
+    def test_get_gomoku_party_list_type(self):
+        add_gomoku_into_database()
+        gomoku = Game.objects.get(app_name='gomoku')
+        get_party_list_type = type(self.user.get_party_list(gomoku))
+        self.assertEquals(QuerySet, get_party_list_type)
+
+    def test_get_gomoku_party_list(self):
+        add_gomoku_into_database()
+        gomoku = Game.objects.get(app_name='gomoku')
+        test_user_2 = User.objects.create(username="testUser2")
+        test_user_3 = User.objects.create(username="testUser3")
+        test_user_4 = User.objects.create(username="testUser4", is_active=False)
+
+        ids_of_parties = []
+
+        GomokuParty.objects.create(player_1=test_user_2, player_2=test_user_4, game=gomoku)
+        GomokuParty.objects.create(player_1=test_user_2, player_2=test_user_4, game=gomoku)
+        GomokuParty.objects.create(player_1=test_user_4, player_2=test_user_2, game=gomoku)
+        ids_of_parties.append(
+            GomokuParty.objects.create(player_1=test_user_3, player_2=self.user, game=gomoku).id
+        )
+        ids_of_parties.append(
+            GomokuParty.objects.create(player_1=self.user, player_2=test_user_3, game=gomoku).id
+        )
+        GomokuParty.objects.create(player_1=test_user_2, player_2=test_user_3, game=gomoku)
+        ids_of_parties.append(
+            GomokuParty.objects.create(player_1=self.user, player_2=test_user_2, game=gomoku).id
+        )
+        GomokuParty.objects.create(player_1=self.user, player_2=self.user, game=gomoku)
+        GomokuParty.objects.create(player_1=test_user_4, player_2=test_user_3, game=gomoku)
+        ids_of_parties.append(
+            GomokuParty.objects.create(player_1=self.user, player_2=test_user_2, game=gomoku).id
+        )
+        GomokuParty.objects.create(player_1=test_user_2, player_2=test_user_2, game=gomoku)
+        ids_of_parties.append(
+            GomokuParty.objects.create(player_1=test_user_4, player_2=self.user, game=gomoku).id
+        )
+        GomokuParty.objects.create(player_1=test_user_3, player_2=test_user_2, game=gomoku)
+        ids_of_parties.append(
+            GomokuParty.objects.create(player_1=self.user, player_2=test_user_3, game=gomoku).id
+        )
+
+        is_get_gomoku_party_list_correct = True
+        correct_gomoku_party_list_queryset = GomokuParty.objects.filter(id__in=ids_of_parties)
+        get_gomoku_party_list_queryset = self.user.get_party_list(gomoku)
+
+        if correct_gomoku_party_list_queryset.count() != get_gomoku_party_list_queryset.count():
+            is_get_gomoku_party_list_correct = False
+        else:
+            for gomoku_party in correct_gomoku_party_list_queryset:
+                if gomoku_party not in get_gomoku_party_list_queryset:
+                    is_get_gomoku_party_list_correct = False
+                    break
+
+        self.assertTrue(is_get_gomoku_party_list_correct)
+
+    def test_get_viewers_type(self):
+        self.assertEquals(QuerySet, type(self.user.get_viewers()))
+
+    def test_get_viewers_with_self(self):
+        UserView.objects.create(view_from=self.user, view_to=self.user)
+        self.assertEquals(0, self.user.get_viewers().count())
+
+    def test_get_viewers_with_user(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        UserView.objects.create(view_from=test_user_2, view_to=self.user)
+        self.assertTrue(test_user_2 in self.user.get_viewers())
+
+    def test_get_viewers_to_user_repeatedly(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        UserView.objects.create(view_from=test_user_2, view_to=self.user)
+        UserView.objects.create(view_from=test_user_2, view_to=self.user)
+        self.assertEquals(1, self.user.get_viewers().count())
+
+    def test_get_viewers_with_many_users(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        test_user_3 = User.objects.create(username="testUser3")
+        test_user_4 = User.objects.create(username="testUser4")
+
+        ids_of_user_viewers = []
+
+        UserView.objects.create(view_from=test_user_2, view_to=test_user_3)
+        UserView.objects.create(view_from=test_user_2, view_to=test_user_4)
+        ids_of_user_viewers.append(
+            UserView.objects.create(view_from=test_user_3, view_to=self.user).id
+        )
+        UserView.objects.create(view_from=test_user_3, view_to=self.user)
+        ids_of_user_viewers.append(
+            UserView.objects.create(view_from=test_user_4, view_to=self.user).id
+        )
+        UserView.objects.create(view_from=self.user, view_to=test_user_2)
+        UserView.objects.create(view_from=test_user_4, view_to=test_user_2)
+        UserView.objects.create(view_from=self.user, view_to=self.user)
+        UserView.objects.create(view_from=test_user_4, view_to=test_user_4)
+
+        is_get_viewers_correct = True
+        get_viewers_queryset = self.user.get_viewers()
+        correct_user_views_queryset = UserView.objects.filter(id__in=ids_of_user_viewers)
+
+        if correct_user_views_queryset.count() != get_viewers_queryset.count():
+            is_get_viewers_correct = False
+        else:
+            for user_view in correct_user_views_queryset:
+                if user_view.get_viewer(self.user) not in get_viewers_queryset:
+                    is_get_viewers_correct = False
+                    break
+
+        self.assertTrue(is_get_viewers_correct)
+
+    def test_has_access_to_view_data_of_another_user_type(self):
+        test_user_2 = User.objects.create(username="userUser2")
+        result_type = type(self.user.has_access_to_view_data_of_another_user(test_user_2))
+        self.assertEquals(bool, result_type)
+
+    def test_has_access_to_view_data_of_self(self):
+        self.assertTrue(self.user.has_access_to_view_data_of_another_user(self.user))
+
+    def test_has_access_to_view_data_of_another_user(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))
+
+    def test_has_access_to_view_data_of_private_user(self):
+        test_user_2 = User.objects.create(username="testUser2", is_private=True)
+        self.assertFalse(self.user.has_access_to_view_data_of_another_user(test_user_2))
+
+    def test_has_access_to_view_data_of_friend(self):
+        test_user_2 = User.objects.create(username="testUser2")
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
+        self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))
+
+    def test_has_access_to_view_data_of_private_friend(self):
+        test_user_2 = User.objects.create(username="testUser2", is_private=True)
+        FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
+        self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))

@@ -22,9 +22,6 @@ services:
     command: npm run serve
     environment:
       - VUE_APP_BACKEND_HOST=localhost:8001
-      - VUE_APP_RECAPTCHA_PUBLIC=6LdAUyUcAAAAANujUGnroaWZd6C5woLmMVpQdRtD
-      - VUE_APP_GOOGLE_OAUTH2_PUBLIC=568731334008-liiq5eghbc2icnc51c4mrfcdcldsstvn.apps.googleusercontent.com
-      - VUE_APP_VK_OAUTH2_PUBIC=7938245
     links:
       - backend
     restart: always

@@ -11,6 +11,9 @@ class Chat(models.Model):
     user_2 = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Пользователь 2',
                                related_name='chat_user_2')
 
+    def __str__(self):
+        return f'{self.user_1} - {self.user_2}'
+
     def get_interlocutor(self, user: User) -> User:
         return self.user_2 if user == self.user_1 else self.user_1
 

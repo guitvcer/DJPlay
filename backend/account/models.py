@@ -34,7 +34,7 @@ class User(AbstractUser):
                                    })
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=GENDERS, verbose_name="Пол")
-    email = models.EmailField(null=True, blank=True, max_length=64, verbose_name="Эл.почта")
+    email = models.EmailField(null=True, blank=True, max_length=64, verbose_name="Эл. почта")
     provider = models.CharField(default="DJPlay", choices=PROVIDERS, max_length=64,
                                 verbose_name="Соц. сеть через которую вошел")
     last_online = models.DateTimeField(null=True, blank=True, verbose_name="Был онлайн в")
@@ -63,6 +63,9 @@ class User(AbstractUser):
         active_users = User.active.all()
 
         for active_user in active_users:
+            if active_user == self:
+                continue
+
             try:
                 fqs.append(FriendRequest.objects.get(
                     request_from=self, request_to=active_user, is_active=True))

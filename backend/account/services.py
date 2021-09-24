@@ -281,7 +281,7 @@ def google_authorization(code: str, google_client_id: str) -> dict:
         if not user.is_active:
             raise NotFound
     except User.DoesNotExist:
-        avatar_url = f"{google_user_data['name']}.png"
+        avatar_url = f"avatars/{google_user_data['name']}.png"
         download_file_by_url(google_user_data['picture'], avatar_url)
 
         user = User.objects.create(
@@ -314,10 +314,10 @@ def vk_authorization(access_token: str) -> dict:
             raise NotFound
     except User.DoesNotExist:
         if vk_user_data['has_photo']:
-            avatar_url = f"{vk_user_data['screen_name']}.png"
+            avatar_url = f"avatars/{vk_user_data['screen_name']}.png"
             download_file_by_url(vk_user_data['photo_max_orig'], avatar_url)
         else:
-            avatar_url = '/media/user.png'
+            avatar_url = '/media/avatars/user.png'
 
         user = User.objects.create(
             username=vk_user_data['screen_name'],
