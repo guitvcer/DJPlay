@@ -527,3 +527,74 @@ class UserModelMethodsTest(TestCase):
         test_user_2 = User.objects.create(username="testUser2", is_private=True)
         FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
         self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))
+
+
+class GameTestCase(TestCase):
+    """Тесты для модели игры"""
+
+    def setUp(self) -> None:
+        add_gomoku_into_database()
+        self.gomoku = Game.objects.get(app_name="gomoku")
+
+    def test_name_type(self):
+        field_type = type(self.gomoku._meta.get_field('name'))
+        self.assertEquals(models.CharField, field_type)
+
+    def test_name_label(self):
+        field_label = self.gomoku._meta.get_field('name').verbose_name
+        self.assertEquals('Название игры', field_label)
+
+    def test_name_max_length(self):
+        field_max_length = self.gomoku._meta.get_field('name').max_length
+        self.assertEquals(64, field_max_length)
+
+    def test_app_name_type(self):
+        field_type = type(self.gomoku._meta.get_field('app_name'))
+        self.assertEquals(models.CharField, field_type)
+
+    def test_app_name_label(self):
+        field_label = self.gomoku._meta.get_field('app_name').verbose_name
+        self.assertEquals('Название приложения', field_label)
+
+    def test_app_name_max_length(self):
+        field_max_length = self.gomoku._meta.get_field('app_name').max_length
+        self.assertEquals(64, field_max_length)
+
+    def test_rules_type(self):
+        field_type = type(self.gomoku._meta.get_field('rules'))
+        self.assertEquals(models.TextField, field_type)
+
+    def test_rules_label(self):
+        field_label = self.gomoku._meta.get_field('rules').verbose_name
+        self.assertEquals('Правила игры', field_label)
+
+    def test_image_type(self):
+        field_type = type(self.gomoku._meta.get_field('image'))
+        self.assertEquals(models.ImageField, field_type)
+
+    def test_image_label(self):
+        field_label = self.gomoku._meta.get_field('image').verbose_name
+        self.assertEquals('Обложка', field_label)
+
+    def test_image_for_null(self):
+        field_none = self.gomoku._meta.get_field('image').null
+        self.assertTrue(field_none)
+
+    def test_image_for_blank(self):
+        field_blank = self.gomoku._meta.get_field('image').blank
+        self.assertTrue(field_blank)
+
+    def test_is_realeased_type(self):
+        field_type = type(self.gomoku._meta.get_field('is_released'))
+        self.assertEquals(models.BooleanField, field_type)
+
+    def test_is_realeased_label(self):
+        field_label = self.gomoku._meta.get_field('is_released').verbose_name
+        self.assertEquals('Выпущена ли игра?', field_label)
+
+    def test_is_released_default(self):
+        field_default = self.gomoku._meta.get_field('is_released').default
+        self.assertFalse(field_default)
+
+    def test_str(self):
+        self.assertEquals('Гомоку', str(self.gomoku))
