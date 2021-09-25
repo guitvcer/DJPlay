@@ -132,30 +132,29 @@ class Queue(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name="Очередь для")
     player_1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
 
-    def __str__(self): return self.game.name
+    def __str__(self): return f'Очередь для {self.game.name}'
 
-    @staticmethod
-    def update_queue(queue, player: User):
-        if player is None:
-            queue.player_1 = None
-            queue.save()
+    def update_queue(self, player: User = None, clear: bool = False):
+        if clear:
+            self.player_1 = None
+            self.save()
             return
 
-        if queue.player_1 is None:
-            queue.player_1 = player
-            queue.save()
-        elif queue.player_1 == player:
-            queue.player_1 = None
-            queue.save()
-        else:
-            # если очередь заполнена, создается игра и очищается очередь
+        if player is not None:
+            if self.player_1 is None:
+                self.player_1 = player
+                self.save()
+            elif self.player_1 == player:
+                pass
+            else:
+                # если очередь заполнена, создается игра и очищается очередь
 
-            gomoku = Game.objects.get(app_name="gomoku")
-            party = queue.game.party_set.create(player_1=queue.player_1, player_2=player, game=gomoku)
-            queue.player_1 = None
-            queue.save()
+                gomoku = Game.objects.get(app_name="gomoku")
+                party = self.game.party_set.create(player_1=self.player_1, player_2=player, game=gomoku)
+                self.player_1 = None
+                self.save()
 
-            return party
+                return party
 
     class Meta:
         verbose_name = 'Очередь для игры'
@@ -163,12 +162,12 @@ class Queue(models.Model):
 
 
 class FriendRequest(models.Model):
-    """Модель для добавления/удаления друзей"""
+    """Модель запросов в друзья"""
 
     id = models.AutoField(primary_key=True)
-    request_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Запрос на дружбу от",
+    request_from = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Запрос от",
                                      related_name="friend_request_from")
-    request_to = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Запрос на дружбу к",
+    request_to = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Запрос к",
                                    related_name="friend_request_to")
     is_active = models.BooleanField(default=False, verbose_name="Принят ли запрос?")
 
@@ -178,8 +177,8 @@ class FriendRequest(models.Model):
         return self.request_from if user == self.request_to else self.request_to
 
     class Meta:
-        verbose_name = 'Запрос на дружбу'
-        verbose_name_plural = 'Запросы на дружбу'
+        verbose_name = 'Запрос в друзья'
+        verbose_name_plural = 'Запросы в друзья'
 
 
 class UserView(models.Model):
@@ -194,4 +193,4 @@ class UserView(models.Model):
 
     class Meta:
         verbose_name = 'Просмотр пользователя'
-        verbose_name_plural = 'Просмотры пользователя'
+        verbose_name_plural = 'Просмотры пользователей'

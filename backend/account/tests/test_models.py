@@ -4,11 +4,11 @@ from PIL import Image
 from django.core.files.images import get_image_dimensions
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, ProtectedError
 from django.test import TestCase
 from easy_thumbnails.fields import ThumbnailerImageField
 
-from account.models import User, FriendRequest, Game, UserView
+from account.models import User, FriendRequest, Game, UserView, Queue
 from gomoku.models import Party as GomokuParty
 from gomoku.services import add_gomoku_into_database
 from chat.models import Chat
@@ -598,3 +598,182 @@ class GameTestCase(TestCase):
 
     def test_str(self):
         self.assertEquals('Гомоку', str(self.gomoku))
+
+
+class QueueModelTest(TestCase):
+    """Тесты для модели очереди"""
+
+    def setUp(self) -> None:
+        add_gomoku_into_database()
+        self.gomoku = Game.objects.get(app_name='gomoku')
+        self.queue = Queue.objects.create(game=self.gomoku)
+        self.test_user_1 = User.objects.create(username="testUser1")
+        self.test_user_2 = User.objects.create(username="testUser2")
+
+    def test_verbose_name(self):
+        self.assertEquals('Очередь для игры', self.queue._meta.verbose_name)
+
+    def test_verbose_name_plural(self):
+        self.assertEquals('Очереди для игр', self.queue._meta.verbose_name_plural)
+
+    def test_game_type(self):
+        field_type = type(self.queue._meta.get_field('game'))
+        self.assertEquals(models.ForeignKey, field_type)
+
+    def test_game_label(self):
+        field_label = self.queue._meta.get_field('game').verbose_name
+        self.assertEquals('Очередь для', field_label)
+
+    def test_game_to(self):
+        field_to = type(self.queue.game)
+        self.assertEquals(Game, field_to)
+
+    def test_game_on_delete(self):
+        self.gomoku.delete()
+        self.assertEquals(0, Queue.objects.count())
+
+    def test_player_1_type(self):
+        field_type = type(self.queue._meta.get_field('player_1'))
+        self.assertEquals(models.ForeignKey, field_type)
+
+    def test_player_1_label(self):
+        field_label = self.queue._meta.get_field('player_1').verbose_name
+        self.assertEquals('Игрок 1', field_label)
+
+    def test_player_1_to(self):
+        self.queue.player_1 = self.test_user_1
+        self.queue.save()
+        field_to = type(self.queue.player_1)
+        self.assertEquals(User, field_to)
+
+    def test_player_1_on_delete(self):
+        self.queue.player_1 = self.test_user_1
+        self.queue.save()
+        self.test_user_1.delete()
+        queue = Queue.objects.get(game=self.gomoku)
+        self.assertEquals(None, queue.player_1)
+
+    def test_str(self):
+        self.assertEquals('Очередь для Гомоку', str(self.queue))
+
+    def test_update_queue(self):
+        self.queue.update_queue(self.test_user_1)
+        self.assertEquals(self.test_user_1, self.queue.player_1)
+
+    def test_update_queue_for_clear(self):
+        self.queue.update_queue(self.test_user_1)
+        self.queue.update_queue(clear=True)
+        self.assertEquals(None, self.queue.player_1)
+
+    def test_update_queue_for_one_player_twice(self):
+        self.queue.update_queue(self.test_user_1)
+        self.queue.update_queue(self.test_user_1)
+        self.assertEquals(self.test_user_1, self.queue.player_1)
+
+    def test_update_queue_for_two_players(self):
+        self.queue.update_queue(self.test_user_1)
+        self.queue.update_queue(self.test_user_2)
+        self.assertEquals((1, None), (GomokuParty.objects.count(), self.queue.player_1))
+
+
+class FriendRequestModelTest(TestCase):
+    """Тесты для модели запроса в друзья"""
+
+    def setUp(self) -> None:
+        self.test_user_1 = User.objects.create(username="testUser1")
+        self.test_user_2 = User.objects.create(username="testUser2")
+        self.fq = FriendRequest.objects.create(
+            request_from=self.test_user_1,
+            request_to=self.test_user_2,
+            is_active=True
+        )
+
+    def test_verbose_name(self):
+        self.assertEquals('Запрос в друзья', self.fq._meta.verbose_name)
+
+    def test_verbose_name_plural(self):
+        self.assertEquals('Запросы в друзья', self.fq._meta.verbose_name_plural)
+
+    def test_request_from_type(self):
+        field_type = type(self.fq._meta.get_field('request_from'))
+        self.assertEquals(models.ForeignKey, field_type)
+
+    def test_request_from_label(self):
+        field_label = self.fq._meta.get_field('request_from').verbose_name
+        self.assertEquals('Запрос от', field_label)
+
+    def test_request_from_on_delete(self):
+        try:
+            self.test_user_1.delete()
+            self.assertTrue(False)
+        except ProtectedError:
+            self.assertTrue(True)
+
+    def test_request_to_type(self):
+        field_type = type(self.fq._meta.get_field('request_to'))
+        self.assertEquals(models.ForeignKey, field_type)
+
+    def test_request_to_label(self):
+        field_label = self.fq._meta.get_field('request_to').verbose_name
+        self.assertEquals('Запрос к', field_label)
+
+    def test_request_to_on_delete(self):
+        try:
+            self.test_user_1.delete()
+            self.assertTrue(False)
+        except ProtectedError:
+            self.assertTrue(True)
+
+    def test_str(self):
+        self.assertEquals('От testUser1 к testUser2', str(self.fq))
+
+    def get_friend(self):
+        self.assertEquals(self.test_user_1, self.fq.get_friend(self.test_user_2))
+
+
+class UserViewModelTest(TestCase):
+    """Тесты для модели просмотра пользователя"""
+
+    def setUp(self) -> None:
+        self.test_user_1 = User.objects.create(username="testUser1")
+        self.test_user_2 = User.objects.create(username="testUser2")
+        self.user_view = UserView.objects.create(view_from=self.test_user_1, view_to=self.test_user_2)
+
+    def test_verbose_name(self):
+        self.assertEquals('Просмотр пользователя', self.user_view._meta.verbose_name)
+
+    def test_verbose_name_plural(self):
+        self.assertEquals('Просмотры пользователей', self.user_view._meta.verbose_name_plural)
+
+    def test_view_from_type(self):
+        field_type = type(self.user_view._meta.get_field('view_from'))
+        self.assertEquals(models.ForeignKey, field_type)
+
+    def test_view_from_label(self):
+        field_label = self.user_view._meta.get_field('view_from').verbose_name
+        self.assertEquals('Просмотр от', field_label)
+
+    def test_view_from_on_delete(self):
+        try:
+            self.test_user_1.delete()
+            self.assertTrue(False)
+        except ProtectedError:
+            self.assertTrue(True)
+
+    def test_view_to_type(self):
+        field_type = type(self.user_view._meta.get_field('view_to'))
+        self.assertEquals(models.ForeignKey, field_type)
+
+    def test_view_to_label(self):
+        field_label = self.user_view._meta.get_field('view_to').verbose_name
+        self.assertEquals('Просмотр к', field_label)
+
+    def test_view_to_on_delete(self):
+        try:
+            self.test_user_2.delete()
+            self.assertTrue(True)
+        except ProtectedError:
+            self.assertTrue(False)
+
+    def test_str(self):
+        self.assertEquals('От testUser1 к testUser2', str(self.user_view))

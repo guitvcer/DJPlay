@@ -31,7 +31,7 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        await sync_to_async(Queue.update_queue)(self.queue, None)
+        await sync_to_async(self.queue.update_queue)(clear=True)
 
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -41,7 +41,7 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content, **kwargs):
         token = content.get('access_token')
         player = await sync_to_async(get_user_by_token)(token)
-        new_party = await sync_to_async(Queue.update_queue)(self.queue, player)
+        new_party = await sync_to_async(self.queue.update_queue)(player)
 
         if new_party:
             await self.channel_layer.group_send(
