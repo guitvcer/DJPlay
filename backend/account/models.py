@@ -86,13 +86,14 @@ class User(AbstractUser):
         if game.app_name == 'gomoku':
             from gomoku.models import Party
 
-            return Party.objects.filter(player_1=self).union(Party.objects.filter(player_2=self)).order_by('-date')
+            return Party.objects.filter(player_1=self).exclude(player_2=self).union(
+                Party.objects.filter(player_2=self).exclude(player_1=self)).order_by('-date')
 
     def get_viewers(self) -> QuerySet:
         """Получить пользователей, которое просматривали страницу этого пользователя"""
 
         views = UserView.objects.filter(view_to=self)
-        list_of_ids = [view.view_from.id for view in views]
+        list_of_ids = [view.view_from.id for view in views if view.view_from != self]
         queryset = User.objects.filter(id__in=list_of_ids)
 
         return queryset
@@ -100,7 +101,7 @@ class User(AbstractUser):
     def has_access_to_view_data_of_another_user(self, user) -> bool:
         """Может ли user просматривать данные этого пользователя"""
 
-        return (self == user) or (user in self.get_friends()) or not self.is_private
+        return (self == user) or (user in self.get_friends()) or (not user.is_private)
 
     class Meta:
         verbose_name = 'Пользователь'

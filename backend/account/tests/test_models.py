@@ -496,7 +496,7 @@ class UserModelMethodsTest(TestCase):
             is_get_viewers_correct = False
         else:
             for user_view in correct_user_views_queryset:
-                if user_view.get_viewer(self.user) not in get_viewers_queryset:
+                if user_view.view_from not in get_viewers_queryset:
                     is_get_viewers_correct = False
                     break
 
