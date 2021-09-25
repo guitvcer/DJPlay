@@ -21,25 +21,25 @@ class UserModelFieldsTest(TestCase):
         self.user = User.objects.create(username="testUser")
 
     def test_verbose_name(self):
-        self.assertEquals('Пользователь', self.user._meta.verbose_name)
+        self.assertEqual('Пользователь', self.user._meta.verbose_name)
 
     def test_verbose_name_plural(self):
-        self.assertEquals('Пользователи', self.user._meta.verbose_name_plural)
+        self.assertEqual('Пользователи', self.user._meta.verbose_name_plural)
 
     def test_ordering(self):
-        self.assertEquals(('username', ), self.user._meta.ordering)
+        self.assertEqual(('username', ), self.user._meta.ordering)
 
     def test_avatar_type(self):
         field_type = type(self.user._meta.get_field('avatar'))
-        self.assertEquals(ThumbnailerImageField, field_type)
+        self.assertEqual(ThumbnailerImageField, field_type)
 
     def test_avatar_label(self):
         field_label = self.user._meta.get_field('avatar').verbose_name
-        self.assertEquals(field_label, 'Фото профиля')
+        self.assertEqual(field_label, 'Фото профиля')
 
     def test_avatar_default_url(self):
         default_avatar_url = self.user.avatar.url
-        self.assertEquals(default_avatar_url, '/media/avatars/user.png')
+        self.assertEqual(default_avatar_url, '/media/avatars/user.png')
 
     @staticmethod
     def upload_image(width, height):
@@ -55,43 +55,43 @@ class UserModelFieldsTest(TestCase):
         self.user.save()
 
         width, height = get_image_dimensions(self.user.avatar)
-        self.assertEquals((256, 256), (width, height))
+        self.assertEqual((256, 256), (width, height))
 
     def test_avatar_upload_not_square_image(self):
         self.user.avatar = self.upload_image(1024, 512)
         self.user.save()
 
         width, height = get_image_dimensions(self.user.avatar)
-        self.assertEquals((256, 256), (width, height))
+        self.assertEqual((256, 256), (width, height))
 
     def test_avatar_upload_image_url(self):
         self.user.avatar = self.upload_image(256, 256)
         self.user.save()
-        self.assertEquals(['media', 'avatars'], self.user.avatar.url.split('/')[1:3])
+        self.assertEqual(['media', 'avatars'], self.user.avatar.url.split('/')[1:3])
 
     def test_birthday_type(self):
         field_type = type(self.user._meta.get_field('birthday'))
-        self.assertEquals(models.DateField, field_type)
+        self.assertEqual(models.DateField, field_type)
 
     def test_birthday_label(self):
         field_label = self.user._meta.get_field('birthday').verbose_name
-        self.assertEquals('Дата рождения', field_label)
+        self.assertEqual('Дата рождения', field_label)
 
     def test_birthday_default(self):
         field_value = self.user.birthday
-        self.assertEquals(None, field_value)
+        self.assertEqual(None, field_value)
 
     def test_gender_type(self):
         field_type = type(self.user._meta.get_field('gender'))
-        self.assertEquals(models.CharField, field_type)
+        self.assertEqual(models.CharField, field_type)
 
     def test_gender_label(self):
         field_label = self.user._meta.get_field('gender').verbose_name
-        self.assertEquals('Пол', field_label)
+        self.assertEqual('Пол', field_label)
 
     def test_gender_default(self):
         field_value = self.user.gender
-        self.assertEquals(None, field_value)
+        self.assertEqual(None, field_value)
 
     def test_gender_choices(self):
         field_choices = self.user._meta.get_field('gender').choices
@@ -99,35 +99,35 @@ class UserModelFieldsTest(TestCase):
             ('M', 'Мужской'),
             ('F', 'Женский')
         )
-        self.assertEquals(genders, field_choices)
+        self.assertEqual(genders, field_choices)
 
     def test_gender_max_length(self):
         field_max_length = self.user._meta.get_field('gender').max_length
-        self.assertEquals(1, field_max_length)
+        self.assertEqual(1, field_max_length)
 
     def test_email_type(self):
         field_type = type(self.user._meta.get_field('email'))
-        self.assertEquals(models.EmailField, field_type)
+        self.assertEqual(models.EmailField, field_type)
 
     def test_email_label(self):
         field_label = self.user._meta.get_field('email').verbose_name
-        self.assertEquals('Эл. почта', field_label)
+        self.assertEqual('Эл. почта', field_label)
 
     def test_email_default(self):
         field_value = self.user.email
-        self.assertEquals(None, field_value)
+        self.assertEqual(None, field_value)
 
     def test_provider_type(self):
         field_type = type(self.user._meta.get_field('provider'))
-        self.assertEquals(models.CharField, field_type)
+        self.assertEqual(models.CharField, field_type)
 
     def test_provider_label(self):
         field_label = self.user._meta.get_field('provider').verbose_name
-        self.assertEquals('Соц. сеть через которую вошел', field_label)
+        self.assertEqual('Соц. сеть через которую вошел', field_label)
 
     def test_provider_default(self):
         field_value = self.user.provider
-        self.assertEquals('DJPlay', field_value)
+        self.assertEqual('DJPlay', field_value)
 
     def test_provider_choices(self):
         field_choices = self.user._meta.get_field('provider').choices
@@ -136,31 +136,31 @@ class UserModelFieldsTest(TestCase):
             ('VK', 'VK'),
             ('Google', 'Google')
         )
-        self.assertEquals(providers, field_choices)
+        self.assertEqual(providers, field_choices)
 
     def test_provider_max_length(self):
         field_max_length = self.user._meta.get_field('provider').max_length
-        self.assertEquals(64, field_max_length)
+        self.assertEqual(64, field_max_length)
 
     def test_last_online_type(self):
         field_type = type(self.user._meta.get_field('last_online'))
-        self.assertEquals(models.DateTimeField, field_type)
+        self.assertEqual(models.DateTimeField, field_type)
 
     def test_last_online_label(self):
         field_label = self.user._meta.get_field('last_online').verbose_name
-        self.assertEquals('Был онлайн в', field_label)
+        self.assertEqual('Был онлайн в', field_label)
 
     def test_last_online_default(self):
         field_value = self.user.last_online
-        self.assertEquals(None, field_value)
+        self.assertEqual(None, field_value)
 
     def test_is_online_type(self):
         field_type = type(self.user._meta.get_field('is_online'))
-        self.assertEquals(models.BooleanField, field_type)
+        self.assertEqual(models.BooleanField, field_type)
 
     def test_is_online_label(self):
         field_label = self.user._meta.get_field('is_online').verbose_name
-        self.assertEquals('Онлайн?', field_label)
+        self.assertEqual('Онлайн?', field_label)
 
     def test_is_online_default(self):
         field_value = self.user.is_online
@@ -168,11 +168,11 @@ class UserModelFieldsTest(TestCase):
 
     def test_is_private_type(self):
         field_type = type(self.user._meta.get_field('is_private'))
-        self.assertEquals(models.BooleanField, field_type)
+        self.assertEqual(models.BooleanField, field_type)
 
     def test_is_private_label(self):
         field_label = self.user._meta.get_field('is_private').verbose_name
-        self.assertEquals('Приватный аккаунт?', field_label)
+        self.assertEqual('Приватный аккаунт?', field_label)
 
     def test_is_private_default(self):
         field_value = self.user.is_private
@@ -180,11 +180,11 @@ class UserModelFieldsTest(TestCase):
 
     def test_is_active_type(self):
         field_type = type(self.user._meta.get_field('is_active'))
-        self.assertEquals(models.BooleanField, field_type)
+        self.assertEqual(models.BooleanField, field_type)
 
     def test_is_active_label(self):
         field_label = self.user._meta.get_field('is_active').verbose_name
-        self.assertEquals('Активный аккаунт?', field_label)
+        self.assertEqual('Активный аккаунт?', field_label)
 
     def test_is_active_default(self):
         field_value = self.user.is_active
@@ -198,11 +198,11 @@ class UserModelMethodsTest(TestCase):
         self.user = User.objects.create(username="testUser")
 
     def test_str(self):
-        self.assertEquals(self.user.username, str(self.user))
+        self.assertEqual(self.user.username, str(self.user))
 
     def test_get_chats_type(self):
         get_chats_type = type(self.user.get_chats())
-        self.assertEquals(QuerySet, get_chats_type)
+        self.assertEqual(QuerySet, get_chats_type)
 
     def test_get_chats_with_self(self):
         chat = Chat.objects.create(user_1=self.user, user_2=self.user)
@@ -248,7 +248,7 @@ class UserModelMethodsTest(TestCase):
 
     def test_get_friends_type(self):
         get_friends_type = type(self.user.get_friends())
-        self.assertEquals(QuerySet, get_friends_type)
+        self.assertEqual(QuerySet, get_friends_type)
 
     def test_get_friends_request_from_self_to_self(self):
         FriendRequest.objects.create(request_from=self.user, request_to=self.user, is_active=True)
@@ -381,8 +381,6 @@ class UserModelMethodsTest(TestCase):
         get_friends_queryset = self.user.get_friends()
         correct_friends_request_queryset = FriendRequest.objects.filter(id__in=ids_of_friends)
 
-        self.assertEquals(correct_friends_request_queryset.count(), get_friends_queryset.count())
-
         if correct_friends_request_queryset.count() != get_friends_queryset.count():
             is_get_friends_correct = False
         else:
@@ -397,7 +395,7 @@ class UserModelMethodsTest(TestCase):
         add_gomoku_into_database()
         gomoku = Game.objects.get(app_name='gomoku')
         get_party_list_type = type(self.user.get_party_list(gomoku))
-        self.assertEquals(QuerySet, get_party_list_type)
+        self.assertEqual(QuerySet, get_party_list_type)
 
     def test_get_gomoku_party_list(self):
         add_gomoku_into_database()
@@ -450,11 +448,11 @@ class UserModelMethodsTest(TestCase):
         self.assertTrue(is_get_gomoku_party_list_correct)
 
     def test_get_viewers_type(self):
-        self.assertEquals(QuerySet, type(self.user.get_viewers()))
+        self.assertEqual(QuerySet, type(self.user.get_viewers()))
 
     def test_get_viewers_with_self(self):
         UserView.objects.create(view_from=self.user, view_to=self.user)
-        self.assertEquals(0, self.user.get_viewers().count())
+        self.assertEqual(0, self.user.get_viewers().count())
 
     def test_get_viewers_with_user(self):
         test_user_2 = User.objects.create(username="testUser2")
@@ -465,7 +463,7 @@ class UserModelMethodsTest(TestCase):
         test_user_2 = User.objects.create(username="testUser2")
         UserView.objects.create(view_from=test_user_2, view_to=self.user)
         UserView.objects.create(view_from=test_user_2, view_to=self.user)
-        self.assertEquals(1, self.user.get_viewers().count())
+        self.assertEqual(1, self.user.get_viewers().count())
 
     def test_get_viewers_with_many_users(self):
         test_user_2 = User.objects.create(username="testUser2")
@@ -505,7 +503,7 @@ class UserModelMethodsTest(TestCase):
     def test_has_access_to_view_data_of_another_user_type(self):
         test_user_2 = User.objects.create(username="userUser2")
         result_type = type(self.user.has_access_to_view_data_of_another_user(test_user_2))
-        self.assertEquals(bool, result_type)
+        self.assertEqual(bool, result_type)
 
     def test_has_access_to_view_data_of_self(self):
         self.assertTrue(self.user.has_access_to_view_data_of_another_user(self.user))
@@ -538,43 +536,43 @@ class GameTestCase(TestCase):
 
     def test_name_type(self):
         field_type = type(self.gomoku._meta.get_field('name'))
-        self.assertEquals(models.CharField, field_type)
+        self.assertEqual(models.CharField, field_type)
 
     def test_name_label(self):
         field_label = self.gomoku._meta.get_field('name').verbose_name
-        self.assertEquals('Название игры', field_label)
+        self.assertEqual('Название игры', field_label)
 
     def test_name_max_length(self):
         field_max_length = self.gomoku._meta.get_field('name').max_length
-        self.assertEquals(64, field_max_length)
+        self.assertEqual(64, field_max_length)
 
     def test_app_name_type(self):
         field_type = type(self.gomoku._meta.get_field('app_name'))
-        self.assertEquals(models.CharField, field_type)
+        self.assertEqual(models.CharField, field_type)
 
     def test_app_name_label(self):
         field_label = self.gomoku._meta.get_field('app_name').verbose_name
-        self.assertEquals('Название приложения', field_label)
+        self.assertEqual('Название приложения', field_label)
 
     def test_app_name_max_length(self):
         field_max_length = self.gomoku._meta.get_field('app_name').max_length
-        self.assertEquals(64, field_max_length)
+        self.assertEqual(64, field_max_length)
 
     def test_rules_type(self):
         field_type = type(self.gomoku._meta.get_field('rules'))
-        self.assertEquals(models.TextField, field_type)
+        self.assertEqual(models.TextField, field_type)
 
     def test_rules_label(self):
         field_label = self.gomoku._meta.get_field('rules').verbose_name
-        self.assertEquals('Правила игры', field_label)
+        self.assertEqual('Правила игры', field_label)
 
     def test_image_type(self):
         field_type = type(self.gomoku._meta.get_field('image'))
-        self.assertEquals(models.ImageField, field_type)
+        self.assertEqual(models.ImageField, field_type)
 
     def test_image_label(self):
         field_label = self.gomoku._meta.get_field('image').verbose_name
-        self.assertEquals('Обложка', field_label)
+        self.assertEqual('Обложка', field_label)
 
     def test_image_for_null(self):
         field_none = self.gomoku._meta.get_field('image').null
@@ -586,18 +584,18 @@ class GameTestCase(TestCase):
 
     def test_is_realeased_type(self):
         field_type = type(self.gomoku._meta.get_field('is_released'))
-        self.assertEquals(models.BooleanField, field_type)
+        self.assertEqual(models.BooleanField, field_type)
 
     def test_is_realeased_label(self):
         field_label = self.gomoku._meta.get_field('is_released').verbose_name
-        self.assertEquals('Выпущена ли игра?', field_label)
+        self.assertEqual('Выпущена ли игра?', field_label)
 
     def test_is_released_default(self):
         field_default = self.gomoku._meta.get_field('is_released').default
         self.assertFalse(field_default)
 
     def test_str(self):
-        self.assertEquals('Гомоку', str(self.gomoku))
+        self.assertEqual('Гомоку', str(self.gomoku))
 
 
 class QueueModelTest(TestCase):
@@ -611,69 +609,69 @@ class QueueModelTest(TestCase):
         self.test_user_2 = User.objects.create(username="testUser2")
 
     def test_verbose_name(self):
-        self.assertEquals('Очередь для игры', self.queue._meta.verbose_name)
+        self.assertEqual('Очередь для игры', self.queue._meta.verbose_name)
 
     def test_verbose_name_plural(self):
-        self.assertEquals('Очереди для игр', self.queue._meta.verbose_name_plural)
+        self.assertEqual('Очереди для игр', self.queue._meta.verbose_name_plural)
 
     def test_game_type(self):
         field_type = type(self.queue._meta.get_field('game'))
-        self.assertEquals(models.ForeignKey, field_type)
+        self.assertEqual(models.ForeignKey, field_type)
 
     def test_game_label(self):
         field_label = self.queue._meta.get_field('game').verbose_name
-        self.assertEquals('Очередь для', field_label)
+        self.assertEqual('Очередь для', field_label)
 
     def test_game_to(self):
         field_to = type(self.queue.game)
-        self.assertEquals(Game, field_to)
+        self.assertEqual(Game, field_to)
 
     def test_game_on_delete(self):
         self.gomoku.delete()
-        self.assertEquals(0, Queue.objects.count())
+        self.assertEqual(0, Queue.objects.count())
 
     def test_player_1_type(self):
         field_type = type(self.queue._meta.get_field('player_1'))
-        self.assertEquals(models.ForeignKey, field_type)
+        self.assertEqual(models.ForeignKey, field_type)
 
     def test_player_1_label(self):
         field_label = self.queue._meta.get_field('player_1').verbose_name
-        self.assertEquals('Игрок 1', field_label)
+        self.assertEqual('Игрок 1', field_label)
 
     def test_player_1_to(self):
         self.queue.player_1 = self.test_user_1
         self.queue.save()
         field_to = type(self.queue.player_1)
-        self.assertEquals(User, field_to)
+        self.assertEqual(User, field_to)
 
     def test_player_1_on_delete(self):
         self.queue.player_1 = self.test_user_1
         self.queue.save()
         self.test_user_1.delete()
         queue = Queue.objects.get(game=self.gomoku)
-        self.assertEquals(None, queue.player_1)
+        self.assertEqual(None, queue.player_1)
 
     def test_str(self):
-        self.assertEquals('Очередь для Гомоку', str(self.queue))
+        self.assertEqual('Очередь для Гомоку', str(self.queue))
 
     def test_update_queue(self):
         self.queue.update_queue(self.test_user_1)
-        self.assertEquals(self.test_user_1, self.queue.player_1)
+        self.assertEqual(self.test_user_1, self.queue.player_1)
 
     def test_update_queue_for_clear(self):
         self.queue.update_queue(self.test_user_1)
         self.queue.update_queue(clear=True)
-        self.assertEquals(None, self.queue.player_1)
+        self.assertEqual(None, self.queue.player_1)
 
     def test_update_queue_for_one_player_twice(self):
         self.queue.update_queue(self.test_user_1)
         self.queue.update_queue(self.test_user_1)
-        self.assertEquals(self.test_user_1, self.queue.player_1)
+        self.assertEqual(self.test_user_1, self.queue.player_1)
 
     def test_update_queue_for_two_players(self):
         self.queue.update_queue(self.test_user_1)
         self.queue.update_queue(self.test_user_2)
-        self.assertEquals((1, None), (GomokuParty.objects.count(), self.queue.player_1))
+        self.assertEqual((1, None), (GomokuParty.objects.count(), self.queue.player_1))
 
 
 class FriendRequestModelTest(TestCase):
@@ -689,18 +687,18 @@ class FriendRequestModelTest(TestCase):
         )
 
     def test_verbose_name(self):
-        self.assertEquals('Запрос в друзья', self.fq._meta.verbose_name)
+        self.assertEqual('Запрос в друзья', self.fq._meta.verbose_name)
 
     def test_verbose_name_plural(self):
-        self.assertEquals('Запросы в друзья', self.fq._meta.verbose_name_plural)
+        self.assertEqual('Запросы в друзья', self.fq._meta.verbose_name_plural)
 
     def test_request_from_type(self):
         field_type = type(self.fq._meta.get_field('request_from'))
-        self.assertEquals(models.ForeignKey, field_type)
+        self.assertEqual(models.ForeignKey, field_type)
 
     def test_request_from_label(self):
         field_label = self.fq._meta.get_field('request_from').verbose_name
-        self.assertEquals('Запрос от', field_label)
+        self.assertEqual('Запрос от', field_label)
 
     def test_request_from_on_delete(self):
         try:
@@ -711,11 +709,11 @@ class FriendRequestModelTest(TestCase):
 
     def test_request_to_type(self):
         field_type = type(self.fq._meta.get_field('request_to'))
-        self.assertEquals(models.ForeignKey, field_type)
+        self.assertEqual(models.ForeignKey, field_type)
 
     def test_request_to_label(self):
         field_label = self.fq._meta.get_field('request_to').verbose_name
-        self.assertEquals('Запрос к', field_label)
+        self.assertEqual('Запрос к', field_label)
 
     def test_request_to_on_delete(self):
         try:
@@ -725,10 +723,10 @@ class FriendRequestModelTest(TestCase):
             self.assertTrue(True)
 
     def test_str(self):
-        self.assertEquals('От testUser1 к testUser2', str(self.fq))
+        self.assertEqual('От testUser1 к testUser2', str(self.fq))
 
     def get_friend(self):
-        self.assertEquals(self.test_user_1, self.fq.get_friend(self.test_user_2))
+        self.assertEqual(self.test_user_1, self.fq.get_friend(self.test_user_2))
 
 
 class UserViewModelTest(TestCase):
@@ -740,18 +738,18 @@ class UserViewModelTest(TestCase):
         self.user_view = UserView.objects.create(view_from=self.test_user_1, view_to=self.test_user_2)
 
     def test_verbose_name(self):
-        self.assertEquals('Просмотр пользователя', self.user_view._meta.verbose_name)
+        self.assertEqual('Просмотр пользователя', self.user_view._meta.verbose_name)
 
     def test_verbose_name_plural(self):
-        self.assertEquals('Просмотры пользователей', self.user_view._meta.verbose_name_plural)
+        self.assertEqual('Просмотры пользователей', self.user_view._meta.verbose_name_plural)
 
     def test_view_from_type(self):
         field_type = type(self.user_view._meta.get_field('view_from'))
-        self.assertEquals(models.ForeignKey, field_type)
+        self.assertEqual(models.ForeignKey, field_type)
 
     def test_view_from_label(self):
         field_label = self.user_view._meta.get_field('view_from').verbose_name
-        self.assertEquals('Просмотр от', field_label)
+        self.assertEqual('Просмотр от', field_label)
 
     def test_view_from_on_delete(self):
         try:
@@ -762,11 +760,11 @@ class UserViewModelTest(TestCase):
 
     def test_view_to_type(self):
         field_type = type(self.user_view._meta.get_field('view_to'))
-        self.assertEquals(models.ForeignKey, field_type)
+        self.assertEqual(models.ForeignKey, field_type)
 
     def test_view_to_label(self):
         field_label = self.user_view._meta.get_field('view_to').verbose_name
-        self.assertEquals('Просмотр к', field_label)
+        self.assertEqual('Просмотр к', field_label)
 
     def test_view_to_on_delete(self):
         try:
@@ -776,4 +774,4 @@ class UserViewModelTest(TestCase):
             self.assertTrue(False)
 
     def test_str(self):
-        self.assertEquals('От testUser1 к testUser2', str(self.user_view))
+        self.assertEqual('От testUser1 к testUser2', str(self.user_view))
