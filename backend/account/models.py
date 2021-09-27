@@ -101,7 +101,7 @@ class User(AbstractUser):
     def has_access_to_view_data_of_another_user(self, user) -> bool:
         """Может ли user просматривать данные этого пользователя"""
 
-        return (self == user) or (user in self.get_friends()) or (not user.is_private)
+        return (self == user) or (user in self.get_friends()) or (not self.is_private)
 
     class Meta:
         verbose_name = 'Пользователь'
