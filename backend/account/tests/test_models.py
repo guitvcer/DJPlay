@@ -502,7 +502,7 @@ class UserModelMethodsTest(TestCase):
 
     def test_has_access_to_view_data_of_another_user_type(self):
         test_user_2 = User.objects.create(username="userUser2")
-        result_type = type(self.user.has_access_to_view_data_of_another_user(test_user_2))
+        result_type = type(test_user_2.has_access_to_view_data_of_another_user(self.user))
         self.assertEqual(bool, result_type)
 
     def test_has_access_to_view_data_of_self(self):
@@ -510,21 +510,21 @@ class UserModelMethodsTest(TestCase):
 
     def test_has_access_to_view_data_of_another_user(self):
         test_user_2 = User.objects.create(username="testUser2")
-        self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))
+        self.assertTrue(test_user_2.has_access_to_view_data_of_another_user(self.user))
 
     def test_has_access_to_view_data_of_private_user(self):
         test_user_2 = User.objects.create(username="testUser2", is_private=True)
-        self.assertFalse(self.user.has_access_to_view_data_of_another_user(test_user_2))
+        self.assertFalse(test_user_2.has_access_to_view_data_of_another_user(self.user))
 
     def test_has_access_to_view_data_of_friend(self):
         test_user_2 = User.objects.create(username="testUser2")
         FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
-        self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))
+        self.assertTrue(test_user_2.has_access_to_view_data_of_another_user(self.user))
 
     def test_has_access_to_view_data_of_private_friend(self):
         test_user_2 = User.objects.create(username="testUser2", is_private=True)
         FriendRequest.objects.create(request_from=test_user_2, request_to=self.user, is_active=True)
-        self.assertTrue(self.user.has_access_to_view_data_of_another_user(test_user_2))
+        self.assertTrue(test_user_2.has_access_to_view_data_of_another_user(self.user))
 
 
 class GameTestCase(TestCase):
