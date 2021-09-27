@@ -3,12 +3,13 @@ import axios from 'axios'
 
 export default {
   async mounted() {
-    const access_token = window.location.hash.split("=")[1].split("&")[0]
+    const code = new URL(window.location.href).searchParams.get('code')
 
-    if (access_token) {
+    if (code) {
       await axios
         .post(`${this.host}/api/account/social-authorization`, {
-          access_token: access_token,
+          code: code,
+          vk_client_id: this.VK_CLIENT_ID,
           provider: 'VK'
         })
         .then(response => {

@@ -161,7 +161,7 @@ class SocialAuthorizationAPIView(APIView):
         if provider == 'Google':
             credentials = google_authorization(request.data.get('code'), request.data.get('google_client_id'))
         elif provider == 'VK':
-            credentials = vk_authorization(request.data.get('access_token'))
+            credentials = vk_authorization(request.data.get('code'), request.data.get('vk_client_id'))
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

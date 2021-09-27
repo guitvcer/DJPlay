@@ -295,15 +295,24 @@ def google_authorization(code: str, google_client_id: str) -> dict:
     return generate_tokens(user)
 
 
-def vk_authorization(access_token: str) -> dict:
+def vk_authorization(code: str, vk_client_id: str) -> dict:
     """Получить JWT токены авторизации и создать пользователя (если нету) по токену VK"""
 
-    if access_token is None:
+    if code is None or vk_client_id is None:
         raise ParseError
 
-    vk_user_data = requests.get(
+    vk_tokens_response = requests.get(f'https://oauth.vk.com/access_token?client_id={vk_client_id}&'
+                                      f'client_secret={settings.SOCIAL_AUTH_VK_OAUTH_SECRET}&'
+                                      f'redirect_uri={settings.CORS_ALLOWED_ORIGINS[0]}/account/vk-oauth2/&code={code}')
+
+    if vk_tokens_response.status_code == 401:
+        raise ParseError
+
+    vk_user_data_response = requests.get(
         f'https://api.vk.com/method/users.get?v=5.131&fields=screen_name,photo_max_orig,has_photo'
-        f'&access_token={access_token}').json()['response'][0]
+        f'&access_token={vk_tokens_response.json()["access_token"]}')
+
+    vk_user_data = vk_user_data_response.json()['response'][0]
 
     try:
         user = User.objects.get(username=vk_user_data['screen_name'])
