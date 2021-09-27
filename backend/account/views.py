@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gomoku.serializers import GomokuPartyListSerializer
+from .models import User
 from .paginations import PartyListPagination
 from .services import (
     add_user_view,
@@ -107,8 +108,9 @@ class UserFriendRequestAPIView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
+        request_to = get_object_or_404(User.active.all(), username=kwargs.get('username'))
         return Response({
-            'title': create_or_delete_or_accept_friend_request(request.user, kwargs.get('username'))
+            'title': create_or_delete_or_accept_friend_request(request.user, request_to)
         }, status=status.HTTP_200_OK)
 
 

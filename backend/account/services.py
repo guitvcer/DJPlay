@@ -77,10 +77,8 @@ def get_active_users_by_filter(
     return active_users
 
 
-def create_or_delete_or_accept_friend_request(request_from: User, username_of_request_to: str) -> str:
+def create_or_delete_or_accept_friend_request(request_from: User, request_to: User) -> str:
     """Создать|удалить|принять запрос на дружбу"""
-
-    request_to = User.objects.get(username=username_of_request_to)
 
     if request_from == request_to:
         raise ParseError
@@ -301,7 +299,7 @@ def vk_authorization(access_token: str) -> dict:
     """Получить JWT токены авторизации и создать пользователя (если нету) по токену VK"""
 
     if access_token is None:
-        raise NotFound
+        raise ParseError
 
     vk_user_data = requests.get(
         f'https://api.vk.com/method/users.get?v=5.131&fields=screen_name,photo_max_orig,has_photo'
