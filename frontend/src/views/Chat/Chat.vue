@@ -141,9 +141,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.grecaptcha-badge {
-  opacity: 0
-}
-</style>

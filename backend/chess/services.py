@@ -13,7 +13,7 @@ def add_chess_into_database() -> None:
               " который дал мат королю соперника.</li><li>Партия считается выигранной тем из партнёров,"
               " противник которого признал себя побеждённым.</li><li>Партия считается выигранной, если у"
               " одного из шахматистов закончилось время на ходы.</li></ul>",
-        image="/chess/chess.svg",
+        image="/chess/chess-logo.png",
         is_released=False
     )
     Queue.objects.get_or_create(game=chess)

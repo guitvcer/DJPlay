@@ -5,7 +5,7 @@ SECRET_KEY = '^bll0r6(epnd9il893d409-j7^j0#0^9)srjc$4h@msh3vd9gh'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.9']
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',

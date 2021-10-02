@@ -170,7 +170,7 @@ class Move(models.Model):
     moved_to = models.CharField(null=True, blank=True, max_length=2, verbose_name="Куда?")
     eaten_piece = models.ForeignKey(Piece, on_delete=models.CASCADE, null=True, blank=True,
                                     verbose_name="Съеденная фигура", related_name="chess_eaten_piece")
-    time = models.TimeField(null=True, blank=True, verbose_name="Потраченное время на ход")
+    time = models.TimeField(verbose_name="Потраченное время на ход")
 
     objects = MoveManager()
 

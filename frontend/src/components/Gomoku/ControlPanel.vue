@@ -6,6 +6,7 @@
       class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
       @click="returnMove"
     >
+      <!-- TODO: добавить ctrl+z на отмену хода -->
       <reply-icon class="h-6 w-6" />
     </button>
     <button

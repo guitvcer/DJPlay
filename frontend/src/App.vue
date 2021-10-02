@@ -137,4 +137,7 @@ main {
     height: calc(100% - 90px)
   }
 }
+.grecaptcha-badge {
+  opacity: 0
+}
 </style>

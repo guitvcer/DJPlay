@@ -10,7 +10,7 @@ import ru from 'javascript-time-ago/locale/ru'
 
 
 const app = createApp(App)
-const domain = process.env["VUE_APP_BACKEND_HOST"] ?? '127.0.0.1:8000'
+const domain = process.env["VUE_APP_BACKEND_HOST"] ?? '192.168.1.9:8000'
 const httpProtocol = process.env["VUE_APP_HTTP_PROTOCOL"] ?? 'http'
 const webSocketProtocol = process.env["VUE_APP_WEBSOCKET_PROTOCOL"] ?? 'ws'
 
