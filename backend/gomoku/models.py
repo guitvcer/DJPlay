@@ -24,13 +24,13 @@ class Party(models.Model):
     """Модель партии Гомоку"""
 
     id = models.AutoField(primary_key=True)
-    game = models.ForeignKey(Game, on_delete=models.PROTECT, verbose_name="Игра")
+    game = models.ForeignKey(Game, on_delete=models.PROTECT, verbose_name="Игра", related_name="gomoku_game")
     player_1 = models.ForeignKey(User, on_delete=models.PROTECT,
                                  verbose_name="Игрок 1", related_name="gomoku_first_player")
     player_2 = models.ForeignKey(User, on_delete=models.PROTECT,
                                  verbose_name="Игрок 2", related_name="gomoku_second_player")
-    winner = models.CharField(max_length=64, null=True, verbose_name="Победивший игрок")
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата начала")
+    winner = models.CharField(max_length=64, null=True, verbose_name="Победитель")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
 
     def __str__(self): return f'id={self.id}, {self.player_1}, {self.player_2}, {self.date.date()}'
 

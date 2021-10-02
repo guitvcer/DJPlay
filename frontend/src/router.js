@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from './views/Account/Home.vue'
+import Home from './views/Account/Home'
 
 const routes = [
     {
@@ -9,13 +9,18 @@ const routes = [
     },
     {
         path: '/gomoku/',
-        component: () => import('./views/Gomoku/Gomoku.vue'),
+        component: () => import('./views/Gomoku/Gomoku'),
         name: 'gomoku'
     },
     {
         path: '/gomoku/:id/',
         component: () => import('./views/Gomoku/GomokuParty'),
         name: 'gomokuParty'
+    },
+    {
+        path: '/chess/',
+        component: () => import('./views/Chess/Chess'),
+        name: 'chess',
     },
     {
         path: '/account/',
@@ -35,17 +40,17 @@ const routes = [
     {
         path: '/account/:username/',
         name: 'profile',
-        component: () => import('./views/Account/Profile.vue')
+        component: () => import('./views/Account/Profile')
     },
     {
         path: '/account/:username/views/',
         name: 'usersViewers',
-        component: () => import('./views/Account/UsersList.vue')
+        component: () => import('./views/Account/UsersList')
     },
     {
         path: '/account/:username/friends/',
         name: 'usersFriends',
-        component: () => import('./views/Account/UsersList.vue')
+        component: () => import('./views/Account/UsersList')
     },
     {
         path: '/account/:username/friend-request',
@@ -60,17 +65,17 @@ const routes = [
     {
         path: '/account/:username/party-list/',
         name: 'userPartyList',
-        component: () => import('./views/Account/UserPartyList.vue')
+        component: () => import('./views/Account/UserPartyList')
     },
     {
         path: '/account/users/',
         name: 'users',
-        component: () => import('./views/Account/UsersList.vue')
+        component: () => import('./views/Account/UsersList')
     },
     {
         path: '/account/edit/',
         name: 'editProfile',
-        component: () => import('./views/Account/EditProfile.vue')
+        component: () => import('./views/Account/EditProfile')
     },
     {
         path: '/account/party-list/',
