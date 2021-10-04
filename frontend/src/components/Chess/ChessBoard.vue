@@ -452,11 +452,20 @@ export default {
         piece.coordinate = movedToCell.id
         this.$parent.pieces[piece.coordinate] = piece
       } else {
-        this.$parent.moves.push({
-          piece: piece.piece,
-          movedFrom: piece.coordinate,
-          movedTo: movedToCell.id
-        })
+        if (this.$parent.pieces[movedToCell.id] !== null) {
+          this.$parent.moves.push({
+            piece: piece.piece,
+            movedFrom: piece.coordinate,
+            movedTo: movedToCell.id,
+            eatenPiece: this.$parent.pieces[movedToCell.id]
+          })
+        } else {
+          this.$parent.moves.push({
+            piece: piece.piece,
+            movedFrom: piece.coordinate,
+            movedTo: movedToCell.id
+          })
+        }
 
         this.unselectAllPieces()
 

@@ -101,10 +101,16 @@ export default {
       if (this.$parent.gameStatus !== 'playing' && this.$parent.moves.length > 0) {
         let lastMove = this.$parent.moves[this.$parent.moves.length - 1]
 
+        for (const lastMoveCell of document.querySelectorAll('.last-move-cell'))
+          lastMoveCell.classList.remove('last-move-cell')
+
         this.$parent.moveOf = this.$parent.currentColor === 'white' ? 'black' : 'white'
         this.$parent.currentColor = this.$parent.moveOf
 
-        this.$parent.pieces[lastMove.movedTo] = undefined
+        if (lastMove.eatenPiece !== null) {
+          this.$parent.pieces[lastMove.movedTo] = lastMove.eatenPiece
+        } else this.$parent.pieces[lastMove.movedTo] = undefined
+
         this.$parent.pieces[lastMove.movedFrom] = {
           piece: lastMove.piece,
           coordinate: lastMove.movedFrom,
