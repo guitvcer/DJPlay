@@ -99,9 +99,11 @@ export default {
   methods: {
     returnMove() {
       if (this.$parent.gameStatus !== 'playing' && this.$parent.moves.length > 0) {
-        const lastMove = this.$parent.moves[this.$parent.moves.length - 1]
-        this.$parent.moveOf = this.$parent.color === 'white' ? 'black' : 'white'
+        let lastMove = this.$parent.moves[this.$parent.moves.length - 1]
+
+        this.$parent.moveOf = this.$parent.currentColor === 'white' ? 'black' : 'white'
         this.$parent.currentColor = this.$parent.moveOf
+
         this.$parent.pieces[lastMove.movedTo] = undefined
         this.$parent.pieces[lastMove.movedFrom] = {
           piece: lastMove.piece,
@@ -110,7 +112,14 @@ export default {
           image: `${this.host}/media/chess/pieces/${this.$parent.currentColor}/${lastMove.piece}.png`
         }
         this.$parent.moves.pop()
+
         this.$parent.$refs.chessBoard.unselectAllPieces()
+
+        if (this.$parent.moves.length > 0) {
+          lastMove = this.$parent.moves[this.$parent.moves.length - 1]
+          document.getElementById(lastMove.movedFrom).classList.add('last-move-cell')
+          document.getElementById(lastMove.movedTo).classList.add('last-move-cell')
+        }
       }
     },
     resetBoard(showAlert = true) {

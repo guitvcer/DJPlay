@@ -11,20 +11,20 @@
   >
     <div
       v-for="number in numbers"
-      :class="['flex w-full ',
+      :class="['flex w-full items-center justify-around',
       $parent.currentColor === colors[1] ? 'flex-row-reverse' : 'flex-row']"
       style="height: 12.5%"
     >
       <div
         v-for="letter in letters"
-        style="width: 12.5%; height: 100%"
-        class="flex items-center justify-center cell rounded-3xl"
+        style="width: 11%; height: 88%;"
+        class="flex items-center justify-center cell rounded"
         :id="letter + number"
         @click="boardCellOnClick"
       >
         <img
           v-if="$parent.pieces[letter + number] !== undefined"
-          class="w-10/12 h-10/12"
+          class="w-11/12 h-11/12"
           :src="$parent.pieces[letter + number].image"
           :alt="$parent.pieces[letter + number].piece"
         >
@@ -528,12 +528,12 @@ export default {
 
 <style>
 .selected-cell {
-  border: 2px dashed blue;
+  border: 2px dashed blue !important;
 }
 .eatable-cell {
-  border: 2px dashed red;
+  border: 2px dashed red !important;
 }
 .last-move-cell {
-  border: 2px dashed orange;
+  border: 2px dashed green;
 }
 </style>

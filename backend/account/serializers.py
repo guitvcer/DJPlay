@@ -5,7 +5,6 @@ from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-import settings.base
 from chat.services import get_or_create_chat
 from .models import User, Game
 from .services import generate_tokens

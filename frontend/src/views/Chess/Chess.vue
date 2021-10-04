@@ -14,7 +14,7 @@
       @give-up="giveUp"
     >
       <h2 class="text-2xl md:text-4xl mb-4">{{ game.name }}</h2>
-      <p class="mb-12 md:mb-20">{{ game.rules }}</p>
+      <p class="mb-12 md:mb-20" v-html="game.rules"></p>
     </start-panel>
     <control-panel v-if="!loading" ref="controlPanel" name="Chess" />
   </section>
