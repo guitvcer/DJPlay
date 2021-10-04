@@ -42,10 +42,11 @@ export default {
       partyID: null,
       opponent: null,
       username: null,
-      myMove: true,
+      currentColor: 'white',
       data: null,
       moves: [],
-      pieces: []
+      pieces: [],
+      moveOf: 'white'
     }
   },
   async mounted() {

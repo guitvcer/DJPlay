@@ -98,35 +98,19 @@ export default {
   },
   methods: {
     returnMove() {
-      if (this.$parent.moves.length !== 0) {
-        const lastDot = this.$parent.moves[this.$parent.moves.length - 1]
-
-        if (this.$parent.gameStatus === 'playing') {
-          if (
-            (this.$parent.currentColor === 'white' && lastDot.classList.contains('bg-main')) ||
-            (this.$parent.currentColor === 'blue' && lastDot.classList.contains('bg-white'))
-          ) {
-            this.$parent.$emit('create-alert', {
-              level: 'warning',
-              title: 'Последний ход не Ваш.'
-            })
-          } else {
-            this.$parent.returnMoveSocket.send(JSON.stringify({
-              access_token: this.getCookie('access'),
-              command: 'return_move',
-              returnable_move: lastDot.id,
-              returner: this.$parent.username
-            }))
-          }
-        } else {
-          lastDot.className = this.$parent.dotClassName
-          lastDot.innerHTML = ''
-
-          this.$parent.moves.pop()
-
-          if (this.$parent.currentColor === 'white') this.$parent.currentColor = 'blue'
-          else this.$parent.currentColor = 'white'
+      if (this.$parent.gameStatus !== 'playing' && this.$parent.moves.length > 0) {
+        const lastMove = this.$parent.moves[this.$parent.moves.length - 1]
+        this.$parent.moveOf = this.$parent.color === 'white' ? 'black' : 'white'
+        this.$parent.currentColor = this.$parent.moveOf
+        this.$parent.pieces[lastMove.movedTo] = undefined
+        this.$parent.pieces[lastMove.movedFrom] = {
+          piece: lastMove.piece,
+          coordinate: lastMove.movedFrom,
+          color: this.$parent.currentColor,
+          image: `${this.host}/media/chess/pieces/${this.$parent.currentColor}/${lastMove.piece}.png`
         }
+        this.$parent.moves.pop()
+        this.$parent.$refs.chessBoard.unselectAllPieces()
       }
     },
     resetBoard(showAlert = true) {
@@ -135,14 +119,8 @@ export default {
           level: 'warning',
           title: 'Во время игры нельзя очищать поле.'
         })
-      } else {
-        for (let dot of document.querySelectorAll('.dot')) {
-          dot.className = this.$parent.dotClassName
-          dot.innerHTML = ''
-        }
-
-        this.$parent.moves = []
-        this.$parent.currentColor = 'white'
+      } else if (this.$parent.moves.length > 0) {
+        this.$parent.$refs.chessBoard.clearAndSetInitialPieces()
       }
     }
   }

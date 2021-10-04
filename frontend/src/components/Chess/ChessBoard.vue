@@ -1,8 +1,8 @@
 <template>
   <div
     :class="['max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-chess-board flex ',
-      currentColor === colors[0] ? 'flex-col-reverse' : 'flex-col'
-    ]"
+    $parent.currentColor === colors[0] ? 'flex-col-reverse' : 'flex-col'
+  ]"
     id="chessBoard"
     @keydown.left="focusToLeft"
     @keydown.down="focusToDown"
@@ -12,21 +12,21 @@
     <div
       v-for="number in numbers"
       :class="['flex w-full ',
-        currentColor === colors[1] ? 'flex-row-reverse' : 'flex-row']"
+      $parent.currentColor === colors[1] ? 'flex-row-reverse' : 'flex-row']"
       style="height: 12.5%"
     >
       <div
         v-for="letter in letters"
         style="width: 12.5%; height: 100%"
-        class="flex items-center justify-center cell"
+        class="flex items-center justify-center cell rounded-3xl"
         :id="letter + number"
         @click="boardCellOnClick"
       >
         <img
-          v-if="pieces[letter + number] !== undefined"
+          v-if="$parent.pieces[letter + number] !== undefined"
           class="w-10/12 h-10/12"
-          :src="pieces[letter + number].image"
-          :alt="pieces[letter + number].piece"
+          :src="$parent.pieces[letter + number].image"
+          :alt="$parent.pieces[letter + number].piece"
         >
       </div>
     </div>
@@ -39,7 +39,6 @@ export default {
     return {
       numbers: [1, 2, 3, 4, 5, 6, 7, 8],
       letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
-      pieces: {},
       colors: ['white', 'black'],
       pieceY: {
         'white': 1,
@@ -49,10 +48,8 @@ export default {
         'white': 2,
         'black': 7
       },
-      currentColor: 'white',
-      moveOf: 'white',
       selectedPiece: null,
-      gameStatus: null
+      newMoveSound: new Audio(`${this.host}/media/sounds/new_move.mp3`)
     }
   },
   mounted() {
@@ -60,7 +57,7 @@ export default {
     setTimeout(this.resizeChessBoard, 2)
     window.addEventListener('resize', this.resizeChessBoard)
 
-    this.setInitialPieces()
+    this.clearAndSetInitialPieces()
   },
   methods: {
     focusToLeft() {},
@@ -70,7 +67,7 @@ export default {
     setPawns(color) {
       for (let pawnSerialNumber = 0; pawnSerialNumber < 8; pawnSerialNumber++) {
         const coordinate = `${this.letters[pawnSerialNumber]}${this.pawnY[color]}`
-        this.pieces[coordinate] = {
+        this.$parent.pieces[coordinate] = {
           piece: 'pawn',
           coordinate: coordinate,
           image: `${this.host}/media/chess/pieces/${color}/pawn.png`,
@@ -81,7 +78,7 @@ export default {
     setRooks(color) {
       for (let rookX = 0; rookX < 8; rookX += 7) {
         const coordinate = `${this.letters[rookX]}${this.pieceY[color]}`
-        this.pieces[coordinate] = {
+        this.$parent.pieces[coordinate] = {
           piece: 'rook',
           coordinate: coordinate,
           image: `${this.host}/media/chess/pieces/${color}/rook.png`,
@@ -92,7 +89,7 @@ export default {
     setKnights(color) {
       for (let knightX = 1; knightX < 7; knightX += 5) {
         const coordinate = `${this.letters[knightX]}${this.pieceY[color]}`
-        this.pieces[coordinate] = {
+        this.$parent.pieces[coordinate] = {
           piece: 'knight',
           coordinate: coordinate,
           image: `${this.host}/media/chess/pieces/${color}/knight.png`,
@@ -103,7 +100,7 @@ export default {
     setBishops(color) {
       for (let bishopX = 2; bishopX < 6; bishopX += 3) {
         const coordinate = `${this.letters[bishopX]}${this.pieceY[color]}`
-        this.pieces[coordinate] = {
+        this.$parent.pieces[coordinate] = {
           piece: 'bishop',
           coordinate: coordinate,
           image: `${this.host}/media/chess/pieces/${color}/bishop.png`,
@@ -113,7 +110,7 @@ export default {
     },
     setQueenAndKing(color) {
       const queenCoordinate = `${this.letters[3]}${this.pieceY[color]}`
-      this.pieces[queenCoordinate] = {
+      this.$parent.pieces[queenCoordinate] = {
         piece: 'queen',
         coordinate: queenCoordinate,
         image: `${this.host}/media/chess/pieces/${color}/queen.png`,
@@ -121,20 +118,29 @@ export default {
       }
 
       const kingCoordinate = `${this.letters[4]}${this.pieceY[color]}`
-      this.pieces[kingCoordinate] = {
+      this.$parent.pieces[kingCoordinate] = {
         piece: 'king',
         coordinate: kingCoordinate,
         image: `${this.host}/media/chess/pieces/${color}/king.png`,
         color: color
       }
     },
-    setInitialPieces() {
+    clearAndSetInitialPieces(color = 'white') {
+      this.unselectAllPieces()
+      this.$parent.moves = []
+      this.$parent.pieces = []
+      this.$parent.moveOf = 'white'
+      this.$parent.currentColor = color
+
       for (const color of this.colors) {
         this.setPawns(color)
         this.setRooks(color)
         this.setKnights(color)
         this.setBishops(color)
         this.setQueenAndKing(color)
+      }
+      for (const lastMoveCell of document.querySelectorAll('.last-move-cell')) {
+        lastMoveCell.classList.remove('last-move-cell')
       }
     },
     selectPiece(cell, piece) {
@@ -148,34 +154,37 @@ export default {
       for (const eatableCell of document.querySelectorAll('.eatable-cell'))
         eatableCell.classList.remove('eatable-cell')
 
+      for (const castlingCell of document.querySelectorAll('.castling-cell'))
+        castlingCell.classList.remove('castling-cell')
+
       this.selectedPiece = null
     },
     selectCellsForPawn(cell, piece) {
       const x = piece.coordinate[0]
       const leftX = this.letters[this.letters.indexOf(x) - 1]
       const rightX = this.letters[this.letters.indexOf(x) + 1]
-      const frontY = this.currentColor === 'white' ? +piece.coordinate[1] + 1 : +piece.coordinate[1] - 1
-      const frontY2 = this.currentColor === 'white' ? frontY + 1 : frontY - 1
+      const frontY = this.$parent.currentColor === 'white' ? +piece.coordinate[1] + 1 : +piece.coordinate[1] - 1
+      const frontY2 = this.$parent.currentColor === 'white' ? frontY + 1 : frontY - 1
       const selectableCellId = x + frontY
 
-      if (this.pieces[selectableCellId] === undefined) {
+      if (this.$parent.pieces[selectableCellId] === undefined) {
         document.getElementById(selectableCellId).classList.add('selected-cell')
 
         if (
-          +piece.coordinate[1] === 2 && this.currentColor === 'white' ||
-          +piece.coordinate[1] === 7 && this.currentColor === 'black'
+          +piece.coordinate[1] === 2 && this.$parent.currentColor === 'white' ||
+          +piece.coordinate[1] === 7 && this.$parent.currentColor === 'black'
         ) {
           const frontCell2Id = x + frontY2
           document.getElementById(frontCell2Id).classList.add('selected-cell')
         }
       }
 
-      let eatablePiece = this.pieces[leftX + frontY]
-      if (eatablePiece !== undefined && eatablePiece.color !== this.currentColor)
+      let eatablePiece = this.$parent.pieces[leftX + frontY]
+      if (eatablePiece !== undefined && eatablePiece.color !== this.$parent.currentColor)
         document.getElementById(eatablePiece.coordinate).classList.add('eatable-cell')
 
-      eatablePiece = this.pieces[rightX + frontY]
-      if (eatablePiece !== undefined && eatablePiece.color !== this.currentColor)
+      eatablePiece = this.$parent.pieces[rightX + frontY]
+      if (eatablePiece !== undefined && eatablePiece.color !== this.$parent.currentColor)
         document.getElementById(eatablePiece.coordinate).classList.add('eatable-cell')
     },
     selectCellsForKnight(cell, piece) {
@@ -190,9 +199,9 @@ export default {
 
           const selectableCellId = this.letters[this.letters.indexOf(piece.coordinate[0]) + x] + (+piece.coordinate[1] + y)
           try {
-            if (this.pieces[selectableCellId] === undefined)
+            if (this.$parent.pieces[selectableCellId] === undefined)
               document.getElementById(selectableCellId).classList.add('selected-cell')
-            else if (this.pieces[selectableCellId].color !== this.currentColor)
+            else if (this.$parent.pieces[selectableCellId].color !== this.$parent.currentColor)
               document.getElementById(selectableCellId).classList.add('eatable-cell')
           } catch(e) {}
         }
@@ -206,9 +215,9 @@ export default {
       for (let frontY = y + 1; frontY <= 8; frontY++) {
         const coordinate = x + frontY
 
-        if (this.pieces[coordinate] == null)
+        if (this.$parent.pieces[coordinate] == null)
           document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.pieces[coordinate].color !== this.currentColor) {
+        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
           document.getElementById(coordinate).classList.add('eatable-cell')
           break
         } else break
@@ -216,9 +225,9 @@ export default {
       for (let rearY = y - 1; rearY >= 1; rearY--) {
         const coordinate = x + rearY
 
-        if (this.pieces[coordinate] == null)
+        if (this.$parent.pieces[coordinate] == null)
           document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.pieces[coordinate].color !== this.currentColor) {
+        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
           document.getElementById(coordinate).classList.add('eatable-cell')
           break
         } else break
@@ -226,9 +235,9 @@ export default {
       for (let indexOfLeftX = indexOfX - 1; indexOfLeftX >= 0; indexOfLeftX--) {
         const coordinate = this.letters[indexOfLeftX] + y
 
-        if (this.pieces[coordinate] == null)
+        if (this.$parent.pieces[coordinate] == null)
           document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.pieces[coordinate].color !== this.currentColor) {
+        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
           document.getElementById(coordinate).classList.add('eatable-cell')
           break
         } else break
@@ -236,9 +245,9 @@ export default {
       for (let indexOfRightX = indexOfX + 1; indexOfRightX <= 7; indexOfRightX++) {
         const coordinate = this.letters[indexOfRightX] + y
 
-        if (this.pieces[coordinate] == null)
+        if (this.$parent.pieces[coordinate] == null)
           document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.pieces[coordinate].color !== this.currentColor) {
+        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
           document.getElementById(coordinate).classList.add('eatable-cell')
           break
         } else break
@@ -253,11 +262,11 @@ export default {
         try {
           const coordinate = this.letters[indexOfX + n] + (y + n)
           const cell = document.getElementById(coordinate)
-          const piece = this.pieces[coordinate]
+          const piece = this.$parent.pieces[coordinate]
 
           if (piece == null) {
             cell.classList.add('selected-cell')
-          } else if (piece.color !== this.currentColor) {
+          } else if (piece.color !== this.$parent.currentColor) {
             cell.classList.add('eatable-cell')
             break
           } else break
@@ -269,11 +278,11 @@ export default {
         try {
           const coordinate = this.letters[indexOfX - n] + (y - n)
           const cell = document.getElementById(coordinate)
-          const piece = this.pieces[coordinate]
+          const piece = this.$parent.pieces[coordinate]
 
           if (piece == null) {
             cell.classList.add('selected-cell')
-          } else if (piece.color !== this.currentColor) {
+          } else if (piece.color !== this.$parent.currentColor) {
             cell.classList.add('eatable-cell')
             break
           } else break
@@ -285,11 +294,11 @@ export default {
         try {
           const coordinate = this.letters[indexOfX + n] + (y - n)
           const cell = document.getElementById(coordinate)
-          const piece = this.pieces[coordinate]
+          const piece = this.$parent.pieces[coordinate]
 
           if (piece == null) {
             cell.classList.add('selected-cell')
-          } else if (piece.color !== this.currentColor) {
+          } else if (piece.color !== this.$parent.currentColor) {
             cell.classList.add('eatable-cell')
             break
           } else break
@@ -301,11 +310,11 @@ export default {
         try {
           const coordinate = this.letters[indexOfX - n] + (y + n)
           const cell = document.getElementById(coordinate)
-          const piece = this.pieces[coordinate]
+          const piece = this.$parent.pieces[coordinate]
 
           if (piece == null) {
             cell.classList.add('selected-cell')
-          } else if (piece.color !== this.currentColor) {
+          } else if (piece.color !== this.$parent.currentColor) {
             cell.classList.add('eatable-cell')
             break
           } else break
@@ -328,14 +337,62 @@ export default {
           try {
             const coordinate = this.letters[_indexOfX] + _y
             const cell = document.getElementById(coordinate)
-            const piece = this.pieces[coordinate]
+            const piece = this.$parent.pieces[coordinate]
 
             if (piece == null) {
               cell.classList.add('selected-cell')
-            } else if (piece.color !== this.currentColor) {
+            } else if (piece.color !== this.$parent.currentColor) {
               cell.classList.add('eatable-cell')
             }
           } catch (e) {}
+        }
+      }
+
+      for (const move of this.$parent.moves) {
+        if (move.movedFrom === `e${y}`) return
+      }
+
+      for (const move of this.$parent.moves) {
+        const rookCoordinate = `a${y}`
+
+        if (
+          move.movedFrom === rookCoordinate ||
+          move.movedTo === rookCoordinate ||
+          (
+            move.color === this.$parent.currentColor &&
+            (move.longCastling || move.shortCastling)
+          )
+        ) return
+      }
+
+      if (
+        this.$parent.pieces[`b${y}`] == null &&
+        this.$parent.pieces[`c${y}`] == null &&
+        this.$parent.pieces[`d${y}`] == null
+      ) {
+        const kingMoveToCell = document.getElementById(`c${y}`)
+        kingMoveToCell.classList.add('selected-cell')
+        kingMoveToCell.classList.add('castling-cell')
+      }
+
+      let didSecondRookMove = false
+      for (const move of this.$parent.moves) {
+        const rookCoordinate = `h${y}`
+
+        if (move.movedFrom === rookCoordinate || move.movedTo === rookCoordinate) {
+          didSecondRookMove = true
+          break
+        }
+      }
+
+      if (!didSecondRookMove) {
+        if (
+          this.$parent.pieces[`f${y}`] == null &&
+          this.$parent.pieces[`g${y}`] == null
+        ) {
+          const kingMoveToCell = document.getElementById(`g${y}`)
+          kingMoveToCell.classList.add('selected-cell')
+          kingMoveToCell.classList.add('castling-cell')
         }
       }
     },
@@ -354,31 +411,84 @@ export default {
         this.selectCellsForKing(cell, piece)
       }
     },
-    moveOrEatPiece(newCell, piece) {
-      this.moveOf = this.currentColor === 'white' ? 'black': 'white'
-
-      if (this.gameStatus === null) {
-        this.currentColor = this.moveOf
+    moveOrEatPiece(movedToCell, piece) {
+      for (let lastMoveCell of document.querySelectorAll('.last-move-cell')) {
+        lastMoveCell.classList.remove('last-move-cell')
       }
 
-      this.selectedPiece = null
-      this.pieces[piece.coordinate] = undefined
-      piece.coordinate = newCell.id
-      this.pieces[newCell.id] = piece
-      this.unselectAllPieces()
+      if (movedToCell.classList.contains('castling-cell')) {
+        const y = this.pieceY[this.$parent.currentColor]
+        let rook
+
+        this.unselectAllPieces()
+
+        if (movedToCell.id[0] === 'c') {
+          this.$parent.moves.push({
+            longCastling: true,
+            color: this.$parent.currentColor
+          })
+
+          rook = this.$parent.pieces[`a${y}`]
+          document.getElementById(rook.coordinate).classList.add('last-move-cell')
+          this.$parent.pieces[rook.coordinate] = undefined
+          rook.coordinate = `d${y}`
+          this.$parent.pieces[`d${y}`] = rook
+        } else if (movedToCell.id[0] === 'g') {
+          this.$parent.moves.push({
+            shortCastling: true,
+            color: this.$parent.currentColor
+          })
+
+          rook = this.$parent.pieces[`h${y}`]
+          document.getElementById(rook.coordinate).classList.add('last-move-cell')
+          this.$parent.pieces[rook.coordinate] = undefined
+          rook.coordinate = `f${y}`
+          this.$parent.pieces[rook.coordinate] = rook
+        }
+
+        document.getElementById(piece.coordinate).classList.add('last-move-cell')
+
+        this.$parent.pieces[piece.coordinate] = undefined
+        piece.coordinate = movedToCell.id
+        this.$parent.pieces[piece.coordinate] = piece
+      } else {
+        this.$parent.moves.push({
+          piece: piece.piece,
+          movedFrom: piece.coordinate,
+          movedTo: movedToCell.id
+        })
+
+        this.unselectAllPieces()
+
+        document.getElementById(piece.coordinate).classList.add('last-move-cell')
+        movedToCell.classList.add('last-move-cell')
+
+        this.selectedPiece = null
+        this.$parent.pieces[piece.coordinate] = undefined
+        piece.coordinate = movedToCell.id
+        this.$parent.pieces[movedToCell.id] = piece
+      }
+
+      this.$parent.moveOf = this.$parent.currentColor === 'white' ? 'black': 'white'
+
+      if (this.$parent.gameStatus === null) {
+        this.$parent.currentColor = this.$parent.moveOf
+      }
+
+      this.newMoveSound.currentTime = 0
+      this.newMoveSound.play()
     },
     boardCellOnClick(event) {
-      if (this.moveOf !== this.currentColor) return
+      if (this.$parent.moveOf !== this.$parent.currentColor) return
 
       const cell = event.target.closest('.cell')
       const pieceImg = cell.children[0] !== undefined ? cell.children[0] : null
-      const piece = pieceImg ? this.pieces[cell.id] : null
-
+      const piece = pieceImg ? this.$parent.pieces[cell.id] : null
 
       if (this.selectedPiece == null && piece != null) {
         // Выбор фигуры
 
-        if (this.currentColor !== piece.color) return
+        if (this.$parent.currentColor !== piece.color) return
 
         this.selectPiece(cell, piece)
         this.selectCellsForPiece(cell, piece)
@@ -390,14 +500,15 @@ export default {
         this.selectedPiece != null &&
         this.selectedPiece !== piece &&
         piece != null &&
-        piece.color === this.currentColor &&
+        piece.color === this.$parent.currentColor &&
         !cell.classList.contains('selected-cell')
       ) {
         // Отменить выбор текущей фигуры и выбрать другую фигуру
         this.unselectAllPieces()
         this.selectPiece(cell, piece)
         this.selectCellsForPiece(cell, piece)
-      } else if (this.selectedPiece != null && cell.classList.contains('selected-cell') ||
+      } else if (
+        this.selectedPiece != null && cell.classList.contains('selected-cell') ||
         cell.classList.contains('eatable-cell')
       ) {
         this.moveOrEatPiece(cell, this.selectedPiece)
@@ -417,9 +528,12 @@ export default {
 
 <style>
 .selected-cell {
-  border: 2px solid blue;
+  border: 2px dashed blue;
 }
 .eatable-cell {
-  border: 2px solid red;
+  border: 2px dashed red;
+}
+.last-move-cell {
+  border: 2px dashed orange;
 }
 </style>
