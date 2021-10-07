@@ -41,15 +41,23 @@ export default {
       letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
       colors: ['white', 'black'],
       pieceY: {
-        'white': 1,
-        'black': 8
+        white: 1,
+        black: 8
       },
       pawnY: {
-        'white': 2,
-        'black': 7
+        white: 2,
+        black: 7
       },
       selectedPiece: null,
-      newMoveSound: new Audio(`${this.host}/media/sounds/new_move.mp3`)
+      newMoveSound: new Audio(`${this.host}/media/sounds/new_move.mp3`),
+      getSelectableCellsForPieceMethod: {
+        pawn: this.getSelectableCellsForPawn,
+        rook: this.getSelectableCellsForRook,
+        knight: this.getSelectableCellsForKnight,
+        bishop: this.getSelectableCellsForBishop,
+        queen: this.getSelectableCellsForQueen,
+        king: this.getSelectableCellsForKing
+      }
     }
   },
   mounted() {
@@ -139,9 +147,8 @@ export default {
         this.setBishops(color)
         this.setQueenAndKing(color)
       }
-      for (const lastMoveCell of document.querySelectorAll('.last-move-cell')) {
+      for (const lastMoveCell of document.querySelectorAll('.last-move-cell'))
         lastMoveCell.classList.remove('last-move-cell')
-      }
     },
     selectPiece(cell, piece) {
       cell.classList.add('selected-cell')
@@ -159,35 +166,50 @@ export default {
 
       this.selectedPiece = null
     },
-    selectCellsForPawn(cell, piece) {
-      const x = piece.coordinate[0]
+    checkCellForEnemy(cell) {
+      const piece = this.$parent.pieces[cell.id]
+      return piece != null && piece.color !== this.$parent.currentColor
+    },
+    getSelectableCellsForPawn(cell) {
+      let selectableCells = []
+      const x = cell.id[0]
+      const y = +cell.id[1]
       const leftX = this.letters[this.letters.indexOf(x) - 1]
       const rightX = this.letters[this.letters.indexOf(x) + 1]
-      const frontY = this.$parent.currentColor === 'white' ? +piece.coordinate[1] + 1 : +piece.coordinate[1] - 1
+      const frontY = this.$parent.currentColor === 'white' ? +cell.id[1] + 1 : +cell.id[1] - 1
       const frontY2 = this.$parent.currentColor === 'white' ? frontY + 1 : frontY - 1
       const selectableCellId = x + frontY
 
       if (this.$parent.pieces[selectableCellId] === undefined) {
-        document.getElementById(selectableCellId).classList.add('selected-cell')
+        selectableCells.push(document.getElementById(selectableCellId))
 
         if (
-          +piece.coordinate[1] === 2 && this.$parent.currentColor === 'white' ||
-          +piece.coordinate[1] === 7 && this.$parent.currentColor === 'black'
+          y === 2 && this.$parent.currentColor === 'white' ||
+          y === 7 && this.$parent.currentColor === 'black'
         ) {
           const frontCell2Id = x + frontY2
-          document.getElementById(frontCell2Id).classList.add('selected-cell')
+          selectableCells.push(document.getElementById(frontCell2Id))
         }
       }
 
       let eatablePiece = this.$parent.pieces[leftX + frontY]
       if (eatablePiece !== undefined && eatablePiece.color !== this.$parent.currentColor)
-        document.getElementById(eatablePiece.coordinate).classList.add('eatable-cell')
+        selectableCells.push(document.getElementById(eatablePiece.coordinate))
 
       eatablePiece = this.$parent.pieces[rightX + frontY]
       if (eatablePiece !== undefined && eatablePiece.color !== this.$parent.currentColor)
-        document.getElementById(eatablePiece.coordinate).classList.add('eatable-cell')
+        selectableCells.push(document.getElementById(eatablePiece.coordinate))
+
+      return selectableCells
     },
-    selectCellsForKnight(cell, piece) {
+    checkCellByCoordinateForEmptiness(coordinate) {
+      if (this.$parent.pieces[coordinate] == null) return 0
+      else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) return 1
+      else return 2
+    },
+    getSelectableCellsForKnight(cell, color = this.$parent.currentColor) {
+      const selectableCells = []
+
       for (let x = -2; x <= 2; x++) {
         if (x === 0) continue
 
@@ -197,159 +219,99 @@ export default {
         for (let y = yBegin; y <= yEnd; y += 2) {
           if (y === 0) continue
 
-          const selectableCellId = this.letters[this.letters.indexOf(piece.coordinate[0]) + x] + (+piece.coordinate[1] + y)
-          try {
-            if (this.$parent.pieces[selectableCellId] === undefined)
-              document.getElementById(selectableCellId).classList.add('selected-cell')
-            else if (this.$parent.pieces[selectableCellId].color !== this.$parent.currentColor)
-              document.getElementById(selectableCellId).classList.add('eatable-cell')
-          } catch(e) {}
+          const selectableCellId = this.letters[this.letters.indexOf(cell.id[0]) + x] + (+cell.id[1] + y)
+          if (
+            this.$parent.pieces[selectableCellId] === undefined ||
+            this.$parent.pieces[selectableCellId].color !== color
+          ) {
+            const selectableCell = document.getElementById(selectableCellId)
+            if (selectableCell != null) selectableCells.push(selectableCell)
+          }
         }
       }
+
+      return selectableCells
     },
-    selectCellsForRook(cell, piece) {
-      const x = piece.coordinate[0]
+    getSelectablCellsByFormula(_formulas, cell) {
+      const selectableCells = []
+      const x = cell.id[0]
       const indexOfX = this.letters.indexOf(x)
-      const y = +piece.coordinate[1]
+      const y = +cell.id[1]
+      let formulas = _formulas
 
-      for (let frontY = y + 1; frontY <= 8; frontY++) {
-        const coordinate = x + frontY
+      for (const direction in formulas) {
+        const formula = formulas[direction]
 
-        if (this.$parent.pieces[coordinate] == null)
-          document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
-          document.getElementById(coordinate).classList.add('eatable-cell')
-          break
-        } else break
+        if (!formula) continue
+
+        for (let n = 1; n <= 8; n++) {
+          const coordinate = formula(indexOfX, y, n)
+          const cell = document.getElementById(coordinate)
+          const piece = this.$parent.pieces[coordinate]
+
+          if (cell != null) {
+            if (piece === undefined) selectableCells.push(cell)
+            else if (piece.color !== this.$parent.currentColor) {
+              selectableCells.push(cell)
+              formulas[direction] = false
+              break
+            } else {
+              formulas[direction] = false
+              break
+            }
+          }
+        }
       }
-      for (let rearY = y - 1; rearY >= 1; rearY--) {
-        const coordinate = x + rearY
 
-        if (this.$parent.pieces[coordinate] == null)
-          document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
-          document.getElementById(coordinate).classList.add('eatable-cell')
-          break
-        } else break
-      }
-      for (let indexOfLeftX = indexOfX - 1; indexOfLeftX >= 0; indexOfLeftX--) {
-        const coordinate = this.letters[indexOfLeftX] + y
-
-        if (this.$parent.pieces[coordinate] == null)
-          document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
-          document.getElementById(coordinate).classList.add('eatable-cell')
-          break
-        } else break
-      }
-      for (let indexOfRightX = indexOfX + 1; indexOfRightX <= 7; indexOfRightX++) {
-        const coordinate = this.letters[indexOfRightX] + y
-
-        if (this.$parent.pieces[coordinate] == null)
-          document.getElementById(coordinate).classList.add('selected-cell')
-        else if (this.$parent.pieces[coordinate].color !== this.$parent.currentColor) {
-          document.getElementById(coordinate).classList.add('eatable-cell')
-          break
-        } else break
-      }
+      return selectableCells
     },
-    selectCellsForBishop(cell, piece) {
-      const x = piece.coordinate[0]
+    getSelectableCellsForRook(cell) {
+      const verticalAndHorizontalFormulas = {
+        'forward': (indexOfX, y, n) => this.letters[indexOfX + n] + y,
+        'right': (indexOfX, y, n) => this.letters[indexOfX] + (y + n),
+        'back': (indexOfX, y, n) => this.letters[indexOfX - n] + y,
+        'left': (indexOfX, y, n) => this.letters[indexOfX] + (y - n)
+      }
+
+      return this.getSelectablCellsByFormula(verticalAndHorizontalFormulas, cell)
+    },
+    getSelectableCellsForBishop(cell) {
+      const diagonalFormulas = {
+        'topLeft': (indexOfX, y, n) => this.letters[indexOfX - n] + (y + n),
+        'topRight': (indexOfX, y, n) => this.letters[indexOfX + n] + (y + n),
+        'bottomRight': (indexOfX, y, n) => this.letters[indexOfX + n] + (y - n),
+        'bottomLeft': (indexOfX, y, n) => this.letters[indexOfX - n] + (y - n)
+      }
+
+      return this.getSelectablCellsByFormula(diagonalFormulas, cell)
+    },
+    getSelectableCellsForQueen(cell) {
+      const selectableCellsForRook = this.getSelectableCellsForRook(cell)
+      const selectableCellsForBishop = this.getSelectableCellsForBishop(cell)
+      return selectableCellsForRook.concat(selectableCellsForBishop)
+    },
+    getSelectableCellsForKing(cell) {
+      let selectableCells = []
+      const x = cell.id[0]
       const indexOfX = this.letters.indexOf(x)
-      const y = +piece.coordinate[1]
-
-      for (let n = 1; n <= 8; n++) {
-        try {
-          const coordinate = this.letters[indexOfX + n] + (y + n)
-          const cell = document.getElementById(coordinate)
-          const piece = this.$parent.pieces[coordinate]
-
-          if (piece == null) {
-            cell.classList.add('selected-cell')
-          } else if (piece.color !== this.$parent.currentColor) {
-            cell.classList.add('eatable-cell')
-            break
-          } else break
-        } catch (e) {
-          break
-        }
-      }
-      for (let n = 1; n <= 8; n++) {
-        try {
-          const coordinate = this.letters[indexOfX - n] + (y - n)
-          const cell = document.getElementById(coordinate)
-          const piece = this.$parent.pieces[coordinate]
-
-          if (piece == null) {
-            cell.classList.add('selected-cell')
-          } else if (piece.color !== this.$parent.currentColor) {
-            cell.classList.add('eatable-cell')
-            break
-          } else break
-        } catch (e) {
-          break
-        }
-      }
-      for (let n = 1; n <= 8; n++) {
-        try {
-          const coordinate = this.letters[indexOfX + n] + (y - n)
-          const cell = document.getElementById(coordinate)
-          const piece = this.$parent.pieces[coordinate]
-
-          if (piece == null) {
-            cell.classList.add('selected-cell')
-          } else if (piece.color !== this.$parent.currentColor) {
-            cell.classList.add('eatable-cell')
-            break
-          } else break
-        } catch (e) {
-          break
-        }
-      }
-      for (let n = 1; n <= 8; n++) {
-        try {
-          const coordinate = this.letters[indexOfX - n] + (y + n)
-          const cell = document.getElementById(coordinate)
-          const piece = this.$parent.pieces[coordinate]
-
-          if (piece == null) {
-            cell.classList.add('selected-cell')
-          } else if (piece.color !== this.$parent.currentColor) {
-            cell.classList.add('eatable-cell')
-            break
-          } else break
-        } catch (e) {
-          break
-        }
-      }
-    },
-    selectCellsForQueen(cell, piece) {
-      this.selectCellsForRook(cell, piece)
-      this.selectCellsForBishop(cell, piece)
-    },
-    selectCellsForKing(cell, piece) {
-      const x = piece.coordinate[0]
-      const indexOfX = this.letters.indexOf(x)
-      const y = +piece.coordinate[1]
+      const y = +cell.id[1]
 
       for (let _indexOfX = indexOfX - 1; _indexOfX <= indexOfX + 1; _indexOfX++) {
         for (let _y = y - 1; _y <= y + 1; _y++) {
-          try {
-            const coordinate = this.letters[_indexOfX] + _y
-            const cell = document.getElementById(coordinate)
-            const piece = this.$parent.pieces[coordinate]
+          const coordinate = this.letters[_indexOfX] + _y
+          const cell = document.getElementById(coordinate)
 
-            if (piece == null) {
-              cell.classList.add('selected-cell')
-            } else if (piece.color !== this.$parent.currentColor) {
-              cell.classList.add('eatable-cell')
+          if (cell != null && !this.checkForCheck(cell)) {
+            const piece = this.$parent.pieces[coordinate]
+            if (piece == null || piece.color !== this.$parent.currentColor) {
+              selectableCells.push(cell)
             }
-          } catch (e) {}
+          }
         }
       }
 
       for (const move of this.$parent.moves) {
-        if (move.movedFrom === `e${y}`) return
+        if (move.movedFrom === `e${this.pieceY[this.$parent.currentColor]}`) return selectableCells
       }
 
       for (const move of this.$parent.moves) {
@@ -362,7 +324,7 @@ export default {
             move.color === this.$parent.currentColor &&
             (move.longCastling || move.shortCastling)
           )
-        ) return
+        ) return selectableCells
       }
 
       if (
@@ -371,8 +333,8 @@ export default {
         this.$parent.pieces[`d${y}`] == null
       ) {
         const kingMoveToCell = document.getElementById(`c${y}`)
-        kingMoveToCell.classList.add('selected-cell')
         kingMoveToCell.classList.add('castling-cell')
+        selectableCells.push(kingMoveToCell)
       }
 
       let didSecondRookMove = false
@@ -391,30 +353,42 @@ export default {
           this.$parent.pieces[`g${y}`] == null
         ) {
           const kingMoveToCell = document.getElementById(`g${y}`)
-          kingMoveToCell.classList.add('selected-cell')
           kingMoveToCell.classList.add('castling-cell')
+          selectableCells.push(kingMoveToCell)
         }
       }
+
+      return selectableCells
+    },
+    checkForCheck(cell) {
+      for (const piece in this.getSelectableCellsForPieceMethod) {
+        if (piece !== 'king') {
+          for (const selectableCell of this.getSelectableCellsForPieceMethod[piece](cell)) {
+            const pieceOfSelectableCell = this.$parent.pieces[selectableCell.id]
+            if (
+              pieceOfSelectableCell !== undefined &&
+              pieceOfSelectableCell.piece === piece &&
+              pieceOfSelectableCell.color !== this.$parent.currentColor
+            ) return true
+          }
+        }
+      }
+
+      return false
+    },
+    selectCell(cell) {
+      if (this.checkCellForEnemy(cell))
+        cell.classList.add('eatable-cell')
+      else cell.classList.add('selected-cell')
     },
     selectCellsForPiece(cell, piece) {
-      if (piece.piece === 'pawn') {
-        this.selectCellsForPawn(cell, piece)
-      } else if (piece.piece === 'knight') {
-        this.selectCellsForKnight(cell, piece)
-      } else if (piece.piece === 'rook') {
-        this.selectCellsForRook(cell, piece)
-      } else if (piece.piece === 'bishop') {
-        this.selectCellsForBishop(cell, piece)
-      } else if (piece.piece === 'queen') {
-        this.selectCellsForQueen(cell, piece)
-      } else if (piece.piece === 'king') {
-        this.selectCellsForKing(cell, piece)
+      for (const selectableCell of this.getSelectableCellsForPieceMethod[piece.piece](cell)) {
+        this.selectCell(selectableCell)
       }
     },
     moveOrEatPiece(movedToCell, piece) {
-      for (let lastMoveCell of document.querySelectorAll('.last-move-cell')) {
+      for (let lastMoveCell of document.querySelectorAll('.last-move-cell'))
         lastMoveCell.classList.remove('last-move-cell')
-      }
 
       if (movedToCell.classList.contains('castling-cell')) {
         const y = this.pieceY[this.$parent.currentColor]
@@ -538,9 +512,11 @@ export default {
 <style>
 .selected-cell {
   border: 2px dashed blue !important;
+  cursor: pointer;
 }
 .eatable-cell {
   border: 2px dashed red !important;
+  cursor: pointer;
 }
 .last-move-cell {
   border: 2px dashed green;

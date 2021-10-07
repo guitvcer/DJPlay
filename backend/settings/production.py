@@ -5,7 +5,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv('HOST'), 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [os.getenv('HOST'), f'www.{os.getenv("HOST")}', 'localhost', '127.0.0.1']
 PROTOCOL = os.getenv('PROTOCOL')
 CORS_ALLOWED_ORIGINS = [f'{PROTOCOL}://{ALLOWED_HOSTS[0]}']
 

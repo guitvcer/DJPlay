@@ -46,7 +46,8 @@ export default {
       data: null,
       moves: [],
       pieces: [],
-      moveOf: 'white'
+      moveOf: 'white',
+      check: null
     }
   },
   async mounted() {

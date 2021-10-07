@@ -107,25 +107,54 @@ export default {
         this.$parent.moveOf = this.$parent.currentColor === 'white' ? 'black' : 'white'
         this.$parent.currentColor = this.$parent.moveOf
 
-        if (lastMove.eatenPiece !== null) {
-          this.$parent.pieces[lastMove.movedTo] = lastMove.eatenPiece
-        } else this.$parent.pieces[lastMove.movedTo] = undefined
+        if (lastMove.shortCastling || lastMove.longCastling) {
+          const y = this.$parent.$refs.chessBoard.pieceY[this.$parent.currentColor]
+          let kingCoordinate
+          let rookOldCoordinate
+          let rookNewCoordinate
 
-        this.$parent.pieces[lastMove.movedFrom] = {
-          piece: lastMove.piece,
-          coordinate: lastMove.movedFrom,
-          color: this.$parent.currentColor,
-          image: `${this.host}/media/chess/pieces/${this.$parent.currentColor}/${lastMove.piece}.png`
+          if (lastMove.shortCastling) {
+            kingCoordinate = `g${y}`
+            rookOldCoordinate = `f${y}`
+            rookNewCoordinate = `h${y}`
+          } else if (lastMove.longCastling) {
+            kingCoordinate = `c${y}`
+            rookOldCoordinate = `d${y}`
+            rookNewCoordinate = `a${y}`
+          }
+
+          const king = this.$parent.pieces[kingCoordinate]
+          king.coordinate = `e${y}`
+          this.$parent.pieces[kingCoordinate] = undefined
+          this.$parent.pieces[king.coordinate] = king
+
+          const rook = this.$parent.pieces[rookOldCoordinate]
+          rook.coordinate = rookNewCoordinate
+          this.$parent.pieces[rookOldCoordinate] = undefined
+          this.$parent.pieces[rook.coordinate] = rook
+        } else {
+          if (lastMove.eatenPiece !== null) {
+            this.$parent.pieces[lastMove.movedTo] = lastMove.eatenPiece
+            this.$parent.pieces[lastMove.movedTo] = undefined
+          }
+
+          this.$parent.pieces[lastMove.movedFrom] = {
+            piece: lastMove.piece,
+            coordinate: lastMove.movedFrom,
+            color: this.$parent.currentColor,
+            image: `${this.host}/media/chess/pieces/${this.$parent.currentColor}/${lastMove.piece}.png`
+          }
+
+          if (this.$parent.moves.length > 1) {
+            lastMove = this.$parent.moves[this.$parent.moves.length - 2]
+            document.getElementById(lastMove.movedFrom).classList.add('last-move-cell')
+            document.getElementById(lastMove.movedTo).classList.add('last-move-cell')
+          }
         }
+
         this.$parent.moves.pop()
 
         this.$parent.$refs.chessBoard.unselectAllPieces()
-
-        if (this.$parent.moves.length > 0) {
-          lastMove = this.$parent.moves[this.$parent.moves.length - 1]
-          document.getElementById(lastMove.movedFrom).classList.add('last-move-cell')
-          document.getElementById(lastMove.movedTo).classList.add('last-move-cell')
-        }
       }
     },
     resetBoard(showAlert = true) {
