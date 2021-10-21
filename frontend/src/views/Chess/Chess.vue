@@ -21,49 +21,26 @@
 </template>
 
 <script>
-import axios from 'axios'
-import Loading from '@/components/Interface/Loading'
-import ChessBoard from '@/components/Chess/ChessBoard'
-import StartPanel from '@/components/Chess/StartPanel'
-import ControlPanel from '@/components/Chess/ControlPanel'
+import { mapGetters, mapActions } from "vuex";
+import Loading from "../../components/Interface/Loading";
+import ChessBoard from "../../components/Chess/ChessBoard";
+import StartPanel from "../../components/Chess/StartPanel";
+import ControlPanel from "../../components/Chess/ControlPanel";
 
 export default {
   components: {
-    Loading, ChessBoard, StartPanel, ControlPanel
-  },
-  data() {
-    return {
-      loading: true,
-      game: null,
-      gameStatus: null,
-      findOpponentSocket: null,
-      chessPartySocket: null,
-      returnMoveSocket: null,
-      partyID: null,
-      opponent: null,
-      username: null,
-      currentColor: 'white',
-      data: null,
-      moves: [],
-      pieces: [],
-      moveOf: 'white',
-      check: null
-    }
+    Loading, ChessBoard, StartPanel, ControlPanel,
   },
   async mounted() {
-    await axios
-      .get(`${this.host}/api/chess/`)
-      .then(response => {
-        this.game = response.data
-        this.loading = false
-      })
-      .catch(error => this.$emit('api-error', error))
+    await this.loadChess();
   },
   methods: {
+    ...mapActions(["loadChess"]),
     findOpponent() {},
     cancelFinding() {},
     giveUp() {},
     offerDraw() {}
-  }
+  },
+  computed: mapGetters(["game", "loading"]),
 }
 </script>

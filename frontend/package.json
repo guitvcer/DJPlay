@@ -22,7 +22,8 @@
     "vue-recaptcha-v3": "^2.0.1",
     "vue-router": "^4.0.10",
     "vue-tailwind": "^2.4.1",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
