@@ -40,3 +40,25 @@ export function onResizeBoard() {
   squareBoard();
   window.addEventListener("resize", squareBoard);
 }
+
+export function onBoardClick(event) {
+  /* При нажатии на доску */
+
+  if (
+    store.getters.moveOf === store.getters.currentColor &&
+    event.target.id !== "chessBoard"
+  ) {
+    const id = event.target.closest(".cell").id;
+    const piece = store.getters.pieces[id];
+
+    if (piece) {
+      if (piece.color === store.getters.currentColor) {
+        if (store.getters.selectedPiece === piece) {
+          store.dispatch("unselectPiece").then();
+        } else {
+          store.dispatch("selectPiece", piece.coordinate).then();
+        }
+      }
+    }
+  }
+}
