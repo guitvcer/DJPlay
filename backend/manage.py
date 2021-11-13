@@ -16,7 +16,7 @@ def main():
 
     from django.core.management.commands.runserver import Command
 
-    Command.default_addr = '192.168.1.6'
+    Command.default_addr = '192.168.1.2'
     execute_from_command_line(sys.argv)
 
 

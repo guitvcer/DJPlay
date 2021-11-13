@@ -11,15 +11,15 @@
 @layer utilities {
     @variants dark {
         .bg-board-background {
-            background-image: url('http://192.168.1.6:8000/media/gomoku/board_background.png');
+            background-image: url('http://192.168.1.2:8000/media/gomoku/board_background.png');
             background-size: 100%;
         }
         .bg-board-background-dark {
-            background-image: url('http://192.169.1.6:8000/media/gomoku/board_background_dark.png');
+            background-image: url('http://192.169.1.2:8000/media/gomoku/board_background_dark.png');
             background-size: 100%;
         }
         .bg-chess-board {
-            background-image: url('http://192.168.1.6:8000/media/chess/board.png');
+            background-image: url('http://192.168.1.2:8000/media/chess/board.png');
             background-size: 100%;
         }
     }
