@@ -1,5 +1,6 @@
 import api from "../../api/index";
 import { WHITE } from "../../scripts/chess/constants";
+import { getField } from "../../scripts/chess/board";
 
 export default {
   actions: {
@@ -7,7 +8,7 @@ export default {
       const response = await api.chess.load();
 
       commit("updateGame", response.data);
-    }
+    },
   },
   mutations: {
     updateGame(state, game) {
@@ -19,6 +20,7 @@ export default {
     game: null,
     loading: true,
     currentColor: WHITE,
+    field: getField(),
   },
   getters: {
     game(state) {
@@ -29,6 +31,9 @@ export default {
     },
     currentColor(state) {
       return state.currentColor;
+    },
+    field(state) {
+      return state.field;
     }
   }
 }
