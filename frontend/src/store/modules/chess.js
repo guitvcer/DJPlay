@@ -1,6 +1,7 @@
 import api from "../../api/index";
 import { WHITE } from "../../scripts/chess/constants";
 import { getField } from "../../scripts/chess/board";
+import pieces from "../../scripts/chess/pieces";
 
 export default {
   actions: {
@@ -21,6 +22,7 @@ export default {
     loading: true,
     currentColor: WHITE,
     field: getField(),
+    pieces: pieces,
   },
   getters: {
     game(state) {
@@ -34,6 +36,9 @@ export default {
     },
     field(state) {
       return state.field;
+    },
+    pieces(state) {
+      return state.pieces;
     }
   }
 }

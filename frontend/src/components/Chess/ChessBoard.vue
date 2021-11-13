@@ -10,7 +10,13 @@
       v-for="coordinate of Object.keys(field)"
       :id="coordinate"
       class="cell"
-    ></div>
+    >
+      <img
+        v-if="pieces[coordinate]"
+        :src="this.host + pieces[coordinate].image"
+        :alt="pieces[coordinate].name"
+      >
+    </div>
   </div>
 </template>
 
@@ -26,14 +32,15 @@ export default {
   mounted() {
     onResizeBoard();
   },
-  computed: mapGetters(["currentColor", "field"]),
+  computed: mapGetters(["currentColor", "field", "pieces"]),
 }
 </script>
 
 <style>
 .cell {
-  width: 12.5%;
-  height: 12.5%;
+  width: 10%;
+  height: 10%;
+  margin: 1.25%;
 }
 .selectable-cell {
   border: 2px dashed blue !important;

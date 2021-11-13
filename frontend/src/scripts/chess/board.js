@@ -16,7 +16,7 @@ export function getField() {
 }
 
 function squareBoard() {
-  /* Сделать доску квадратным */
+  /* Сделать доску квадратной */
 
   const board = document.getElementById("chessBoard");
 
