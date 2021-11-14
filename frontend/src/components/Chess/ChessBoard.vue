@@ -12,7 +12,9 @@
       :id="coordinate"
       :class="[
         'cell',
-        pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selectable-cell' : ''
+        pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
+        pieces[coordinate] !== undefined && pieces[coordinate].edible ? ' edible-piece' : '',
+        field[coordinate].selectable ? ' selectable-cell' : '',
       ]"
     >
       <img
@@ -46,8 +48,9 @@ export default {
   width: 11%;
   height: 11%;
   margin: 0.75%;
+  padding: 3px;
 }
-.selectable-cell {
+.selected-piece, .selectable-cell {
   border: 2px dashed blue !important;
   cursor: pointer;
 }
