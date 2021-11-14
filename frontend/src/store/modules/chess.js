@@ -84,11 +84,18 @@ export default {
         }
       }
     },
+    checkCellForEnemy({ getters }, coordinate) {
+      /* Проверка клетку на враждебную фигуру */
 
-    ediblePiece({ commit, getters }, coordinate) {
+      const piece = getters.pieces[coordinate];
+
+      return piece && piece.color !== getters.currentColor;
+    },
+
+    ediblePiece({ dispatch, commit, getters }, coordinate) {
       /* Сделать фигуру съедобным */
 
-      if (getters.pieces[coordinate]) {
+      if (dispatch("checkCellForEnemy", coordinate)) {
         const properties = { edible: true };
 
         commit("updatePiece", { coordinate, properties });
@@ -122,7 +129,9 @@ export default {
     },
     updatePiece(state, { coordinate, properties }) {
       for (const key of Object.keys(properties)) {
-        state.pieces[coordinate][key] = properties[key];
+        if (state.pieces[coordinate]) {
+          state.pieces[coordinate][key] = properties[key];
+        }
       }
     },
     createPiece(state, { coordinate, piece }) {

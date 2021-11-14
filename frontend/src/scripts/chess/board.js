@@ -58,6 +58,12 @@ export function onBoardClick(event) {
         } else {
           store.dispatch("selectPiece", piece.coordinate).then();
         }
+      } else {
+        if (store.getters.pieces[coordinate].edible) {
+          store.dispatch("movePiece", coordinate).then();
+          store.commit("swapColor");
+          store.commit("swapMoveOf");
+        }
       }
     } else {
       if (store.getters.selectedPiece) {
