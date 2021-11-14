@@ -1,6 +1,6 @@
 import api from "../../api/index";
 import { WHITE, BLACK } from "../../scripts/chess/constants";
-import { getField } from "../../scripts/chess/board";
+import { getField, isCellHostile } from "../../scripts/chess/board";
 import pieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
@@ -79,25 +79,18 @@ export default {
       for (const coordinate in getters.field) {
         const piece = getters.field[coordinate];
 
-        if (piece && piece.selectable) {
+        if (piece.selectable) {
           const properties = { selectable: false };
 
           commit("updateCell", { coordinate, properties });
         }
       }
     },
-    checkCellForEnemy({ getters }, coordinate) {
-      /* Проверка клетку на враждебную фигуру */
-
-      const piece = getters.pieces[coordinate];
-
-      return piece && piece.color !== getters.currentColor;
-    },
 
     ediblePiece({ dispatch, commit, getters }, coordinate) {
       /* Сделать фигуру съедобным */
 
-      if (dispatch("checkCellForEnemy", coordinate)) {
+      if (isCellHostile(coordinate)) {
         const properties = { edible: true };
 
         commit("updatePiece", { coordinate, properties });
@@ -116,7 +109,7 @@ export default {
       for (const coordinate in getters.pieces) {
         const piece = getters.pieces[coordinate];
 
-        if (piece && piece.edible) {
+        if (piece.edible) {
           const properties = { edible: false };
 
           commit("updatePiece", { coordinate, properties });
@@ -131,16 +124,14 @@ export default {
     },
     updatePiece(state, { coordinate, properties }) {
       for (const key of Object.keys(properties)) {
-        if (state.pieces[coordinate]) {
-          state.pieces[coordinate][key] = properties[key];
-        }
+        state.pieces[coordinate][key] = properties[key];
       }
     },
     createPiece(state, { coordinate, piece }) {
       state.pieces[coordinate] = piece;
     },
     removePiece(state, coordinate) {
-      state.pieces[coordinate] = undefined;
+      delete state.pieces[coordinate];
     },
     updateSelectedPiece(state, piece) {
       state.selectedPiece = piece;

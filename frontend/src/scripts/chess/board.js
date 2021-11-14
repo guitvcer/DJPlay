@@ -76,3 +76,21 @@ export function onBoardClick(event) {
     }
   }
 }
+
+export function isCoordinateValid(coordinate) {
+  /* Валидна ли координата? */
+
+  return Object.keys(store.getters.field).includes(coordinate);
+}
+
+export function isCellEmpty(coordinate) {
+  /* Пустая ли клетка? */
+
+  return !(Object.keys(store.getters.pieces).includes(coordinate));
+}
+
+export function isCellHostile(coordinate) {
+  /* Враждебная ли клетка */
+
+  return !(isCellEmpty(coordinate) || store.getters.pieces[coordinate].color === store.getters.currentColor);
+}
