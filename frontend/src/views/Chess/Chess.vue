@@ -30,6 +30,8 @@ export default {
   },
   async mounted() {
     await this.loadChess();
+
+    document.title = "Шахматы - DJPlay";
   },
   methods: mapActions(["loadChess"]),
   computed: mapGetters(["game", "loading"]),
