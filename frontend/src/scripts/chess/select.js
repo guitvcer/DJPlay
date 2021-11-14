@@ -1,6 +1,24 @@
 import { WHITE, LETTERS } from "./constants";
 import store from "../../store/index";
 
+function getDidPieceMove(coordinate) {
+  /* Получить true, если фигура ранее делала ход, иначе false */
+
+  let didPieceMove = false;
+
+  for (const moveIndex in store.getters.moves) {
+    const move = store.getters.moves[moveIndex];
+    const piece = store.getters.pieces[coordinate];
+
+    if (move.piece.id === piece.id) {
+      didPieceMove = true;
+      break;
+    }
+  }
+
+  return didPieceMove;
+}
+
 function availableCellsForPawn(coordinate) {
   /* Получить объект из координат допустимых клеток для пешки */
 
@@ -17,7 +35,10 @@ function availableCellsForPawn(coordinate) {
     frontY2 = store.getters.currentColor === WHITE ? frontY + 1 : frontY - 1;
 
   selectableCells.selectable.push(x + frontY);
-  selectableCells.selectable.push(x + frontY2);
+
+  if (!getDidPieceMove(coordinate)) {
+    selectableCells.selectable.push(x + frontY2);
+  }
 
   selectableCells.edible.push(leftX + frontY);
   selectableCells.edible.push(rightX + frontY);

@@ -1,5 +1,7 @@
 import { COLORS, LETTERS, PAWN_Y, PIECE_Y } from "./constants";
 
+let id = 1;
+
 function getPawns(color) {
   /* Вернуть объект из начальных пешек определенного цвета */
 
@@ -13,7 +15,10 @@ function getPawns(color) {
       coordinate: coordinate,
       image: `/media/chess/pieces/${color}/pawn.png`,
       color: color,
+      id,
     }
+
+    id++;
   }
 
   return pawns;
@@ -32,7 +37,10 @@ function getRooks(color) {
       coordinate: coordinate,
       image: `/media/chess/pieces/${color}/rook.png`,
       color: color,
+      id,
     }
+
+    id++;
   }
 
   return rooks;
@@ -51,7 +59,10 @@ function getKnights(color) {
       coordinate: coordinate,
       image: `/media/chess/pieces/${color}/knight.png`,
       color: color,
+      id,
     }
+
+    id++;
   }
 
   return knights;
@@ -70,7 +81,10 @@ function getBishops(color) {
       coordinate: coordinate,
       image: `/media/chess/pieces/${color}/bishop.png`,
       color: color,
+      id,
     }
+
+    id++;
   }
 
   return bishops;
@@ -81,12 +95,16 @@ function getQueen(color) {
 
   const coordinate = LETTERS[3] + PIECE_Y[color];
   const queen = {};
+
   queen[coordinate] = {
     name: "queen",
     coordinate: coordinate,
     image: `/media/chess/pieces/${color}/queen.png`,
     color: color,
+    id,
   }
+
+  id++;
 
   return queen;
 }
@@ -102,7 +120,10 @@ function getKing(color) {
     coordinate: coordinate,
     image: `/media/chess/pieces/${color}/king.png`,
     color: color,
+    id,
   }
+
+  id++;
 
   return king;
 }

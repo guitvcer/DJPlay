@@ -46,6 +46,8 @@ export default {
     movePiece({ dispatch, commit, getters }, coordinate) {
       /* Двинуть фигуру */
 
+      commit("addMove", coordinate);
+
       const piece = getters.selectedPiece;
 
       dispatch("unselectPiece");
@@ -153,6 +155,12 @@ export default {
     },
     swapMoveOf(state) {
       state.moveOf = state.moveOf === WHITE ? BLACK : WHITE;
+    },
+    addMove(state, coordinate) {
+      state.moves.push({
+        piece: state.selectedPiece,
+        to_coordinate: coordinate,
+      });
     }
   },
   state: {
@@ -163,6 +171,7 @@ export default {
     field: getField(),
     pieces: pieces,
     selectedPiece: null,
+    moves: [],
   },
   getters: {
     game(state) {
@@ -185,6 +194,9 @@ export default {
     },
     selectedPiece(state) {
       return state.selectedPiece;
+    },
+    moves(state) {
+      return state.moves;
     }
   }
 }
