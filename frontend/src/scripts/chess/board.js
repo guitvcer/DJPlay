@@ -48,8 +48,8 @@ export function onBoardClick(event) {
     store.getters.moveOf === store.getters.currentColor &&
     event.target.id !== "chessBoard"
   ) {
-    const id = event.target.closest(".cell").id;
-    const piece = store.getters.pieces[id];
+    const coordinate = event.target.closest(".cell").id;
+    const piece = store.getters.pieces[coordinate];
 
     if (piece) {
       if (piece.color === store.getters.currentColor) {
@@ -57,6 +57,14 @@ export function onBoardClick(event) {
           store.dispatch("unselectPiece").then();
         } else {
           store.dispatch("selectPiece", piece.coordinate).then();
+        }
+      }
+    } else {
+      if (store.getters.selectedPiece) {
+        if (store.getters.field[coordinate].selectable) {
+          store.dispatch("movePiece", coordinate).then();
+          store.commit("swapColor");
+          store.commit("swapMoveOf");
         }
       }
     }

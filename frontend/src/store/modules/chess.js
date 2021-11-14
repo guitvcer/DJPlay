@@ -1,5 +1,5 @@
 import api from "../../api/index";
-import { WHITE } from "../../scripts/chess/constants";
+import { WHITE, BLACK } from "../../scripts/chess/constants";
 import { getField } from "../../scripts/chess/board";
 import pieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
@@ -43,6 +43,19 @@ export default {
         dispatch("unEdiblePieces");
       }
     },
+    movePiece({ dispatch, commit, getters }, coordinate) {
+      /* Двинуть фигуру */
+
+      const piece = getters.selectedPiece;
+
+      dispatch("unselectPiece");
+      commit("removePiece", piece.coordinate);
+
+      piece.coordinate = coordinate;
+      piece.selected = false;
+
+      commit("createPiece", { coordinate, piece });
+    },
 
     selectCell({ commit }, coordinate) {
       /* Выбрать клетку */
@@ -55,16 +68,20 @@ export default {
       /* Выбрать клетки */
 
       for (const coordinate of cellsIds) {
-        dispatch("selectCell", coordinate).then();
+        dispatch("selectCell", coordinate);
       }
     },
     unSelectCells({ commit, getters }) {
       /* Убрать выделение со всех клеток */
 
       for (const coordinate in getters.field) {
-        const properties = { selectable: false };
+        const piece = getters.field[coordinate];
 
-        commit("updateCell", { coordinate, properties });
+        if (piece && piece.selectable) {
+          const properties = { selectable: false };
+
+          commit("updateCell", { coordinate, properties });
+        }
       }
     },
 
@@ -81,16 +98,20 @@ export default {
       /* Сделать фигуры съедобными */
 
       for (const coordinate of cellsIds) {
-        dispatch("ediblePiece", coordinate).then();
+        dispatch("ediblePiece", coordinate);
       }
     },
     unEdiblePieces({ commit, getters }) {
       /* Сделать все фигуры не съедобными */
 
       for (const coordinate in getters.pieces) {
-        const properties = { edible: false };
+        const piece = getters.pieces[coordinate];
 
-        commit("updatePiece", { coordinate, properties });
+        if (piece && piece.edible) {
+          const properties = { edible: false };
+
+          commit("updatePiece", { coordinate, properties });
+        }
       }
     },
   },
@@ -104,6 +125,12 @@ export default {
         state.pieces[coordinate][key] = properties[key];
       }
     },
+    createPiece(state, { coordinate, piece }) {
+      state.pieces[coordinate] = piece;
+    },
+    removePiece(state, coordinate) {
+      state.pieces[coordinate] = undefined;
+    },
     updateSelectedPiece(state, piece) {
       state.selectedPiece = piece;
     },
@@ -111,6 +138,12 @@ export default {
       for (const key of Object.keys(properties)) {
         state.field[coordinate][key] = properties[key];
       }
+    },
+    swapColor(state) {
+      state.currentColor = state.currentColor === WHITE ? BLACK : WHITE;
+    },
+    swapMoveOf(state) {
+      state.moveOf = state.moveOf === WHITE ? BLACK : WHITE;
     }
   },
   state: {
