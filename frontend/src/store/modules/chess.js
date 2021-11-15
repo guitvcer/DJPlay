@@ -39,14 +39,17 @@ export default {
         commit("updatePiece", { coordinate, properties });
         commit("updateSelectedPiece", null);
 
-        dispatch("unSelectCells");
-        dispatch("unEdiblePieces");
+        dispatch("unselectCells");
+        dispatch("unediblePieces");
       }
     },
     movePiece({ dispatch, commit, getters }, coordinate) {
       /* Двинуть фигуру */
 
-      commit("addMove", coordinate);
+      commit("addMove", {
+        from_coordinate: getters.selectedPiece.coordinate,
+        to_coordinate: coordinate
+      });
 
       const piece = getters.selectedPiece;
 
@@ -57,6 +60,7 @@ export default {
       piece.selected = false;
 
       commit("createPiece", { coordinate, piece });
+      dispatch("selectLastMoveCell");
     },
 
     selectCell({ commit }, coordinate) {
@@ -73,18 +77,42 @@ export default {
         dispatch("selectCell", coordinate);
       }
     },
-    unSelectCells({ commit, getters }) {
+    unselectCells({ commit, getters }) {
       /* Убрать выделение со всех клеток */
 
       for (const coordinate in getters.field) {
-        const piece = getters.field[coordinate];
+        const cell = getters.field[coordinate];
 
-        if (piece.selectable) {
+        if (cell.selectable) {
           const properties = { selectable: false };
 
           commit("updateCell", { coordinate, properties });
         }
       }
+    },
+    unselectLastMoveCells({ commit, getters }) {
+      /* Убрать выделение с клеток последнего хода */
+
+      for (const coordinate in getters.field) {
+        const cell = getters.field[coordinate];
+
+        if (cell.lastMoveCell) {
+          const properties = { lastMoveCell: false };
+
+          commit("updateCell", { coordinate, properties });
+        }
+      }
+    },
+    selectLastMoveCell({ dispatch, commit, getters }) {
+      /* Выделить клетки последнего(нового) хода */
+
+      dispatch("unselectLastMoveCells");
+
+      const lastMove = getters.moves[getters.moves.length - 1];
+      const properties = { lastMoveCell: true };
+
+      commit("updateCell", { coordinate: lastMove.from_coordinate, properties });
+      commit("updateCell", { coordinate: lastMove.to_coordinate, properties });
     },
 
     ediblePiece({ dispatch, commit, getters }, coordinate) {
@@ -103,7 +131,7 @@ export default {
         dispatch("ediblePiece", coordinate);
       }
     },
-    unEdiblePieces({ commit, getters }) {
+    unediblePieces({ commit, getters }) {
       /* Сделать все фигуры не съедобными */
 
       for (const coordinate in getters.pieces) {
@@ -147,10 +175,10 @@ export default {
     swapMoveOf(state) {
       state.moveOf = state.moveOf === WHITE ? BLACK : WHITE;
     },
-    addMove(state, coordinate) {
+    addMove(state, { from_coordinate, to_coordinate }) {
       state.moves.push({
         piece: state.selectedPiece,
-        to_coordinate: coordinate,
+        from_coordinate, to_coordinate,
       });
     }
   },

@@ -15,6 +15,7 @@
         pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
         pieces[coordinate] !== undefined && pieces[coordinate].edible ? ' edible-piece' : '',
         field[coordinate].selectable ? ' selectable-cell' : '',
+        field[coordinate].lastMoveCell ? ' last-move-cell' : '',
       ]"
     >
       <img

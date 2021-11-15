@@ -1,6 +1,6 @@
-import {LETTERS, WHITE} from "./constants";
+import { LETTERS, WHITE } from "./constants";
 import store from "../../store/index";
-import {isCellEmpty, isCellHostile, isCoordinateValid} from "./board";
+import { isCellEmpty, isCellHostile, isCoordinateValid } from "./board";
 
 function getDidPieceMove(coordinate) {
   /* Получить true, если фигура ранее делала ход, иначе false */
