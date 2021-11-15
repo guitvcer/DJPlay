@@ -1,6 +1,6 @@
-import { WHITE, LETTERS } from "./constants";
+import {LETTERS, WHITE} from "./constants";
 import store from "../../store/index";
-import {isCoordinateValid, isCellHostile, isCellEmpty} from "./board";
+import {isCellEmpty, isCellHostile, isCoordinateValid} from "./board";
 
 function getDidPieceMove(coordinate) {
   /* Получить true, если фигура ранее делала ход, иначе false */
@@ -48,7 +48,7 @@ function availableCellsForPawn(coordinate) {
 }
 
 function availableCellsForKnight(coordinate) {
-  /* Получить объект из координат доступных клеток для кноя */
+  /* Получить объект из координат доступных клеток для коня */
 
   const availableCells = {
     selectable: [],
@@ -67,7 +67,6 @@ function availableCellsForKnight(coordinate) {
       const sCoordinate = LETTERS[LETTERS.indexOf(coordinate[0]) + x] + (+coordinate[1] + y);
 
       if (isCoordinateValid(sCoordinate)) {
-
         if (isCellEmpty(sCoordinate)) {
           availableCells.selectable.push(sCoordinate);
         } else if (isCellHostile(sCoordinate)) {
@@ -80,7 +79,87 @@ function availableCellsForKnight(coordinate) {
   return availableCells;
 }
 
+function availableCellsByFormula(_formulas, coordinate) {
+  /* Получить объект из координат допустимых клеток по формуле */
+
+  const
+    availableCells = {
+      selectable: [],
+      edible: [],
+    },
+    x = coordinate[0],
+    y = +coordinate[1],
+    indexOfX = LETTERS.indexOf(x);
+  let formulas = _formulas;
+
+  for (const direction in formulas) {
+    const formula = formulas[direction];
+
+    if (!formula) continue;
+
+    for (let n = 1; n <= 8; n++) {
+      const coordinate = formula(indexOfX, y, n);
+
+      if (isCoordinateValid(coordinate)) {
+        if (isCellEmpty(coordinate)) {
+          availableCells.selectable.push(coordinate);
+        } else if (isCellHostile(coordinate)) {
+          availableCells.edible.push(coordinate);
+          formulas[direction] = false;
+          break;
+        } else {
+          formulas[direction] = false;
+          break;
+        }
+      }
+    }
+  }
+
+  return availableCells;
+}
+
+function availableCellsForRook(coordinate) {
+  /* Получить объект из координат допустимых клеток для ладьи */
+
+  const verticalAndHorizontalFormulas = {
+    forward: (indexOfX, y, n) => LETTERS[indexOfX + n] + y,
+    right: (indexOfX, y, n) => LETTERS[indexOfX] + (y + n),
+    back: (indexOfX, y, n) => LETTERS[indexOfX - n] + y,
+    left: (indexOfX, y, n) => LETTERS[indexOfX] + (y - n),
+  }
+
+  return availableCellsByFormula(verticalAndHorizontalFormulas, coordinate);
+}
+
+function availableCellsForBishop(coordinate) {
+  /* Получить объект из координат допустимых клеток для слона */
+
+  const diagonalFormulas = {
+    topLeft: (indexOfX, y, n) => LETTERS[indexOfX - n] + (y + n),
+    topRight: (indexOfX, y, n) => LETTERS[indexOfX + n] + (y + n),
+    bottomRight: (indexOfX, y, n) => LETTERS[indexOfX + n] + (y - n),
+    bottomLeft: (indexOfX, y, n) => LETTERS[indexOfX - n] + (y - n),
+  }
+
+  return availableCellsByFormula(diagonalFormulas, coordinate);
+}
+
+function availableCellsForQueen(coordinate) {
+  /* Получить объект из координат допустимых клеток для ферзя */
+
+  const bishopCells = availableCellsForBishop(coordinate);
+  const rookCells = availableCellsForRook(coordinate);
+
+  return {
+    selectable: bishopCells.selectable.concat(rookCells.selectable),
+    edible: bishopCells.edible.concat(rookCells.edible),
+  }
+}
+
 export default {
   pawn: availableCellsForPawn,
   knight: availableCellsForKnight,
+  rook: availableCellsForRook,
+  bishop: availableCellsForBishop,
+  queen: availableCellsForQueen,
 }
