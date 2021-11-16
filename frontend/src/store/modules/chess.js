@@ -28,7 +28,7 @@ export default {
 
       const castling = getters.field[coordinate].castling;
       const kingOldCoordinate = 'e' + PIECE_Y[getters.currentColor]
-      const rookOldCoordinate = (castling.long === 'd' ? 'a' : 'h') + PIECE_Y[getters.currentColor]
+      const rookOldCoordinate = (castling.longCastling ? 'a' : 'h') + PIECE_Y[getters.currentColor]
 
       commit("removePiece", kingOldCoordinate);
       commit("removePiece", rookOldCoordinate);

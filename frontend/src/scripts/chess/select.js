@@ -163,8 +163,11 @@ function castlingCells() {
 
   for (const move of store.getters.moves) {
     if (
-      (move.piece.name === "king" && move.piece.color === store.getters.currentColor) ||
-      (move.color === store.getters.currentColor && (move.longCastling || move.shortCastling))
+      move.color === store.getters.currentColor &&
+      (
+        (move.longCastling || move.shortCastling) ||
+        (move.piece.name === "king" && move.piece.color === store.getters.currentColor)
+      )
     ) {
       return castlingMoves;
     }
@@ -179,6 +182,8 @@ function castlingCells() {
 
   for (const move of store.getters.moves) {
     if (didFirstRookMove && didSecondRookMove) return castlingMoves;
+
+    if (move.longCastling || move.shortCastling) continue;
 
     if (move.piece.color === store.getters.currentColor) {
       if (move.from_coordinate === rookLeftCoordinate) {
