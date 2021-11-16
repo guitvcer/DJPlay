@@ -14,7 +14,6 @@
         v-if="name === 'Chess'"
         title="Отменить ход"
         class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
-        @click="returnMove"
       >
         <!-- TODO: добавить ctrl+z на отмену хода -->
         <reply-icon class="h-6 w-6" />
@@ -78,14 +77,15 @@ import {
   ClockIcon,
   RefreshIcon,
   ReplyIcon
-} from '@heroicons/vue/outline'
+} from "@heroicons/vue/outline";
+import { mapActions } from "vuex";
 
 export default {
   props: {
     name: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   components: {
     ChevronLeftIcon,
@@ -96,77 +96,6 @@ export default {
     RefreshIcon,
     ReplyIcon
   },
-  methods: {
-    returnMove() {
-      if (this.$parent.gameStatus !== 'playing' && this.$parent.moves.length > 0) {
-        let lastMove = this.$parent.moves[this.$parent.moves.length - 1]
-
-        for (const lastMoveCell of document.querySelectorAll('.last-move-cell'))
-          lastMoveCell.classList.remove('last-move-cell')
-
-        this.$parent.moveOf = this.$parent.currentColor === 'white' ? 'black' : 'white'
-        this.$parent.currentColor = this.$parent.moveOf
-
-        if (lastMove.shortCastling || lastMove.longCastling) {
-          const y = this.$parent.$refs.chessBoard.pieceY[this.$parent.currentColor]
-          let kingCoordinate
-          let rookOldCoordinate
-          let rookNewCoordinate
-
-          if (lastMove.shortCastling) {
-            kingCoordinate = `g${y}`
-            rookOldCoordinate = `f${y}`
-            rookNewCoordinate = `h${y}`
-          } else if (lastMove.longCastling) {
-            kingCoordinate = `c${y}`
-            rookOldCoordinate = `d${y}`
-            rookNewCoordinate = `a${y}`
-          }
-
-          const king = this.$parent.pieces[kingCoordinate]
-          king.coordinate = `e${y}`
-          this.$parent.pieces[kingCoordinate] = undefined
-          this.$parent.pieces[king.coordinate] = king
-
-          const rook = this.$parent.pieces[rookOldCoordinate]
-          rook.coordinate = rookNewCoordinate
-          this.$parent.pieces[rookOldCoordinate] = undefined
-          this.$parent.pieces[rook.coordinate] = rook
-        } else {
-          if (lastMove.eatenPiece !== null) {
-            this.$parent.pieces[lastMove.movedTo] = lastMove.eatenPiece
-            this.$parent.pieces[lastMove.movedTo] = undefined
-          }
-
-          this.$parent.pieces[lastMove.movedFrom] = {
-            piece: lastMove.piece,
-            coordinate: lastMove.movedFrom,
-            color: this.$parent.currentColor,
-            image: `${this.host}/media/chess/pieces/${this.$parent.currentColor}/${lastMove.piece}.png`
-          }
-
-          if (this.$parent.moves.length > 1) {
-            lastMove = this.$parent.moves[this.$parent.moves.length - 2]
-            document.getElementById(lastMove.movedFrom).classList.add('last-move-cell')
-            document.getElementById(lastMove.movedTo).classList.add('last-move-cell')
-          }
-        }
-
-        this.$parent.moves.pop()
-
-        this.$parent.$refs.chessBoard.unselectAllPieces()
-      }
-    },
-    resetBoard(showAlert = true) {
-      if (this.$parent.gameStatus === 'playing' && showAlert) {
-        this.$parent.$emit('create-alert', {
-          level: 'warning',
-          title: 'Во время игры нельзя очищать поле.'
-        })
-      } else if (this.$parent.moves.length > 0) {
-        this.$parent.$refs.chessBoard.clearAndSetInitialPieces()
-      }
-    }
-  }
+  methods: mapActions(["resetBoard"]),
 }
 </script>

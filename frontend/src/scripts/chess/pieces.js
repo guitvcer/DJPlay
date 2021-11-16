@@ -147,4 +147,4 @@ function getPieces() {
   return pieces;
 }
 
-export default getPieces();
+export default getPieces;

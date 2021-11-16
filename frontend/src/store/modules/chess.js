@@ -1,7 +1,7 @@
 import api from "../../api/index";
 import { WHITE, BLACK } from "../../scripts/chess/constants";
 import { getField, isCellHostile } from "../../scripts/chess/board";
-import pieces from "../../scripts/chess/pieces";
+import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
 export default {
@@ -12,6 +12,16 @@ export default {
       const response = await api.chess.load();
 
       commit("updateGame", response.data);
+    },
+    resetBoard({ commit }) {
+      /* Сбросить доску */
+
+      commit("resetCells");
+      commit("resetPieces");
+      commit("updateSelectedPiece", null);
+      commit("clearMoves");
+      commit("updateColor", WHITE);
+      commit("updateMoveOf", WHITE);
     },
 
     selectPiece({ dispatch, commit, getters }, coordinate) {
@@ -150,37 +160,57 @@ export default {
       state.game = game;
       state.loading = false;
     },
+
+    createPiece(state, { coordinate, piece }) {
+      state.pieces[coordinate] = piece;
+    },
     updatePiece(state, { coordinate, properties }) {
       for (const key of Object.keys(properties)) {
         state.pieces[coordinate][key] = properties[key];
       }
     },
-    createPiece(state, { coordinate, piece }) {
-      state.pieces[coordinate] = piece;
+    updateSelectedPiece(state, piece) {
+      state.selectedPiece = piece;
     },
     removePiece(state, coordinate) {
       delete state.pieces[coordinate];
     },
-    updateSelectedPiece(state, piece) {
-      state.selectedPiece = piece;
+    resetPieces(state) {
+      state.pieces = getPieces();
     },
+
     updateCell(state, { coordinate, properties }) {
       for (const key of Object.keys(properties)) {
         state.field[coordinate][key] = properties[key];
       }
     },
+    resetCells(state) {
+      state.field = getField();
+    },
+
     swapColor(state) {
       state.currentColor = state.currentColor === WHITE ? BLACK : WHITE;
     },
+    updateColor(state, color) {
+      state.currentColor = color;
+    },
+
     swapMoveOf(state) {
       state.moveOf = state.moveOf === WHITE ? BLACK : WHITE;
     },
+    updateMoveOf(state, color) {
+      state.moveOf = color;
+    },
+
     addMove(state, { from_coordinate, to_coordinate }) {
       state.moves.push({
         piece: state.selectedPiece,
         from_coordinate, to_coordinate,
       });
-    }
+    },
+    clearMoves(state) {
+      state.moves = [];
+    },
   },
   state: {
     game: null,
@@ -188,7 +218,7 @@ export default {
     currentColor: WHITE,
     moveOf: WHITE,
     field: getField(),
-    pieces: pieces,
+    pieces: getPieces(),
     selectedPiece: null,
     moves: [],
   },
