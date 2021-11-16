@@ -38,6 +38,7 @@ export default {
 
       dispatch("selectCells", availableCellsIds.selectable);
       dispatch("ediblePieces", availableCellsIds.edible);
+      dispatch("castlingCells", availableCellsIds.castling);
     },
     unselectPiece({ dispatch, commit, getters }) {
       /* Убрать выделение фигуры и доступные для него клетки */
@@ -93,8 +94,8 @@ export default {
       for (const coordinate in getters.field) {
         const cell = getters.field[coordinate];
 
-        if (cell.selectable) {
-          const properties = { selectable: false };
+        if (cell.selectable || cell.castling) {
+          const properties = { selectable: false, castling: false };
 
           commit("updateCell", { coordinate, properties });
         }
@@ -123,6 +124,18 @@ export default {
 
       commit("updateCell", { coordinate: lastMove.from_coordinate, properties });
       commit("updateCell", { coordinate: lastMove.to_coordinate, properties });
+    },
+    castlingCell({ commit, getters }, { coordinate, castling }) {
+      const properties = { castling };
+
+      commit("updateCell", { coordinate, properties })
+    },
+    castlingCells({ dispatch }, castling) {
+      if (castling) {
+        for (const coordinate of Object.keys(castling)) {
+          dispatch("castlingCell", { coordinate, castling: castling[coordinate] });
+        }
+      }
     },
 
     ediblePiece({ dispatch, commit, getters }, coordinate) {

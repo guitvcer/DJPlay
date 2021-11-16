@@ -1,4 +1,4 @@
-import { LETTERS, WHITE } from "./constants";
+import { LETTERS, WHITE, PIECE_Y } from "./constants";
 import store from "../../store/index";
 import { isCellEmpty, isCellHostile, isCoordinateValid } from "./board";
 
@@ -156,6 +156,67 @@ function availableCellsForQueen(coordinate) {
   }
 }
 
+function castlingCells() {
+  /* Получить координаты клеток доступные для рокировки */
+
+  const castlingMoves = {};
+
+  for (const move of store.getters.moves) {
+    if (
+      (move.piece.name === "king" && move.piece.color === store.getters.currentColor) ||
+      (move.color === store.getters.currentColor && (move.longCastling || move.shortCastling))
+    ) {
+      return castlingMoves;
+    }
+  }
+
+  let didFirstRookMove = false;
+  let didSecondRookMove = false;
+  const y = PIECE_Y[store.getters.currentColor];
+  const rookLeftCoordinate = 'a' + y;
+  const rookRightCoordinate = 'h' + y;
+  const king = store.getters.pieces['e' + y];
+
+  for (const move of store.getters.moves) {
+    if (didFirstRookMove && didSecondRookMove) return castlingMoves;
+
+    if (move.piece.color === store.getters.currentColor) {
+      if (move.from_coordinate === rookLeftCoordinate) {
+        didFirstRookMove = true;
+      } else if (move.from_coordinate === rookRightCoordinate) {
+        didSecondRookMove = true;
+      }
+    }
+  }
+
+  if (
+    !didFirstRookMove &&
+    !store.getters.pieces['b' + y] &&
+    !store.getters.pieces['c' + y] &&
+    !store.getters.pieces['d' + y]
+  ) {
+    const rook = store.getters.pieces[rookLeftCoordinate];
+
+    castlingMoves['c' + y] = {
+      king, rook, longCastling: true,
+    }
+  }
+
+  if (
+    !didSecondRookMove &&
+    !store.getters.pieces['f' + y] &&
+    !store.getters.pieces['g' + y]
+  ) {
+    const rook = store.getters.pieces[rookRightCoordinate];
+
+    castlingMoves['g' + y] = {
+      king, rook, shortCastling: true,
+    }
+  }
+
+  return castlingMoves;
+}
+
 function availableCellsForKing(coordinate) {
   /* Получить объект из координат допустимых клеток для короля */
 
@@ -163,6 +224,7 @@ function availableCellsForKing(coordinate) {
     availableCells = {
       selectable: [],
       edible: [],
+      castling: castlingCells(),
     },
     x = coordinate[0],
     y = +coordinate[1],

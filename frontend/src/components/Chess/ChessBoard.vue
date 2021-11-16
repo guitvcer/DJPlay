@@ -10,11 +10,10 @@
     <div
       v-for="coordinate of Object.keys(field)"
       :id="coordinate"
-      :class="[
-        'cell',
+      :class="['cell',
         pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
         pieces[coordinate] !== undefined && pieces[coordinate].edible ? ' edible-piece' : '',
-        field[coordinate].selectable ? ' selectable-cell' : '',
+        field[coordinate].selectable || field[coordinate].castling ? ' selectable-cell' : '',
         field[coordinate].lastMoveCell ? ' last-move-cell' : '',
       ]"
     >
