@@ -156,10 +156,41 @@ function availableCellsForQueen(coordinate) {
   }
 }
 
+function availableCellsForKing(coordinate) {
+  /* Получить объект из координат допустимых клеток для короля */
+
+  const
+    availableCells = {
+      selectable: [],
+      edible: [],
+    },
+    x = coordinate[0],
+    y = +coordinate[1],
+    indexOfX = LETTERS.indexOf(x);
+
+  for (let _indexOfX = indexOfX - 1; _indexOfX <= indexOfX + 1; _indexOfX++) {
+    for (let _y = y - 1; _y <= y + 1; _y++) {
+      const coordinate = LETTERS[_indexOfX] + _y;
+
+      if (isCoordinateValid(coordinate)) {
+        if (isCellEmpty(coordinate)) {
+          availableCells.selectable.push(coordinate);
+        } else if (isCellHostile(coordinate)) {
+          availableCells.edible.push(coordinate);
+        }
+      }
+    }
+  }
+
+  return availableCells;
+}
+
+
 export default {
   pawn: availableCellsForPawn,
   knight: availableCellsForKnight,
   rook: availableCellsForRook,
   bishop: availableCellsForBishop,
   queen: availableCellsForQueen,
+  king: availableCellsForKing,
 }
