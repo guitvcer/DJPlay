@@ -1,5 +1,5 @@
 import api from "../../api/index";
-import { WHITE, BLACK } from "../../scripts/chess/constants";
+import { WHITE, BLACK, PIECE_Y } from "../../scripts/chess/constants";
 import { getField, isCellHostile } from "../../scripts/chess/board";
 import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
@@ -22,6 +22,35 @@ export default {
       commit("clearMoves");
       commit("updateColor", WHITE);
       commit("updateMoveOf", WHITE);
+    },
+    castle({ dispatch, commit, getters }, coordinate) {
+      /* Сделать рокировку */
+
+      const castling = getters.field[coordinate].castling;
+      const kingOldCoordinate = 'e' + PIECE_Y[getters.currentColor]
+      const rookOldCoordinate = (castling.long === 'd' ? 'a' : 'h') + PIECE_Y[getters.currentColor]
+
+      commit("removePiece", kingOldCoordinate);
+      commit("removePiece", rookOldCoordinate);
+
+      commit("createPiece", { coordinate: castling.king.coordinate, piece: castling.king });
+      commit("createPiece", { coordinate: castling.rook.coordinate, piece: castling.rook });
+
+      dispatch("unselectPiece");
+
+      const move = {
+        color: getters.currentColor,
+      }
+
+      if (castling.longCastling) {
+        move.longCastling = true;
+      } else if (castling.shortCastling) {
+        move.shortCastling = true;
+      }
+
+      commit("addMove", move);
+
+      dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
     },
 
     selectPiece({ dispatch, commit, getters }, coordinate) {
@@ -58,6 +87,8 @@ export default {
       /* Двинуть фигуру */
 
       commit("addMove", {
+        color: getters.currentColor,
+        piece: getters.selectedPiece,
         from_coordinate: getters.selectedPiece.coordinate,
         to_coordinate: coordinate
       });
@@ -114,16 +145,23 @@ export default {
         }
       }
     },
-    selectLastMoveCell({ dispatch, commit, getters }) {
+    selectLastMoveCell({ dispatch, commit, getters }, coordinates = null) {
       /* Выделить клетки последнего(нового) хода */
 
       dispatch("unselectLastMoveCells");
 
-      const lastMove = getters.moves[getters.moves.length - 1];
       const properties = { lastMoveCell: true };
 
-      commit("updateCell", { coordinate: lastMove.from_coordinate, properties });
-      commit("updateCell", { coordinate: lastMove.to_coordinate, properties });
+      if (coordinates) {
+        for (const coordinate of coordinates) {
+          commit("updateCell", { coordinate, properties });
+        }
+      } else {
+        const lastMove = getters.moves[getters.moves.length - 1];
+
+        commit("updateCell", { coordinate: lastMove.from_coordinate, properties });
+        commit("updateCell", { coordinate: lastMove.to_coordinate, properties });
+      }
     },
     castlingCell({ commit, getters }, { coordinate, castling }) {
       const properties = { castling };
@@ -215,11 +253,8 @@ export default {
       state.moveOf = color;
     },
 
-    addMove(state, { from_coordinate, to_coordinate }) {
-      state.moves.push({
-        piece: state.selectedPiece,
-        from_coordinate, to_coordinate,
-      });
+    addMove(state, move) {
+      state.moves.push(move);
     },
     clearMoves(state) {
       state.moves = [];

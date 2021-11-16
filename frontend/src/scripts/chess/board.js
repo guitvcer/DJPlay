@@ -71,6 +71,10 @@ export function onBoardClick(event) {
           store.dispatch("movePiece", coordinate).then();
           store.commit("swapColor");
           store.commit("swapMoveOf");
+        } else if (store.getters.field[coordinate].castling) {
+          store.dispatch("castle", coordinate).then();
+          store.commit("swapColor");
+          store.commit("swapMoveOf");
         }
       }
     }
@@ -90,7 +94,7 @@ export function isCellEmpty(coordinate) {
 }
 
 export function isCellHostile(coordinate) {
-  /* Враждебная ли клетка */
+  /* Враждебная ли клетка? */
 
   return !(isCellEmpty(coordinate) || store.getters.pieces[coordinate].color === store.getters.currentColor);
 }

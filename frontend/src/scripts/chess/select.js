@@ -197,6 +197,9 @@ function castlingCells() {
   ) {
     const rook = store.getters.pieces[rookLeftCoordinate];
 
+    rook.coordinate = 'd' + y;
+    king.coordinate = 'c' + y;
+
     castlingMoves['c' + y] = {
       king, rook, longCastling: true,
     }
@@ -208,6 +211,9 @@ function castlingCells() {
     !store.getters.pieces['g' + y]
   ) {
     const rook = store.getters.pieces[rookRightCoordinate];
+
+    rook.coordinate = 'f' + y;
+    king.coordinate = 'g' + y;
 
     castlingMoves['g' + y] = {
       king, rook, shortCastling: true,
