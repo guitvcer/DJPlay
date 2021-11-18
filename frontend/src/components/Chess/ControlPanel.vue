@@ -6,7 +6,7 @@
       title="Оставшееся время соперника на ход"
     >
       <clock-icon class="h-6 w-6 mr-2" />
-      10:00
+      {{ parseTime(players[1].secondsRemaining) }}
     </div>
 
     <div class="relative top-0.5">
@@ -63,7 +63,7 @@
       title="Ваше оставшееся время на ход"
     >
       <clock-icon class="h-6 w-6 mr-2" />
-      10:00
+      {{ parseTime(players[0].secondsRemaining) }}
     </div>
   </div>
 </template>
@@ -78,7 +78,7 @@ import {
   RefreshIcon,
   ReplyIcon
 } from "@heroicons/vue/outline";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   props: {
@@ -96,6 +96,23 @@ export default {
     RefreshIcon,
     ReplyIcon
   },
-  methods: mapActions(["resetBoard"]),
+  methods: {
+    ...mapActions(["resetBoard"]),
+    parseTime(time) {
+      let min = Math.floor(time / 60);
+      let sec = time - (min * 60);
+
+      if (min < 10) {
+        min = "0" + min;
+      }
+
+      if (sec < 10) {
+        sec = "0" + sec;
+      }
+
+      return min + ":" + sec;
+    }
+  },
+  computed: mapGetters(["players"])
 }
 </script>

@@ -6,7 +6,7 @@ import select from "../../scripts/chess/select";
 
 export default {
   actions: {
-    async loadChess({ commit }) {
+    async loadChess({ commit, getters }) {
       /* Загрузить информацию о Шахматах */
 
       const response = await api.chess.load();
@@ -22,13 +22,18 @@ export default {
       commit("clearMoves");
       commit("updateColor", WHITE);
       commit("updateMoveOf", WHITE);
+
+      for (const playerIndex in getters.players) {
+        commit("resetSecondsRemaining", playerIndex);
+        commit("resetIntervalHandle", playerIndex);
+      }
     },
     castle({ dispatch, commit, getters }, coordinate) {
       /* Сделать рокировку */
 
       const castling = getters.field[coordinate].castling;
-      const kingOldCoordinate = 'e' + PIECE_Y[getters.currentColor]
-      const rookOldCoordinate = (castling.longCastling ? 'a' : 'h') + PIECE_Y[getters.currentColor]
+      const kingOldCoordinate = 'e' + PIECE_Y[getters.currentColor];
+      const rookOldCoordinate = (castling.longCastling ? 'a' : 'h') + PIECE_Y[getters.currentColor];
 
       commit("removePiece", kingOldCoordinate);
       commit("removePiece", rookOldCoordinate);
@@ -51,6 +56,20 @@ export default {
       commit("addMove", move);
 
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
+    },
+
+    tick({ commit, state }, playerIndex) {
+      commit("updateSecondsRemaining", playerIndex);
+    },
+    startCountdown({ dispatch, commit }, playerIndex) {
+      const intervalHandle = setInterval(() => {
+        dispatch("tick", playerIndex);
+      }, 1000);
+
+      commit("updateIntervalHandle", { playerIndex, intervalHandle })
+    },
+    pauseCountdown({ commit }, playerIndex) {
+      commit("updateIntervalHandle", { playerIndex });
     },
 
     selectPiece({ dispatch, commit, getters }, coordinate) {
@@ -103,6 +122,9 @@ export default {
 
       commit("createPiece", { coordinate, piece });
       dispatch("selectLastMoveCell");
+
+      dispatch("startCountdown", getters.movingPlayerIndex);
+      dispatch("pauseCountdown", getters.waitingPlayerIndex);
     },
 
     selectCell({ commit }, coordinate) {
@@ -259,6 +281,22 @@ export default {
     clearMoves(state) {
       state.moves = [];
     },
+    updateSecondsRemaining(state, playerIndex) {
+      state.players[playerIndex].secondsRemaining--;
+    },
+    resetSecondsRemaining(state, playerIndex) {
+      state.players[playerIndex].secondsRemaining = 10 * 60;
+    },
+    updateIntervalHandle(state, { playerIndex, intervalHandle = null }) {
+      if (intervalHandle) {
+        state.players[playerIndex].intervalHandle = intervalHandle;
+      } else {
+        clearInterval(state.players[playerIndex].intervalHandle);
+      }
+    },
+    resetIntervalHandle(state, playerIndex) {
+      state.players[playerIndex].intervalHandle = null;
+    }
   },
   state: {
     game: null,
@@ -269,6 +307,18 @@ export default {
     pieces: getPieces(),
     selectedPiece: null,
     moves: [],
+    players: [
+      {
+        color: WHITE,
+        secondsRemaining: 10 * 60,
+        intervalHandle: null,
+      },
+      {
+        color: BLACK,
+        secondsRemaining: 10 * 60,
+        intervalHandle: null,
+      }
+    ]
   },
   getters: {
     game(state) {
@@ -294,6 +344,15 @@ export default {
     },
     moves(state) {
       return state.moves;
+    },
+    players(state) {
+      return state.players;
+    },
+    movingPlayerIndex(state) {
+      return state.players[0].color === state.moveOf ? 0 : 1;
+    },
+    waitingPlayerIndex(state) {
+      return state.players[0].color === state.moveOf ? 1 : 0;
     }
   }
 }
