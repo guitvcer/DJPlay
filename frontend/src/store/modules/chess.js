@@ -13,7 +13,7 @@ export default {
 
       commit("updateGame", response.data);
     },
-    resetBoard({ commit }) {
+    resetBoard({ commit, getters }) {
       /* Сбросить доску */
 
       commit("resetCells");
@@ -56,19 +56,23 @@ export default {
       commit("addMove", move);
 
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
+
+      dispatch("startCountdown", getters.movingPlayerIndex);
+      dispatch("pauseCountdown", getters.waitingPlayerIndex);
     },
 
-    tick({ commit, state }, playerIndex) {
-      commit("updateSecondsRemaining", playerIndex);
-    },
     startCountdown({ dispatch, commit }, playerIndex) {
+      /* Начать/продольжить отсчет */
+
       const intervalHandle = setInterval(() => {
-        dispatch("tick", playerIndex);
+        commit("updateSecondsRemaining", playerIndex);
       }, 1000);
 
-      commit("updateIntervalHandle", { playerIndex, intervalHandle })
+      commit("updateIntervalHandle", { playerIndex, intervalHandle });
     },
     pauseCountdown({ commit }, playerIndex) {
+      /* Остановить отсчет */
+
       commit("updateIntervalHandle", { playerIndex });
     },
 
