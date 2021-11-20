@@ -126,3 +126,18 @@ export function eatingOnAisle(coordinate) {
     )
   );
 }
+
+export function parseTime(time) {
+  let min = Math.floor(time / 60);
+  let sec = time - (min * 60);
+
+  if (min < 10) {
+    min = "0" + min;
+  }
+
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+
+  return min + ":" + sec;
+}

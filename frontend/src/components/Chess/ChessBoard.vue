@@ -1,28 +1,37 @@
 <template>
   <div
-    id="chessBoard"
     :class="[
-      'max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-chess-board flex ',
-      currentColor === WHITE ? 'flex-row flex-wrap-reverse' : 'flex-row-reverse flex-wrap'
+      'max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 flex ',
+      currentColor === WHITE ? 'flex-col' : 'flex-col-reverse',
     ]"
-    @click="onBoardClick"
   >
+    <chess-player :player="players[1]" />
     <div
-      v-for="coordinate of Object.keys(field)"
-      :id="coordinate"
-      :class="['cell',
-        pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
-        field[coordinate].edible ? ' edible-piece' : '',
-        field[coordinate].selectable || field[coordinate].castling ? ' selectable-cell' : '',
-        field[coordinate].lastMoveCell ? ' last-move-cell' : '',
+      id="chessBoard"
+      :class="[
+        'bg-chess-board flex ',
+        currentColor === WHITE ? 'flex-row flex-wrap-reverse' : 'flex-row-reverse flex-wrap'
       ]"
+      @click="onBoardClick"
     >
-      <img
-        v-if="pieces[coordinate]"
-        :src="this.host + pieces[coordinate].image"
-        :alt="pieces[coordinate].name"
+      <div
+        v-for="coordinate of Object.keys(field)"
+        :id="coordinate"
+        :class="['cell',
+          pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
+          field[coordinate].edible ? ' edible-piece' : '',
+          field[coordinate].selectable || field[coordinate].castling ? ' selectable-cell' : '',
+          field[coordinate].lastMoveCell ? ' last-move-cell' : '',
+        ]"
       >
+        <img
+          v-if="pieces[coordinate]"
+          :src="this.host + pieces[coordinate].image"
+          :alt="pieces[coordinate].name"
+        >
+      </div>
     </div>
+    <chess-player :player="players[0]" />
   </div>
 </template>
 
@@ -30,6 +39,7 @@
 import { mapGetters } from "vuex";
 import { WHITE } from "../../scripts/chess/constants";
 import { onResizeBoard, onBoardClick } from "../../scripts/chess/board";
+import ChessPlayer from "./ChessPlayer";
 
 export default {
   data() {
@@ -38,8 +48,9 @@ export default {
   mounted() {
     onResizeBoard();
   },
+  components: { ChessPlayer },
   methods: { onBoardClick },
-  computed: mapGetters(["currentColor", "field", "pieces"]),
+  computed: mapGetters(["currentColor", "field", "pieces", "players"]),
 }
 </script>
 

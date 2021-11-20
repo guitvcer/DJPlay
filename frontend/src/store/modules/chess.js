@@ -6,7 +6,7 @@ import select from "../../scripts/chess/select";
 
 export default {
   actions: {
-    async loadChess({ commit, getters }) {
+    async loadChess({ commit }) {
       /* Загрузить информацию о Шахматах */
 
       const response = await api.chess.load();
@@ -57,8 +57,8 @@ export default {
 
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
 
-      dispatch("startCountdown", getters.movingPlayerIndex);
-      dispatch("pauseCountdown", getters.waitingPlayerIndex);
+      dispatch("startCountdown", getters.waitingPlayerIndex);
+      dispatch("pauseCountdown", getters.movingPlayerIndex);
     },
 
     startCountdown({ dispatch, commit }, playerIndex) {
@@ -127,8 +127,8 @@ export default {
       commit("createPiece", { coordinate, piece });
       dispatch("selectLastMoveCell");
 
-      dispatch("startCountdown", getters.movingPlayerIndex);
-      dispatch("pauseCountdown", getters.waitingPlayerIndex);
+      dispatch("startCountdown", getters.waitingPlayerIndex);
+      dispatch("pauseCountdown", getters.movingPlayerIndex);
     },
 
     selectCell({ commit }, coordinate) {
@@ -192,11 +192,15 @@ export default {
       }
     },
     castlingCell({ commit, getters }, { coordinate, castling }) {
+      /* Сделать клетку доступным для рокировки */
+
       const properties = { castling };
 
       commit("updateCell", { coordinate, properties })
     },
     castlingCells({ dispatch }, castling) {
+      /* Сделать клетки доступными для рокировки */
+
       if (castling) {
         for (const coordinate of Object.keys(castling)) {
           dispatch("castlingCell", { coordinate, castling: castling[coordinate] });
@@ -319,11 +323,19 @@ export default {
     moves: [],
     players: [
       {
+        user: {
+          username: "БЕЛЫЙ",
+          avatar: "/media/avatars/user.png",
+        },
         color: WHITE,
         secondsRemaining: 10 * 60,
         intervalHandle: null,
       },
       {
+        user: {
+          username: "ЧЕРНЫЙ",
+          avatar: "/media/avatars/user.png",
+        },
         color: BLACK,
         secondsRemaining: 10 * 60,
         intervalHandle: null,
