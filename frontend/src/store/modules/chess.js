@@ -25,7 +25,7 @@ export default {
 
       for (const playerIndex in getters.players) {
         commit("resetSecondsRemaining", playerIndex);
-        commit("resetIntervalHandle", playerIndex);
+        commit("updateIntervalHandle", { playerIndex });
       }
     },
     castle({ dispatch, commit, getters }, coordinate) {
@@ -308,9 +308,6 @@ export default {
         clearInterval(state.players[playerIndex].intervalHandle);
       }
     },
-    resetIntervalHandle(state, playerIndex) {
-      state.players[playerIndex].intervalHandle = null;
-    }
   },
   state: {
     game: null,
