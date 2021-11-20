@@ -112,6 +112,7 @@ export function eatingOnAisle(coordinate) {
 
   return (
     lastMove !== undefined &&
+    lastMove.from_coordinate && lastMove.to_coordinate &&
     store.getters.selectedPiece.name === 'pawn' &&
     isCellEmpty(coordinate) &&
     store.getters.selectedPiece.coordinate[1] === lastMove.to_coordinate[1] &&

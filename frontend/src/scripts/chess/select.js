@@ -11,7 +11,7 @@ function getDidPieceMove(coordinate) {
     const move = store.getters.moves[moveIndex];
     const piece = store.getters.pieces[coordinate];
 
-    if (move.piece.id === piece.id) {
+    if (move.piece && move.piece.id === piece.id) {
       didPieceMove = true;
       break;
     }
