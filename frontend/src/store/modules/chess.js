@@ -1,6 +1,6 @@
 import api from "../../api/index";
 import { WHITE, BLACK, PIECE_Y } from "../../scripts/chess/constants";
-import { getField, isCellHostile } from "../../scripts/chess/board";
+import { getField, isCellEmpty, isCellHostile, eatingOnAisle } from "../../scripts/chess/board";
 import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
@@ -134,9 +134,11 @@ export default {
     selectCell({ commit }, coordinate) {
       /* Выбрать клетку */
 
-      const properties = { selectable: true };
+      if (isCellEmpty(coordinate)) {
+        const properties = { selectable: true };
 
-      commit("updateCell", { coordinate, properties });
+        commit("updateCell", { coordinate, properties });
+      }
     },
     selectCells({ dispatch }, cellsIds) {
       /* Выбрать клетки */
@@ -206,28 +208,32 @@ export default {
       /* Сделать фигуру съедобным */
 
       if (isCellHostile(coordinate)) {
-        const properties = { edible: true };
+        const properties = { edible: getters.pieces[coordinate] };
 
-        commit("updatePiece", { coordinate, properties });
+        commit("updateCell", { coordinate, properties });
+      } else if (eatingOnAisle(coordinate)) {
+        const properties = { edible: getters.moves[getters.moves.length - 1].piece };
+
+        commit("updateCell", { coordinate, properties });
       }
     },
-    ediblePieces({ dispatch }, cellsIds) {
+    ediblePieces({ dispatch }, coordinates) {
       /* Сделать фигуры съедобными */
 
-      for (const coordinate of cellsIds) {
+      for (const coordinate of coordinates) {
         dispatch("ediblePiece", coordinate);
       }
     },
     unediblePieces({ commit, getters }) {
       /* Сделать все фигуры не съедобными */
 
-      for (const coordinate in getters.pieces) {
-        const piece = getters.pieces[coordinate];
+      for (const coordinate in getters.field) {
+        const piece = getters.field[coordinate];
 
         if (piece.edible) {
           const properties = { edible: false };
 
-          commit("updatePiece", { coordinate, properties });
+          commit("updateCell", { coordinate, properties });
         }
       }
     },
@@ -357,6 +363,6 @@ export default {
     },
     waitingPlayerIndex(state) {
       return state.players[0].color === state.moveOf ? 1 : 0;
-    }
+    },
   }
 }

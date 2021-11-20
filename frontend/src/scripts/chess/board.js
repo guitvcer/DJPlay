@@ -1,4 +1,4 @@
-import { NUMBERS, LETTERS } from "./constants";
+import { WHITE, BLACK, NUMBERS, LETTERS } from "./constants";
 import store from "../../store/index";
 
 export function getField() {
@@ -59,7 +59,8 @@ export function onBoardClick(event) {
           store.dispatch("selectPiece", piece.coordinate).then();
         }
       } else {
-        if (store.getters.pieces[coordinate].edible) {
+        if (store.getters.field[coordinate].edible) {
+          store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
           store.dispatch("movePiece", coordinate).then();
           store.commit("swapColor");
           store.commit("swapMoveOf");
@@ -73,6 +74,11 @@ export function onBoardClick(event) {
           store.commit("swapMoveOf");
         } else if (store.getters.field[coordinate].castling) {
           store.dispatch("castle", coordinate).then();
+          store.commit("swapColor");
+          store.commit("swapMoveOf");
+        } else if (store.getters.field[coordinate].edible) {
+          store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
+          store.dispatch("movePiece", coordinate).then();
           store.commit("swapColor");
           store.commit("swapMoveOf");
         }
@@ -97,4 +103,26 @@ export function isCellHostile(coordinate) {
   /* Враждебная ли клетка? */
 
   return !(isCellEmpty(coordinate) || store.getters.pieces[coordinate].color === store.getters.currentColor);
+}
+
+export function eatingOnAisle(coordinate) {
+  /* Взятие на проходе? */
+
+  const lastMove = store.getters.moves[store.getters.moves.length - 1];
+
+  return (
+    lastMove !== undefined &&
+    store.getters.selectedPiece.name === 'pawn' &&
+    isCellEmpty(coordinate) &&
+    store.getters.selectedPiece.coordinate[1] === lastMove.to_coordinate[1] &&
+    (
+      lastMove.from_coordinate[0] === lastMove.to_coordinate[0] &&
+      lastMove.from_coordinate[0] === coordinate[0] &&
+      lastMove.to_coordinate[0] === coordinate[0]
+    ) &&
+    (
+      (+lastMove.from_coordinate[1] === 7 && +lastMove.to_coordinate[1] === 5 && lastMove.piece.color === BLACK) ||
+      (+lastMove.from_coordinate[1] === 2 && +lastMove.to_coordinate[1] === 4 && lastMove.piece.color === WHITE)
+    )
+  );
 }

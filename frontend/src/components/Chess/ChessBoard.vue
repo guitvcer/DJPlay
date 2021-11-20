@@ -12,7 +12,7 @@
       :id="coordinate"
       :class="['cell',
         pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
-        pieces[coordinate] !== undefined && pieces[coordinate].edible ? ' edible-piece' : '',
+        field[coordinate].edible ? ' edible-piece' : '',
         field[coordinate].selectable || field[coordinate].castling ? ' selectable-cell' : '',
         field[coordinate].lastMoveCell ? ' last-move-cell' : '',
       ]"
@@ -49,6 +49,7 @@ export default {
   height: 11%;
   margin: 0.75%;
   padding: 3px;
+  border-radius: 20px;
 }
 .selected-piece, .selectable-cell {
   border: 2px dashed blue !important;
