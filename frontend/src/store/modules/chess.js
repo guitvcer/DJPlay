@@ -1,6 +1,6 @@
 import api from "../../api/index";
 import { WHITE, BLACK, PIECE_Y } from "../../scripts/chess/constants";
-import { getField, isCellEmpty, isCellHostile, eatingOnAisle } from "../../scripts/chess/board";
+import { getField, isCellEmpty, isCellHostile, eatingOnAisle, check } from "../../scripts/chess/board";
 import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
@@ -13,13 +13,14 @@ export default {
 
       commit("updateGame", response.data);
     },
+
     swapMoveOf({ dispatch, commit, getters }) {
       commit("updateMoveOf", getters.moveOf === WHITE ? BLACK : WHITE);
 
       dispatch("startCountdown", getters.movingPlayerIndex);
       dispatch("pauseCountdown", getters.waitingPlayerIndex);
     },
-    swapColor({ dispatch, commit, getters }) {
+    swapColor({ commit, getters }) {
       commit("updateColor", getters.currentColor === WHITE ? BLACK : WHITE);
     },
 
@@ -102,10 +103,12 @@ export default {
 
       dispatch("swapMoveOf");
       dispatch("swapColor");
+
+      check();
     },
 
     startCountdown({ dispatch, commit }, playerIndex) {
-      /* Начать/продольжить отсчет */
+      /* Начать/продолжить отсчет */
 
       const intervalHandle = setInterval(() => {
         commit("updateSecondsRemaining", playerIndex);
@@ -161,7 +164,6 @@ export default {
 
       if (getters.field[coordinate].edible) {
         newMove.eatenPiece = getters.field[coordinate].edible;
-        console.log(newMove.eatenPiece);
         commit("removePiece", newMove.eatenPiece.coordinate);
       }
 
@@ -180,6 +182,13 @@ export default {
 
       dispatch("swapMoveOf");
       dispatch("swapColor");
+
+      check();
+    },
+    checkPiece({ commit }, coordinate) {
+      const properties = { check: true };
+
+      commit("updatePiece", { coordinate, properties });
     },
 
     selectCell({ commit }, coordinate) {
@@ -212,13 +221,13 @@ export default {
       }
     },
     unselectLastMoveCells({ commit, getters }) {
-      /* Убрать выделение с клеток последнего хода */
+      /* Убрать выделение с клеток последнего хода и шаха */
 
       for (const coordinate in getters.field) {
         const cell = getters.field[coordinate];
 
         if (cell.lastMoveCell) {
-          const properties = { lastMoveCell: false };
+          const properties = { lastMoveCell: false, check: false };
 
           commit("updateCell", { coordinate, properties });
         }

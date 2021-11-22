@@ -19,6 +19,7 @@
         :id="coordinate"
         :class="['cell',
           pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
+          pieces[coordinate] !== undefined && pieces[coordinate].check ? ' check-piece' : '',
           field[coordinate].edible ? ' edible-piece' : '',
           field[coordinate].selectable || field[coordinate].castling ? ' selectable-cell' : '',
           field[coordinate].lastMoveCell ? ' last-move-cell' : '',
@@ -66,8 +67,12 @@ export default {
   border: 2px dashed blue !important;
   cursor: pointer;
 }
-.edible-piece {
+.edible-piece, .edible-piece.check-piece {
   border: 2px dashed red !important;
+  cursor: pointer;
+}
+.check-piece {
+  border: 2px dashed darkorchid !important;
   cursor: pointer;
 }
 .last-move-cell {

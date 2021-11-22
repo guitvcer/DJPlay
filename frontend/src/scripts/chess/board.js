@@ -1,4 +1,5 @@
 import { WHITE, BLACK, NUMBERS, LETTERS } from "./constants";
+import select from "./select";
 import store from "../../store/index";
 
 export function getField() {
@@ -60,7 +61,6 @@ export function onBoardClick(event) {
         }
       } else {
         if (store.getters.field[coordinate].edible) {
-          // store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
           store.dispatch("movePiece", coordinate).then();
         }
       }
@@ -71,7 +71,6 @@ export function onBoardClick(event) {
         } else if (store.getters.field[coordinate].castling) {
           store.dispatch("castle", coordinate).then();
         } else if (store.getters.field[coordinate].edible) {
-          // store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
           store.dispatch("movePiece", coordinate).then();
         }
       }
@@ -118,6 +117,29 @@ export function eatingOnAisle(coordinate) {
       (+lastMove.from_coordinate[1] === 2 && +lastMove.to_coordinate[1] === 4 && lastMove.piece.color === WHITE)
     )
   );
+}
+
+export function check() {
+  /* Шах? */
+
+  let king;
+
+  for (const piece of Object.values(store.getters.pieces)) {
+    if (piece.color === store.getters.currentColor && piece.name === "king") {
+      king = piece;
+      break;
+    }
+  }
+
+  const cellsForQueen = select.queen(king.coordinate);
+  const cellsForKnight = select.knight(king.coordinate);
+  const dangerousCell = cellsForQueen.edible.concat(cellsForKnight.edible);
+
+  for (const coordinate of dangerousCell) {
+    store.dispatch("checkPiece", coordinate).then();
+  }
+
+  return dangerousCell.length > 0;
 }
 
 export function parseTime(time) {
