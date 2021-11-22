@@ -1,13 +1,13 @@
 <template>
-  <div class="flex justify-between my-2">
+  <div class="flex justify-between my-1">
     <router-link
       :to="{ name: 'profile', params: { username: player.user.username } }"
-      class="flex rounded hover:bg-gray-200 dark:hover:bg-main p-2"
+      class="flex rounded hover:bg-gray-200 dark:hover:bg-main p-1"
     >
       <img
         :src="this.host + player.user.avatar"
         alt="Фото пользователя"
-        class="w-12 h-12 rounded mx-2"
+        class="w-10 h-10 rounded mx-2"
       >
       <div class="flex items-center mx-2">{{ player.user.username }}</div>
     </router-link>
