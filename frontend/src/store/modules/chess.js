@@ -13,6 +13,7 @@ export default {
 
       commit("updateGame", response.data);
     },
+
     resetBoard({ commit, getters }) {
       /* Сбросить доску */
 
@@ -28,6 +29,35 @@ export default {
         commit("updateIntervalHandle", { playerIndex });
       }
     },
+    returnMove({ dispatch, commit, getters }) {
+      /* Отменить предыдущий ход */
+
+      if (getters.moves.length > 0) {
+        const lastMove = getters.moves[getters.moves.length - 1];
+
+        for (let piece of Object.values(getters.pieces)) {
+          if (piece.id === lastMove.piece.id) {
+            dispatch("unselectPiece");
+            dispatch("unselectLastMoveCells");
+            commit("deleteLastMove");
+
+            if (getters.moves.length > 0) {
+              dispatch("selectLastMoveCell");
+            }
+
+            commit("removePiece", lastMove.to_coordinate);
+
+            piece.coordinate = lastMove.from_coordinate;
+            commit("createPiece", piece);
+
+            break;
+          }
+        }
+
+        commit("swapMoveOf");
+        commit('swapColor');
+      }
+    },
     castle({ dispatch, commit, getters }, coordinate) {
       /* Сделать рокировку */
 
@@ -38,8 +68,8 @@ export default {
       commit("removePiece", kingOldCoordinate);
       commit("removePiece", rookOldCoordinate);
 
-      commit("createPiece", { coordinate: castling.king.coordinate, piece: castling.king });
-      commit("createPiece", { coordinate: castling.rook.coordinate, piece: castling.rook });
+      commit("createPiece", castling.king);
+      commit("createPiece", castling.rook);
 
       dispatch("unselectPiece");
 
@@ -124,7 +154,7 @@ export default {
       piece.coordinate = coordinate;
       piece.selected = false;
 
-      commit("createPiece", { coordinate, piece });
+      commit("createPiece", piece);
       dispatch("selectLastMoveCell");
 
       dispatch("startCountdown", getters.waitingPlayerIndex);
@@ -248,8 +278,8 @@ export default {
       state.loading = false;
     },
 
-    createPiece(state, { coordinate, piece }) {
-      state.pieces[coordinate] = piece;
+    createPiece(state, piece) {
+      state.pieces[piece.coordinate] = piece;
     },
     updatePiece(state, { coordinate, properties }) {
       for (const key of Object.keys(properties)) {
@@ -292,9 +322,13 @@ export default {
     addMove(state, move) {
       state.moves.push(move);
     },
+    deleteLastMove(state) {
+      state.moves.pop();
+    },
     clearMoves(state) {
       state.moves = [];
     },
+
     updateSecondsRemaining(state, playerIndex) {
       state.players[playerIndex].secondsRemaining--;
     },
