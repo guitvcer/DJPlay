@@ -13,6 +13,15 @@ export default {
 
       commit("updateGame", response.data);
     },
+    swapMoveOf({ dispatch, commit, getters }) {
+      commit("updateMoveOf", getters.moveOf === WHITE ? BLACK : WHITE);
+
+      dispatch("startCountdown", getters.movingPlayerIndex);
+      dispatch("pauseCountdown", getters.waitingPlayerIndex);
+    },
+    swapColor({ dispatch, commit, getters }) {
+      commit("updateColor", getters.currentColor === WHITE ? BLACK : WHITE);
+    },
 
     resetBoard({ commit, getters }) {
       /* Сбросить доску */
@@ -41,21 +50,25 @@ export default {
             dispatch("unselectLastMoveCells");
             commit("deleteLastMove");
 
-            if (getters.moves.length > 0) {
-              dispatch("selectLastMoveCell");
-            }
-
             commit("removePiece", lastMove.to_coordinate);
 
             piece.coordinate = lastMove.from_coordinate;
             commit("createPiece", piece);
 
+            if (lastMove.eatenPiece) {
+              commit("createPiece", lastMove.eatenPiece);
+            }
+
+            if (getters.moves.length > 0) {
+              dispatch("selectLastMoveCell");
+            }
+
+            dispatch("swapMoveOf");
+            dispatch("swapColor");
+
             break;
           }
         }
-
-        commit("swapMoveOf");
-        commit('swapColor');
       }
     },
     castle({ dispatch, commit, getters }, coordinate) {
@@ -87,8 +100,8 @@ export default {
 
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
 
-      dispatch("startCountdown", getters.waitingPlayerIndex);
-      dispatch("pauseCountdown", getters.movingPlayerIndex);
+      dispatch("swapMoveOf");
+      dispatch("swapColor");
     },
 
     startCountdown({ dispatch, commit }, playerIndex) {
@@ -139,12 +152,20 @@ export default {
     movePiece({ dispatch, commit, getters }, coordinate) {
       /* Двинуть фигуру */
 
-      commit("addMove", {
+      const newMove = {
         color: getters.currentColor,
         piece: getters.selectedPiece,
         from_coordinate: getters.selectedPiece.coordinate,
-        to_coordinate: coordinate
-      });
+        to_coordinate: coordinate,
+      };
+
+      if (getters.field[coordinate].edible) {
+        newMove.eatenPiece = getters.field[coordinate].edible;
+        console.log(newMove.eatenPiece);
+        commit("removePiece", newMove.eatenPiece.coordinate);
+      }
+
+      commit("addMove", newMove);
 
       const piece = getters.selectedPiece;
 
@@ -157,8 +178,8 @@ export default {
       commit("createPiece", piece);
       dispatch("selectLastMoveCell");
 
-      dispatch("startCountdown", getters.waitingPlayerIndex);
-      dispatch("pauseCountdown", getters.movingPlayerIndex);
+      dispatch("swapMoveOf");
+      dispatch("swapColor");
     },
 
     selectCell({ commit }, coordinate) {
@@ -305,15 +326,8 @@ export default {
       state.field = getField();
     },
 
-    swapColor(state) {
-      state.currentColor = state.currentColor === WHITE ? BLACK : WHITE;
-    },
     updateColor(state, color) {
       state.currentColor = color;
-    },
-
-    swapMoveOf(state) {
-      state.moveOf = state.moveOf === WHITE ? BLACK : WHITE;
     },
     updateMoveOf(state, color) {
       state.moveOf = color;

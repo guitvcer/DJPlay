@@ -60,27 +60,19 @@ export function onBoardClick(event) {
         }
       } else {
         if (store.getters.field[coordinate].edible) {
-          store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
+          // store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
           store.dispatch("movePiece", coordinate).then();
-          store.commit("swapColor");
-          store.commit("swapMoveOf");
         }
       }
     } else {
       if (store.getters.selectedPiece) {
         if (store.getters.field[coordinate].selectable) {
           store.dispatch("movePiece", coordinate).then();
-          store.commit("swapColor");
-          store.commit("swapMoveOf");
         } else if (store.getters.field[coordinate].castling) {
           store.dispatch("castle", coordinate).then();
-          store.commit("swapColor");
-          store.commit("swapMoveOf");
         } else if (store.getters.field[coordinate].edible) {
-          store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
+          // store.commit("removePiece", store.getters.field[coordinate].edible.coordinate);
           store.dispatch("movePiece", coordinate).then();
-          store.commit("swapColor");
-          store.commit("swapMoveOf");
         }
       }
     }
