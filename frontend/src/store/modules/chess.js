@@ -46,18 +46,44 @@ export default {
         const lastMove = getters.moves[getters.moves.length - 1];
 
         for (let piece of Object.values(getters.pieces)) {
-          if (piece.id === lastMove.piece.id) {
+          if (lastMove.shortCastling || lastMove.longCastling || piece.id === lastMove.piece.id) {
             dispatch("unselectPiece");
             dispatch("unselectLastMoveCells");
             commit("deleteLastMove");
 
-            commit("removePiece", lastMove.to_coordinate);
+            if (lastMove.shortCastling || lastMove.longCastling) {
+              let castledKingCoordinate;
+              if (lastMove.shortCastling) {
+                castledKingCoordinate = 'g' + PIECE_Y[lastMove.color]
+                const castledRookCoordinate = 'f' + PIECE_Y[lastMove.color];
+                const castledRook = getters.pieces[castledRookCoordinate];
 
-            piece.coordinate = lastMove.from_coordinate;
-            commit("createPiece", piece);
+                castledRook.coordinate = 'h' + PIECE_Y[lastMove.color];
+                commit("createPiece", castledRook);
+                commit("removePiece", castledRookCoordinate);
+              } else {
+                castledKingCoordinate = 'c' + PIECE_Y[lastMove.color]
+                const castledRookCoordinate = 'd' + PIECE_Y[lastMove.color];
+                const castledRook = getters.pieces[castledRookCoordinate];
 
-            if (lastMove.eatenPiece) {
-              commit("createPiece", lastMove.eatenPiece);
+                castledRook.coordinate = 'a' + PIECE_Y[lastMove.color];
+                commit("createPiece", castledRook);
+                commit("removePiece", castledRookCoordinate);
+              }
+
+              const king = getters.pieces[castledKingCoordinate];
+              king.coordinate = 'e' + PIECE_Y[lastMove.color];
+              commit("createPiece", king);
+              commit("removePiece", castledKingCoordinate);
+            } else if (piece.id === lastMove.piece.id) {
+              commit("removePiece", lastMove.to_coordinate);
+
+              piece.coordinate = lastMove.from_coordinate;
+              commit("createPiece", piece);
+
+              if (lastMove.eatenPiece) {
+                commit("createPiece", lastMove.eatenPiece);
+              }
             }
 
             if (getters.moves.length > 0) {
@@ -247,8 +273,16 @@ export default {
       } else {
         const lastMove = getters.moves[getters.moves.length - 1];
 
-        commit("updateCell", { coordinate: lastMove.from_coordinate, properties });
-        commit("updateCell", { coordinate: lastMove.to_coordinate, properties });
+        if (lastMove.shortCastling) {
+          commit("updateCell", { coordinate: 'e' + PIECE_Y[lastMove.color], properties });
+          commit("updateCell", { coordinate: 'h' + PIECE_Y[lastMove.color], properties });
+        } else if (lastMove.longCastling) {
+          commit("updateCell", { coordinate: 'e' + PIECE_Y[lastMove.color], properties });
+          commit("updateCell", { coordinate: 'a' + PIECE_Y[lastMove.color], properties });
+        } else {
+          commit("updateCell", { coordinate: lastMove.from_coordinate, properties });
+          commit("updateCell", { coordinate: lastMove.to_coordinate, properties });
+        }
       }
     },
     castlingCell({ commit, getters }, { coordinate, castling }) {
