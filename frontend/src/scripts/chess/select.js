@@ -1,6 +1,6 @@
 import { LETTERS, WHITE, PIECE_Y } from "./constants";
 import store from "../../store/index";
-import { isCellEmpty, isCellHostile, isCoordinateValid, check, deepClone } from "./board";
+import { isCellEmpty, isCellHostile, isCoordinateValid, check, deepClone, willCheckEntail } from "./board";
 
 function getDidPieceMove(coordinate, copyOfPieces = null) {
   /* Получить true, если фигура ранее делала ход, иначе false */
@@ -37,7 +37,7 @@ function availableCellsForPawn(coordinate, copyOfPieces = null) {
 
   availableCells.selectable.push(x + frontY);
 
-  if (!getDidPieceMove(coordinate, copyOfPieces)) {
+  if (!getDidPieceMove(coordinate, copyOfPieces) && isCellEmpty(x + frontY)) {
     availableCells.selectable.push(x + frontY2);
   }
 
@@ -219,7 +219,8 @@ function castlingCells(copyOfPieces = null) {
     !didFirstRookMove &&
     !pieces['b' + y] &&
     !pieces['c' + y] &&
-    !pieces['d' + y]
+    !pieces['d' + y] &&
+    (!(willCheckEntail('b' + y) && willCheckEntail('c' + y) && willCheckEntail('d' + y)))
   ) {
     const rook = deepClone(pieces[rookLeftCoordinate]);
 
@@ -234,7 +235,8 @@ function castlingCells(copyOfPieces = null) {
   if (
     !didSecondRookMove &&
     !pieces['f' + y] &&
-    !pieces['g' + y]
+    !pieces['g' + y] &&
+    (!willCheckEntail('f' + y) && !willCheckEntail('g' + y))
   ) {
     const rook = deepClone(pieces[rookRightCoordinate]);
 
