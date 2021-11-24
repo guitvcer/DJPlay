@@ -18,7 +18,7 @@
         v-for="coordinate of Object.keys(field)"
         :id="coordinate"
         :class="['cell',
-          pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
+          selectedPiece && pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
           pieces[coordinate] !== undefined && pieces[coordinate].check ? ' check-piece' : '',
           field[coordinate].edible ? ' edible-piece' : '',
           field[coordinate].selectable || field[coordinate].castling ? ' selectable-cell' : '',
@@ -51,7 +51,7 @@ export default {
   },
   components: { ChessPlayer },
   methods: { onBoardClick },
-  computed: mapGetters(["currentColor", "field", "pieces", "players"]),
+  computed: mapGetters(["currentColor", "field", "pieces", "players", "selectedPiece"]),
 }
 </script>
 

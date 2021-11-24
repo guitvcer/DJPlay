@@ -1,15 +1,15 @@
 import { LETTERS, WHITE, PIECE_Y } from "./constants";
 import store from "../../store/index";
-import { isCellEmpty, isCellHostile, isCoordinateValid } from "./board";
+import { isCellEmpty, isCellHostile, isCoordinateValid, check, deepClone } from "./board";
 
-function getDidPieceMove(coordinate) {
+function getDidPieceMove(coordinate, copyOfPieces = null) {
   /* Получить true, если фигура ранее делала ход, иначе false */
 
   let didPieceMove = false;
 
   for (const moveIndex in store.getters.moves) {
     const move = store.getters.moves[moveIndex];
-    const piece = store.getters.pieces[coordinate];
+    const piece = copyOfPieces ? copyOfPieces[coordinate] : store.getters.pieces[coordinate];
 
     if (move.piece && move.piece.id === piece.id) {
       didPieceMove = true;
@@ -20,7 +20,7 @@ function getDidPieceMove(coordinate) {
   return didPieceMove;
 }
 
-function availableCellsForPawn(coordinate) {
+function availableCellsForPawn(coordinate, copyOfPieces = null) {
   /* Получить объект из координат допустимых клеток для пешки */
 
   const
@@ -37,7 +37,7 @@ function availableCellsForPawn(coordinate) {
 
   availableCells.selectable.push(x + frontY);
 
-  if (!getDidPieceMove(coordinate)) {
+  if (!getDidPieceMove(coordinate, copyOfPieces)) {
     availableCells.selectable.push(x + frontY2);
   }
 
@@ -47,7 +47,7 @@ function availableCellsForPawn(coordinate) {
   return availableCells;
 }
 
-function availableCellsForKnight(coordinate) {
+function availableCellsForKnight(coordinate, copyOfPieces = null) {
   /* Получить объект из координат доступных клеток для коня */
 
   const availableCells = {
@@ -67,9 +67,10 @@ function availableCellsForKnight(coordinate) {
       const sCoordinate = LETTERS[LETTERS.indexOf(coordinate[0]) + x] + (+coordinate[1] + y);
 
       if (isCoordinateValid(sCoordinate)) {
-        if (isCellEmpty(sCoordinate)) {
+        if (isCellEmpty(sCoordinate, copyOfPieces)) {
           availableCells.selectable.push(sCoordinate);
-        } else if (isCellHostile(sCoordinate)) {
+        } else if (isCellHostile(sCoordinate, copyOfPieces)) {
+          if (copyOfPieces && copyOfPieces[sCoordinate].name !== "knight") continue;
           availableCells.edible.push(sCoordinate);
         }
       }
@@ -79,7 +80,11 @@ function availableCellsForKnight(coordinate) {
   return availableCells;
 }
 
-function availableCellsByFormula(_formulas, coordinate) {
+function availableCellsByFormula(
+  _formulas,
+  coordinate,
+  copyOfPieces = null,
+) {
   /* Получить объект из координат допустимых клеток по формуле */
 
   const
@@ -101,9 +106,9 @@ function availableCellsByFormula(_formulas, coordinate) {
       const coordinate = formula(indexOfX, y, n);
 
       if (isCoordinateValid(coordinate)) {
-        if (isCellEmpty(coordinate)) {
+        if (isCellEmpty(coordinate, copyOfPieces)) {
           availableCells.selectable.push(coordinate);
-        } else if (isCellHostile(coordinate)) {
+        } else if (isCellHostile(coordinate, copyOfPieces)) {
           availableCells.edible.push(coordinate);
           formulas[direction] = false;
           break;
@@ -118,7 +123,7 @@ function availableCellsByFormula(_formulas, coordinate) {
   return availableCells;
 }
 
-function availableCellsForRook(coordinate) {
+function availableCellsForRook(coordinate, copyOfPieces = null) {
   /* Получить объект из координат допустимых клеток для ладьи */
 
   const verticalAndHorizontalFormulas = {
@@ -128,10 +133,10 @@ function availableCellsForRook(coordinate) {
     left: (indexOfX, y, n) => LETTERS[indexOfX] + (y - n),
   }
 
-  return availableCellsByFormula(verticalAndHorizontalFormulas, coordinate);
+  return availableCellsByFormula(verticalAndHorizontalFormulas, coordinate, copyOfPieces);
 }
 
-function availableCellsForBishop(coordinate) {
+function availableCellsForBishop(coordinate, copyOfPieces = null) {
   /* Получить объект из координат допустимых клеток для слона */
 
   const diagonalFormulas = {
@@ -141,14 +146,14 @@ function availableCellsForBishop(coordinate) {
     bottomLeft: (indexOfX, y, n) => LETTERS[indexOfX - n] + (y - n),
   }
 
-  return availableCellsByFormula(diagonalFormulas, coordinate);
+  return availableCellsByFormula(diagonalFormulas, coordinate, copyOfPieces);
 }
 
-function availableCellsForQueen(coordinate) {
+function availableCellsForQueen(coordinate, copyOfPieces = null) {
   /* Получить объект из координат допустимых клеток для ферзя */
 
-  const bishopCells = availableCellsForBishop(coordinate);
-  const rookCells = availableCellsForRook(coordinate);
+  const bishopCells = availableCellsForBishop(coordinate, copyOfPieces);
+  const rookCells = availableCellsForRook(coordinate, copyOfPieces);
 
   return {
     selectable: bishopCells.selectable.concat(rookCells.selectable),
@@ -156,10 +161,14 @@ function availableCellsForQueen(coordinate) {
   }
 }
 
-function castlingCells() {
+function castlingCells(copyOfPieces = null) {
   /* Получить координаты клеток доступные для рокировки */
 
   const castlingMoves = {};
+
+  if (check() || copyOfPieces) {
+    return castlingMoves;
+  }
 
   for (const move of store.getters.moves) {
     if (
@@ -178,7 +187,8 @@ function castlingCells() {
   const y = PIECE_Y[store.getters.currentColor];
   const rookLeftCoordinate = 'a' + y;
   const rookRightCoordinate = 'h' + y;
-  const king = store.getters.pieces['e' + y];
+  const pieces = copyOfPieces ?? store.getters.pieces;
+  const king = deepClone(pieces['e' + y]);
 
   for (const move of store.getters.moves) {
     if (didFirstRookMove && didSecondRookMove) return castlingMoves;
@@ -196,11 +206,11 @@ function castlingCells() {
 
   if (
     !didFirstRookMove &&
-    !store.getters.pieces['b' + y] &&
-    !store.getters.pieces['c' + y] &&
-    !store.getters.pieces['d' + y]
+    !pieces['b' + y] &&
+    !pieces['c' + y] &&
+    !pieces['d' + y]
   ) {
-    const rook = store.getters.pieces[rookLeftCoordinate];
+    const rook = deepClone(pieces[rookLeftCoordinate]);
 
     rook.coordinate = 'd' + y;
     king.coordinate = 'c' + y;
@@ -212,10 +222,10 @@ function castlingCells() {
 
   if (
     !didSecondRookMove &&
-    !store.getters.pieces['f' + y] &&
-    !store.getters.pieces['g' + y]
+    !pieces['f' + y] &&
+    !pieces['g' + y]
   ) {
-    const rook = store.getters.pieces[rookRightCoordinate];
+    const rook = deepClone(pieces[rookRightCoordinate]);
 
     rook.coordinate = 'f' + y;
     king.coordinate = 'g' + y;
@@ -228,14 +238,14 @@ function castlingCells() {
   return castlingMoves;
 }
 
-function availableCellsForKing(coordinate) {
+function availableCellsForKing(coordinate, copyOfPieces = null) {
   /* Получить объект из координат допустимых клеток для короля */
 
   const
     availableCells = {
       selectable: [],
       edible: [],
-      castling: castlingCells(),
+      castling: castlingCells(copyOfPieces),
     },
     x = coordinate[0],
     y = +coordinate[1],
@@ -246,9 +256,9 @@ function availableCellsForKing(coordinate) {
       const coordinate = LETTERS[_indexOfX] + _y;
 
       if (isCoordinateValid(coordinate)) {
-        if (isCellEmpty(coordinate)) {
+        if (isCellEmpty(coordinate, copyOfPieces)) {
           availableCells.selectable.push(coordinate);
-        } else if (isCellHostile(coordinate)) {
+        } else if (isCellHostile(coordinate, copyOfPieces)) {
           availableCells.edible.push(coordinate);
         }
       }

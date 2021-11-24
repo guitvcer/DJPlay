@@ -1,6 +1,6 @@
 import api from "../../api/index";
 import { WHITE, BLACK, PIECE_Y } from "../../scripts/chess/constants";
-import { getField, isCellEmpty, isCellHostile, eatingOnAisle, check } from "../../scripts/chess/board";
+import { getField, isCellEmpty, isCellHostile, eatingOnAisle, check, willCheckEntail } from "../../scripts/chess/board";
 import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
@@ -49,6 +49,7 @@ export default {
           if (lastMove.shortCastling || lastMove.longCastling || piece.id === lastMove.piece.id) {
             dispatch("unselectPiece");
             dispatch("unselectLastMoveCells");
+            dispatch("unselectCheckingCells");
             commit("deleteLastMove");
 
             if (lastMove.shortCastling || lastMove.longCastling) {
@@ -93,6 +94,8 @@ export default {
             dispatch("swapMoveOf");
             dispatch("swapColor");
 
+            check();
+
             break;
           }
         }
@@ -105,13 +108,14 @@ export default {
       const kingOldCoordinate = 'e' + PIECE_Y[getters.currentColor];
       const rookOldCoordinate = (castling.longCastling ? 'a' : 'h') + PIECE_Y[getters.currentColor];
 
+      dispatch("unselectPiece");
+
       commit("removePiece", kingOldCoordinate);
       commit("removePiece", rookOldCoordinate);
 
       commit("createPiece", castling.king);
       commit("createPiece", castling.rook);
 
-      dispatch("unselectPiece");
 
       const move = {
         color: getters.currentColor,
@@ -126,6 +130,7 @@ export default {
       commit("addMove", move);
 
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
+      dispatch("unselectCheckingCells");
 
       dispatch("swapMoveOf");
       dispatch("swapColor");
@@ -205,6 +210,7 @@ export default {
 
       commit("createPiece", piece);
       dispatch("selectLastMoveCell");
+      dispatch("unselectCheckingCells");
 
       dispatch("swapMoveOf");
       dispatch("swapColor");
@@ -220,13 +226,13 @@ export default {
     selectCell({ commit }, coordinate) {
       /* Выбрать клетку */
 
-      if (isCellEmpty(coordinate)) {
+      if (isCellEmpty(coordinate) && !willCheckEntail(coordinate)) {
         const properties = { selectable: true };
 
         commit("updateCell", { coordinate, properties });
       }
     },
-    selectCells({ dispatch }, cellsIds) {
+    selectCells({ dispatch, getters }, cellsIds) {
       /* Выбрать клетки */
 
       for (const coordinate of cellsIds) {
@@ -246,14 +252,25 @@ export default {
         }
       }
     },
+    unselectCheckingCells({ commit, getters }) {
+      /* Убрать выделение с фигур, которые дают шах */
+
+      for (const coordinate in getters.pieces) {
+        if (getters.pieces[coordinate].check) {
+          const properties = { check: false };
+
+          commit("updatePiece", { coordinate, properties });
+        }
+      }
+    },
     unselectLastMoveCells({ commit, getters }) {
-      /* Убрать выделение с клеток последнего хода и шаха */
+      /* Убрать выделение с клеток последнего хода */
 
       for (const coordinate in getters.field) {
         const cell = getters.field[coordinate];
 
         if (cell.lastMoveCell) {
-          const properties = { lastMoveCell: false, check: false };
+          const properties = { lastMoveCell: false };
 
           commit("updateCell", { coordinate, properties });
         }
@@ -288,9 +305,11 @@ export default {
     castlingCell({ commit, getters }, { coordinate, castling }) {
       /* Сделать клетку доступным для рокировки */
 
-      const properties = { castling };
+      if (!willCheckEntail(coordinate)) {
+        const properties = { castling };
 
-      commit("updateCell", { coordinate, properties })
+        commit("updateCell", { coordinate, properties })
+      }
     },
     castlingCells({ dispatch }, castling) {
       /* Сделать клетки доступными для рокировки */
