@@ -41,8 +41,12 @@ function availableCellsForPawn(coordinate, copyOfPieces = null) {
     availableCells.selectable.push(x + frontY2);
   }
 
-  availableCells.edible.push(leftX + frontY);
-  availableCells.edible.push(rightX + frontY);
+  if (isCoordinateValid(leftX + frontY) && isCellHostile(leftX + frontY)) {
+    availableCells.edible.push(leftX + frontY);
+  }
+  if (isCoordinateValid(rightX + frontY) && isCellHostile(rightX + frontY)) {
+    availableCells.edible.push(rightX + frontY);
+  }
 
   return availableCells;
 }
@@ -84,6 +88,7 @@ function availableCellsByFormula(
   _formulas,
   coordinate,
   copyOfPieces = null,
+  pieceName = null
 ) {
   /* Получить объект из координат допустимых клеток по формуле */
 
@@ -109,7 +114,13 @@ function availableCellsByFormula(
         if (isCellEmpty(coordinate, copyOfPieces)) {
           availableCells.selectable.push(coordinate);
         } else if (isCellHostile(coordinate, copyOfPieces)) {
-          availableCells.edible.push(coordinate);
+          if (
+            !copyOfPieces ||
+            (copyOfPieces && (copyOfPieces[coordinate].name === "queen" || copyOfPieces[coordinate].name === pieceName))
+          ) {
+            availableCells.edible.push(coordinate);
+          }
+
           formulas[direction] = false;
           break;
         } else {
@@ -133,7 +144,7 @@ function availableCellsForRook(coordinate, copyOfPieces = null) {
     left: (indexOfX, y, n) => LETTERS[indexOfX] + (y - n),
   }
 
-  return availableCellsByFormula(verticalAndHorizontalFormulas, coordinate, copyOfPieces);
+  return availableCellsByFormula(verticalAndHorizontalFormulas, coordinate, copyOfPieces, "rook");
 }
 
 function availableCellsForBishop(coordinate, copyOfPieces = null) {
@@ -146,7 +157,7 @@ function availableCellsForBishop(coordinate, copyOfPieces = null) {
     bottomLeft: (indexOfX, y, n) => LETTERS[indexOfX - n] + (y - n),
   }
 
-  return availableCellsByFormula(diagonalFormulas, coordinate, copyOfPieces);
+  return availableCellsByFormula(diagonalFormulas, coordinate, copyOfPieces, "bishop");
 }
 
 function availableCellsForQueen(coordinate, copyOfPieces = null) {

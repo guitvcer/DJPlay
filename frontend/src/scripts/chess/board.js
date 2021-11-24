@@ -138,7 +138,8 @@ export function check(copyOfPieces = null) {
 
   const cellsForQueen = select.queen(king.coordinate, copyOfPieces);
   const cellsForKnight = select.knight(king.coordinate, copyOfPieces);
-  const dangerousCells = cellsForQueen.edible.concat(cellsForKnight.edible);
+  const cellsForPawn = select.pawn(king.coordinate, copyOfPieces);
+  const dangerousCells = cellsForQueen.edible.concat(cellsForKnight.edible.concat(cellsForPawn.edible));
 
   return dangerousCells.length > 0;
 }
