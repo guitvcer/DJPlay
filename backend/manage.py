@@ -15,8 +15,11 @@ def main():
         ) from exc
 
     from django.core.management.commands.runserver import Command
+    from dotenv import load_dotenv
 
-    Command.default_addr = '192.168.1.6'
+    load_dotenv()
+
+    Command.default_addr = os.getenv('HOST')
     execute_from_command_line(sys.argv)
 
 
