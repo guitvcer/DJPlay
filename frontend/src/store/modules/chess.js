@@ -1,3 +1,4 @@
+import { ref } from "vue";
 import api from "../../api/index";
 import { WHITE, BLACK, PIECE_Y } from "../../scripts/chess/constants";
 import { getField, isCellEmpty, isCellHostile, eatingOnAisle, check, willCheckEntail } from "../../scripts/chess/board";
@@ -80,6 +81,12 @@ export default {
               commit("removePiece", lastMove.to_coordinate);
 
               piece.coordinate = lastMove.from_coordinate;
+
+              if (lastMove.transformed) {
+                piece.name = "pawn";
+                piece.image = "/media/chess/pieces/" + piece.color + "/pawn.png";
+              }
+
               commit("createPiece", piece);
 
               if (lastMove.eatenPiece) {
@@ -183,8 +190,18 @@ export default {
         dispatch("unediblePieces");
       }
     },
-    movePiece({ dispatch, commit, getters }, coordinate) {
+    movePiece({ dispatch, commit, getters }, { coordinate, pawnTo = null }) {
       /* Двинуть фигуру */
+
+      if (
+        pawnTo == null && getters.selectedPiece.name === "pawn" &&
+        +coordinate[1] === PIECE_Y[getters.currentColor === BLACK ? WHITE : BLACK]
+      ) {
+        commit("updateSelectedCell", coordinate);
+        commit("updateShowTransformPawnModal", true);
+
+        return;
+      }
 
       const newMove = {
         color: getters.currentColor,
@@ -198,8 +215,6 @@ export default {
         commit("removePiece", newMove.eatenPiece.coordinate);
       }
 
-      commit("addMove", newMove);
-
       const piece = getters.selectedPiece;
 
       dispatch("unselectPiece");
@@ -208,7 +223,17 @@ export default {
       piece.coordinate = coordinate;
       piece.selected = false;
 
+      if (pawnTo) {
+        newMove.transformed = true;
+        piece.name = pawnTo;
+        piece.image = '/media/chess/pieces/' + piece.color + '/' + pawnTo + '.png';
+        commit("updateShowTransformPawnModal", false);
+      }
+
       commit("createPiece", piece);
+
+      commit("addMove", newMove);
+
       dispatch("selectLastMoveCell");
       dispatch("unselectCheckingCells");
 
@@ -387,6 +412,9 @@ export default {
     resetCells(state) {
       state.field = getField();
     },
+    updateSelectedCell(state, coordinate) {
+      state.selectedCell = coordinate;
+    },
 
     updateColor(state, color) {
       state.currentColor = color;
@@ -418,6 +446,10 @@ export default {
         clearInterval(state.players[playerIndex].intervalHandle);
       }
     },
+
+    updateShowTransformPawnModal(state, value) {
+      state.open = ref(value);
+    }
   },
   state: {
     game: null,
@@ -427,6 +459,7 @@ export default {
     field: getField(),
     pieces: getPieces(),
     selectedPiece: null,
+    selectedCell: null,
     moves: [],
     players: [
       {
@@ -447,7 +480,8 @@ export default {
         secondsRemaining: 10 * 60,
         intervalHandle: null,
       }
-    ]
+    ],
+    open: ref(false),
   },
   getters: {
     game(state) {
@@ -471,6 +505,9 @@ export default {
     selectedPiece(state) {
       return state.selectedPiece;
     },
+    selectedCell(state) {
+      return state.selectedCell;
+    },
     moves(state) {
       return state.moves;
     },
@@ -482,6 +519,9 @@ export default {
     },
     waitingPlayerIndex(state) {
       return state.players[0].color === state.moveOf ? 1 : 0;
+    },
+    open(state) {
+      return state.open;
     },
   }
 }

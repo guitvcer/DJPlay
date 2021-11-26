@@ -51,6 +51,10 @@
               @create-alert="createAlert"
               @load-user="$emit('load-user')"
             />
+            <transform-pawn
+              v-if="action === 'transformPawn'"
+              @close-modal="$emit('close-modal')"
+            />
           </div>
         </TransitionChild>
       </div>
@@ -64,6 +68,7 @@ import AuthorizationForm from '@/components/Auth/AuthorizationForm'
 import RegistrationForm from '@/components/Auth/RegistrationForm'
 import ChangePasswordForm from '@/components/EditProfile/ChangePasswordForm'
 import DeleteProfileForm from '@/components/EditProfile/DeleteProfileForm'
+import TransformPawn from '@/components/Chess/TransformPawn'
 
 export default {
   components: {
@@ -75,7 +80,8 @@ export default {
     AuthorizationForm,
     RegistrationForm,
     ChangePasswordForm,
-    DeleteProfileForm
+    DeleteProfileForm,
+    TransformPawn,
   },
   props: {
     action: {
