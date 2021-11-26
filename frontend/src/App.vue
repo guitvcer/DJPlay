@@ -2,7 +2,6 @@
   <div id="app" class="h-full">
     <the-header
       v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
-      @create-alert="createAlert"
       :user="user"
       @load-user="setUserInfo"
     />
@@ -10,16 +9,16 @@
 
     <!-- Content -->
     <main :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8 overflow-y-auto']">
-      <router-view v-if="status === 200" @create-alert="createAlert" @load-user="setUserInfo" @api-error="apiError" />
-      <forbidden v-else-if="status === 403" @redirect="this.status = 200" />
-      <not-found v-else-if="status === 404" @redirect="this.status = 200" />
-      <server-error v-else-if="status === 500" @redirect="this.status = 200" />
+      <router-view v-if="status === 200" @load-user="setUserInfo" @api-error="apiError" />
+      <forbidden v-else-if="status === 403" />
+      <not-found v-else-if="status === 404" />
+      <server-error v-else-if="status === 500" />
     </main>
   </div>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import Alerts from "./components/Interface/Alerts";
 import TheHeader from '@/components/Home/TheHeader'
 import Forbidden from '@/components/ErrorPages/Forbidden'
@@ -31,7 +30,6 @@ export default {
   data() {
     return {
       chatSocket: null,
-      status: 200,
       guest: {
         username: 'Гость',
         avatar: '/media/avatars/user.png'
@@ -40,11 +38,12 @@ export default {
       newMessageSound: new Audio(`${this.host}/media/sounds/message.mp3`)
     }
   },
+  computed: mapGetters(["status"]),
   components: {
     Alerts, TheHeader, Forbidden, NotFound, ServerError
   },
   methods: {
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateStatus"]),
     async setUserInfo() {
       if (await this.isAuthenticated()) {
         this.user = await this.getUserInfo()
@@ -116,7 +115,7 @@ export default {
       this.chatSocket.onmessage = this.chatSocketOnMessage
     },
     async apiError(error) {
-      this.status = error.response.status
+      this.updateStatus(error.response.status);
     }
   },
   async mounted() {

@@ -21,14 +21,22 @@ export default {
     },
     clearAlerts(state) {
       state.alerts = [];
-    }
+    },
+
+    updateStatus(state, status) {
+      state.status = status;
+    },
   },
   state: {
     alerts: [],
+    status: 200,
   },
   getters: {
     alerts(state) {
       return state.alerts;
-    }
+    },
+    status(state) {
+      return state.status;
+    },
   }
 }
