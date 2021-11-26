@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import {
   ChevronLeftIcon,
   ChevronDoubleLeftIcon,
@@ -75,6 +76,7 @@ export default {
     ReplyIcon
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     returnMove() {
       if (this.$parent.moves.length !== 0) {
         const lastDot = this.$parent.moves[this.$parent.moves.length - 1]
@@ -84,10 +86,10 @@ export default {
               (this.$parent.currentColor === 'white' && lastDot.classList.contains('bg-main')) ||
               (this.$parent.currentColor === 'blue' && lastDot.classList.contains('bg-white'))
           ) {
-            this.$parent.$emit('create-alert', {
-              level: 'warning',
-              title: 'Последний ход не Ваш.'
-            })
+            this.createAlert({
+              title: "Последний ход не Ваш.",
+              level: "warning",
+            });
           } else {
             this.$parent.returnMoveSocket.send(JSON.stringify({
               access_token: this.getCookie('access'),
@@ -109,10 +111,10 @@ export default {
     },
     resetBoard(showAlert = true) {
       if (this.$parent.gameStatus === 'playing' && showAlert) {
-        this.$parent.$emit('create-alert', {
-          level: 'warning',
-          title: 'Во время игры нельзя очищать поле.'
-        })
+        this.createAlert({
+          title: "Во время игры нельзя очищать поле.",
+          level: "warning",
+        });
       } else {
         for (let dot of document.querySelectorAll('.dot')) {
           dot.className = this.$parent.dotClassName

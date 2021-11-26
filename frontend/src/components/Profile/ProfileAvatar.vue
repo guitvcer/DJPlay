@@ -53,13 +53,13 @@
       :open="open"
       v-if="showAuthorizationModal"
       @close-modal="closeModal"
-      @create-alert="createAlert"
       @load-user="$emit('load-user')"
     />
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import { ref } from 'vue'
 import axios from 'axios'
 import Modal from '@/components/Interface/Modal'
@@ -86,15 +86,16 @@ export default {
     Modal, ProfileButton
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     async friendRequest() {
       if (this.isAuthenticated()) {
         await axios
           .get(this.host + '/api' + window.location.pathname + 'friend-request')
           .then(response => {
-            this.$emit('create-alert', {
+            this.createAlert({
               title: response.data.title,
-              level: 'success'
-            })
+              level: "success",
+            });
             this.$emit('load-profile')
           })
           .catch(error => this.$emit('api-error', error))
@@ -106,9 +107,6 @@ export default {
     closeModal() {
       this.showAuthorizationModal = false
       this.showRegistrationModal = false
-    },
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
     }
   }
 }

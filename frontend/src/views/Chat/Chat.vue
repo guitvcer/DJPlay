@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 import Loading from '@/components/Interface/Loading'
 import LeftBlock from '@/components/Chat/LeftBlock'
@@ -40,6 +41,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     async loadChats() {
       await axios
         .get(`${this.host}/api/chat/`)
@@ -89,10 +91,10 @@ export default {
       messageText = messageText.trim()
 
       if (messageText === "") {
-        this.$emit('create-alert', {
-          title: 'Нельзя отправлять пустые сообщения.',
-          level: 'danger'
-        })
+        this.createAlert({
+          title: "Нельзя отправлять пустые сообщения.",
+          level: "danger",
+        });
         return
       }
 
@@ -124,10 +126,10 @@ export default {
   },
   async mounted() {
     if (!this.isAuthenticated()) {
-      this.$emit('create-alert', {
-        title: 'Вы не авторизованы.',
-        level: 'danger'
-      })
+      this.createAlert({
+        title: "Вы не авторизованы.",
+        level: "danger",
+      });
       await this.$router.push('/')
     } else {
       document.title = 'Сообщения'

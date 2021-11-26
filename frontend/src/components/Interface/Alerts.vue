@@ -21,53 +21,43 @@
         />
         <p v-else class="flex flex-col justify-start items-center text-left mr-2 py-3" v-html="alert.title" />
       </div>
-      <button @click="alerts.splice(index, 1)" class="pr-4">
+      <button @click="removeAlert(index)" class="pr-4">
         <x-icon class="w-4 h-4 fill-current" />
       </button>
     </div>
     <button
       v-if="alerts.length > 1"
-      class="py-2 px-4 leading-normal rounded w-full flex justify-center my-1 bg-gray-50 hover:bg-gray-200 dark:text-black dark:text-gray-200 dark:bg-main-dark dark:hover:bg-main font-bold text-center"
-      @click="alerts.splice(0, alerts.length)"
+      class="
+        py-2 px-4 leading-normal rounded w-full flex justify-center my-1 bg-gray-50 hover:bg-gray-200
+        dark:text-black dark:text-gray-200 dark:bg-main-dark dark:hover:bg-main font-bold text-center
+      "
+      @click="clearAlerts"
     >Очистить</button>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
   BadgeCheckIcon,
   ExclamationIcon,
   InformationCircleIcon,
   ShieldExclamationIcon,
   XIcon
-} from '@heroicons/vue/outline'
+} from "@heroicons/vue/outline";
 
 export default {
-  props: {
-    alerts: {
-      type: Array,
-      required: true
-    }
-  },
   components: {
     BadgeCheckIcon,
     ExclamationIcon,
     InformationCircleIcon,
     ShieldExclamationIcon,
-    XIcon
+    XIcon,
   },
+  computed: mapGetters(["alerts"]),
   methods: {
-    clearSimilarAlerts(url) {
-      let deletedAlertsCount = 0
-      const alertsLength = this.alerts.length
-
-      for (let index = 0; index < alertsLength; index++) {
-        if (this.alerts[index - deletedAlertsCount].url === url) {
-          this.alerts.splice(index - deletedAlertsCount, 1)
-          deletedAlertsCount++
-        }
-      }
-    }
+    ...mapActions(["clearSimilarAlerts"]),
+    ...mapMutations(["removeAlert", "clearAlerts"]),
   }
 }
 </script>

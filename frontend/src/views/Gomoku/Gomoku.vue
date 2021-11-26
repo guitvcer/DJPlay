@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 import Loading from '@/components/Interface/Loading'
 import ControlPanel from '@/components/Gomoku/ControlPanel'
@@ -62,6 +63,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     async loadGame() {
       await axios
         .get( this.host + '/api/gomoku/')
@@ -73,16 +75,13 @@ export default {
           this.$emit('api-error', error)
         })
     },
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    },
 
     findOpponent() {
       if (this.username === 'Гость') {
-        this.$emit('create-alert', {
-          title: 'Вы не авторизованы',
-          level: 'danger'
-        })
+        this.createAlert({
+          title: "Вы не авторизованы",
+          level: "danger",
+        });
         return
       }
 
@@ -124,10 +123,10 @@ export default {
     },
     findOpponentSocketOnClose(e) {
       if (e.code === 1006) {
-        this.$emit('create-alert', {
-          level: 'danger',
-          title: 'Соединение потеряно.'
-        })
+        this.createAlert({
+          title: "Соединение потеряно.",
+          level: "danger",
+        });
       }
 
       this.gameStatus = false
@@ -137,10 +136,10 @@ export default {
       if (e.code === 1000) {
         try {
           if (this.data.move === 'exit' && this.data.username === this.opponent) {
-            this.$emit('create-alert', {
-              level: 'success',
-              title: 'Вы выиграли. Соперник сдался.'
-            })
+            this.createAlert({
+              title: "Вы выиграли. Соперник сдался.",
+              level: "success",
+            });
           } else if (this.data['win']) {
             for (let dotID of JSON.parse(this.data['row_moves'])) {
               const dot = document.querySelector('#' + dotID)
@@ -152,27 +151,27 @@ export default {
               dot.classList.remove('dark:bg-gray-300')
             }
             if (this.data.username === this.username) {
-              this.$emit('create-alert', {
-                level: 'success',
-                title: 'Вы выиграли.'
-              })
+              this.createAlert({
+                title: "Вы выиграли.",
+                level: "success",
+              });
             } else {
-              this.$emit('create-alert', {
-                level: 'danger',
-                title: 'Вы проиграли.'
-              })
+              this.createAlert({
+                title: "Вы проиграли.",
+                level: "danger",
+              });
             }
           }
         } catch (e) {
-          this.$emit('create-alert', {
-            level: 'danger',
-            title: 'Вы проиграли.'
-          })
+          this.createAlert({
+            title: "Вы проиграли.",
+            level: "danger",
+          });
         }
       } else if (e.code === 1006) {
-        this.$emit('create-alert', {
-          level: 'danger',
-          title: 'Соединение потеряно.'
+        this.createAlert({
+          title: "Соединение потеряно.",
+          level: "danger",
         })
       }
       this.partyID = null
@@ -213,10 +212,10 @@ export default {
       }))
       this.$refs.controlPanel.resetBoard()
       this.gameStatus = 'playing'
-      this.$emit('create-alert', {
-        level: 'simple',
-        title: `Вы играете против ${this.opponent}`
-      })
+      this.createAlert({
+        title: `Вы играете против ${this.opponent}`,
+        level: "simple",
+      });
     },
 
     returnMoveSocketOnMessage(e) {
@@ -245,10 +244,10 @@ export default {
             </div>`
         }
 
-        this.$emit('create-alert', {
-          level: 'simple',
-          title: alert_title
-        })
+        this.createAlert({
+          title: alert_title,
+          level: "simple",
+        });
 
         const _socket = this.returnMoveSocket
         const _accessToken = this.getCookie('access')
@@ -295,25 +294,25 @@ export default {
           this.myMove = false
         }
 
-        this.$emit('create-alert', {
-          level: 'success',
-          title: alert_title
-        })
+        this.createAlert({
+          title: alert_title,
+          level: "success",
+        });
 
         try {
           document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
         } catch (e) {}
       } else if (data['command'] === 'return_move_decline') {
         if (data['returner'] === this.username) {
-          this.$emit('create-alert', {
-            level: 'danger',
-            title: 'Вы не отменили ход.'
-          })
+          this.createAlert({
+            title: "Вы не отменили ход.",
+            level: "danger",
+          });
         } else if (data['returner'] === this.opponent) {
-          this.$emit('create-alert', {
-            level: 'simple',
-            title: 'Соперник не отменил ход.'
-          })
+          this.createAlert({
+            title: "Соперник не отменил ход.",
+            level: "simple",
+          });
         }
 
         try {

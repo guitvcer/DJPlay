@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 
 export default {
@@ -60,6 +61,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     async submitForm() {
       await axios
         .patch(this.action, this.body)
@@ -68,19 +70,19 @@ export default {
           document.cookie = 'refresh=; Max-Age=0; path=/'
 
           this.$emit('load-user')
-          this.$emit('create-alert', {
-            title: 'Вы успешно сменили пароль.',
-            level: 'success'
+          this.createAlert({
+            title: "Вы успешно сменили пароль.",
+            level: "success",
           })
           this.$router.push('/')
         })
         .catch(error => {
           if (error.response.status === 400) {
             for (const field in error.response.data) {
-              this.$emit('create-alert', {
+              this.createAlert({
                 title: this.parseErrors(error.response.data, field),
-                level: 'danger'
-              })
+                level: "danger",
+              });
             }
           } else this.$emit('api-error', error)
         })

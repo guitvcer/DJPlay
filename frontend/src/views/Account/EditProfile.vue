@@ -8,7 +8,6 @@
       <edit-profile-avatar
         :user="user"
         @submit="submitForm"
-        @create-alert="createAlert"
         @load-user="$emit('load-user')"
       />
       <edit-profile-table :user="user" />
@@ -17,6 +16,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 import EditProfileAvatar from '@/components/EditProfile/EditProfileAvatar'
 import EditProfileTable from '@/components/EditProfile/EditProfileTable'
@@ -36,9 +36,7 @@ export default {
     Loading
   },
   methods: {
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    },
+    ...mapMutations(["createAlert"]),
     async setUserProfileInfo() {
       await axios
         .get(this.host + '/api/account/')
@@ -74,20 +72,20 @@ export default {
           }
         })
         .then(response => {
-          this.$emit('create-alert', {
-            title: 'Вы успешно обновили профиль.',
-            level: 'success'
-          })
+          this.createAlert({
+            title: "Вы успешно обновили профиль.",
+            level: "success",
+          });
           this.$emit('load-user')
           this.$router.push('/account/')
         })
         .catch(error => {
           if (error.response.status === 400) {
             for (const field in error.response.data) {
-              this.$emit('create-alert', {
+              this.createAlert({
                 title: this.parseErrors(error.response.data, field),
-                level: 'danger'
-              })
+                level: "danger",
+              });
             }
           } else this.$emit('api-error', error)
         })
@@ -98,10 +96,10 @@ export default {
       this.setUserProfileInfo()
       document.title = 'Изменить профиль'
     } else {
-      this.$emit('create-alert', {
-        level: 'danger',
-        title: 'Вы не авторизованы.'
-      })
+      this.createAlert({
+        title: "Вы не авторизованы.",
+        level: "danger",
+      });
       this.$router.push('/')
     }
   }

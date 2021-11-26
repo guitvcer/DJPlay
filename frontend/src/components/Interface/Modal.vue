@@ -30,25 +30,21 @@
             <authorization-form
               v-if="action === 'authorization'"
               @close-modal="$emit('close-modal')"
-              @create-alert="createAlert"
               @load-user="$emit('load-user')"
             />
             <registration-form
               v-if="action === 'registration'"
               @close-modal="$emit('close-modal')"
-              @create-alert="createAlert"
               @load-user="$emit('load-user')"
             />
             <change-password-form
               v-if="action === 'changePassword'"
               @close-modal="$emit('close-modal')"
-              @create-alert="createAlert"
               @load-user="$emit('load-user')"
             />
             <delete-profile-form
               v-if="action === 'deleteProfile'"
               @close-modal="$emit('close-modal')"
-              @create-alert="createAlert"
               @load-user="$emit('load-user')"
             />
             <transform-pawn
@@ -89,10 +85,5 @@ export default {
       required: true
     }
   },
-  methods: {
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    }
-  }
 }
 </script>

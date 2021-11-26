@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 
 export default {
@@ -40,6 +41,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     async submitForm() {
       await axios
         .delete(this.action, {
@@ -48,10 +50,10 @@ export default {
           }
         })
         .then(response => {
-          this.$emit('create-alert', {
-            level: 'success',
-            title: 'Вы успешно удалили профиль.'
-          })
+          this.createAlert({
+            title: "Вы успешно удалили профиль.",
+            level: "success",
+          });
 
           document.cookie = 'access=; Max-Age=0; path=/'
           document.cookie = 'refresh=; Max-Age=0; path=/'
@@ -62,10 +64,10 @@ export default {
         .catch(error => {
           if (error.response.status === 400) {
             for (const field in error.response.data) {
-              this.$emit('create-alert', {
+              this.createAlert({
                 title: this.parseErrors(error.response.data, field),
-                level: 'danger'
-              })
+                level: "danger",
+              });
             }
           } else this.$emit('api-error', error)
         })

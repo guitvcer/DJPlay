@@ -98,7 +98,6 @@
       :open="open"
       v-if="showAuthorizationModal"
       @close-modal="closeModal"
-      @create-alert="createAlert"
       @load-user="$emit('load-user')"
     />
     <modal
@@ -106,16 +105,16 @@
       :open="open"
       v-if="showRegistrationModal"
       @close-modal="closeModal"
-      @create-alert="createAlert"
       @load-user="$emit('load-user')"
     />
   </Menu>
 </template>
 
 <script>
-import { ref } from 'vue'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import Modal from '@/components/Interface/Modal'
+import { mapMutations } from "vuex";
+import { ref } from "vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import Modal from "./Modal.vue";
 
 export default {
   data() {
@@ -130,39 +129,31 @@ export default {
     user: {
       type: Object,
       default: {
-        username: 'Гость',
-        avatar: '/media/avatars/user.png'
-      }
-    }
+        username: "Гость",
+        avatar: "/media/avatars/user.png",
+      },
+    },
   },
-  components: {
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuItems,
-    Modal
-  },
+  components: { Menu, MenuButton, MenuItem, MenuItems, Modal },
   methods: {
+    ...mapMutations(["createAlert"]),
     logout() {
-      this.$parent.$parent.chatSocket.close()
+      this.$parent.$parent.chatSocket.close();
 
-      document.cookie = 'access=; Max-Age=0; path=/'
-      document.cookie = 'refresh=; Max-Age=0; path=/'
+      document.cookie = "access=; Max-Age=0; path=/";
+      document.cookie = "refresh=; Max-Age=0; path=/";
 
-      this.$emit('load-user')
-      this.$emit('create-alert', {
-        title: 'Вы успешно вышли из аккаунта.',
-        level: 'success'
-      })
-      this.$router.push('/')
+      this.$emit("load-user");
+      this.createAlert({
+        title: "Вы успешно вышли из аккаунта.",
+        level: "success"
+      });
+      this.$router.push("/");
     },
     closeModal() {
-      this.showAuthorizationModal = false
-      this.showRegistrationModal = false
+      this.showAuthorizationModal = false;
+      this.showRegistrationModal = false;
     },
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    }
   }
 }
 </script>

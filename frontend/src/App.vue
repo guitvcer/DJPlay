@@ -6,7 +6,7 @@
       :user="user"
       @load-user="setUserInfo"
     />
-    <alert v-if="alerts.length" :alerts="alerts" />
+    <alerts />
 
     <!-- Content -->
     <main :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8 overflow-y-auto']">
@@ -19,7 +19,8 @@
 </template>
 
 <script>
-import Alert from '@/components/Interface/Alert'
+import { mapMutations } from "vuex";
+import Alerts from "./components/Interface/Alerts";
 import TheHeader from '@/components/Home/TheHeader'
 import Forbidden from '@/components/ErrorPages/Forbidden'
 import NotFound from '@/components/ErrorPages/NotFound'
@@ -29,7 +30,6 @@ export default {
   name: 'App',
   data() {
     return {
-      alerts: [],
       chatSocket: null,
       status: 200,
       guest: {
@@ -41,28 +41,26 @@ export default {
     }
   },
   components: {
-    Alert, TheHeader, Forbidden, NotFound, ServerError
+    Alerts, TheHeader, Forbidden, NotFound, ServerError
   },
   methods: {
-    createAlert(alert) {
-      this.alerts.push(alert)
-    },
+    ...mapMutations(["createAlert"]),
     async setUserInfo() {
       if (await this.isAuthenticated()) {
         this.user = await this.getUserInfo()
 
         if (this.user.username === 'Гость') {
           if (await this.refreshToken()) {
-            this.alerts.push({
-              title: 'Данные авторизации были обновлены.',
-              level: 'success'
-            })
+            this.createAlert({
+              title: "Данные авторизации были обновлены.",
+              level: "success",
+            });
             await this.setUserInfo()
           } else {
-            this.alerts.push({
-              title: 'Данные авторизации устарели. Войдите в аккаунт заново.',
-              level: 'warning'
-            })
+            this.createAlert({
+              title: "Данные авторизации устарели. Войдите в аккаунт заново.",
+              level: "warning",
+            });
           }
           this.$router.push('/')
         } else this.openChatSocket()
@@ -104,11 +102,11 @@ export default {
           </div>
         </div>`
 
-      this.alerts.push({
+      this.createAlert({
+        level: "simple",
+        url: `/chat/${message.sentFrom.username}/`,
         title: title,
-        level: 'simple',
-        url: `/chat/${message.sentFrom.username}/`
-      })
+      });
       this.newMessageSound.currentTime = 0
       this.newMessageSound.play()
     },

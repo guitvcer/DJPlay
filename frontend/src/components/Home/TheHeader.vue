@@ -14,7 +14,6 @@
       <!-- User Dropdown -->
       <dropdown
         :user="user"
-        @create-alert="createAlert"
         @load-user="$emit('load-user')"
         tabindex="2"
       />
@@ -23,22 +22,17 @@
 </template>
 
 <script>
-import Dropdown from '@/components/Interface/Dropdown'
+import Dropdown from "../Interface/Dropdown.vue";
 
 export default {
   props: {
     user: {
       type: Object,
-      required: true
+      required: true,
     }
   },
   components: {
-    Dropdown
+    Dropdown,
   },
-  methods: {
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    }
-  }
 }
 </script>

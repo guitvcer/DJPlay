@@ -38,14 +38,12 @@
       action="changePassword"
       v-if="showChangePasswordModal"
       @close-modal="showChangePasswordModal = false"
-      @create-alert="createAlert"
       @load-user="$emit('load-user')"
     />
     <modal
       action="deleteProfile"
       v-if="showDeleteProfileModal"
       @close-modal="showDeleteProfileModal = false"
-      @create-alert="createAlert"
       @load-user="$emit('load-user')"
     />
   </div>
@@ -73,10 +71,5 @@ export default {
   components: {
     AvatarInput, Modal, ProfileButton
   },
-  methods: {
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    }
-  }
 }
 </script>

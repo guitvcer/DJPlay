@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 
 export default {
@@ -81,16 +82,17 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["createAlert"]),
     async submitForm() {
       this.body.recaptcha = await this.recaptcha('authorization')
 
       await axios
         .post(this.action, this.body)
         .then(response => {
-          this.$emit('create-alert', {
-            title: 'Вы успешно вошли в аккаунт.',
-            level: 'success'
-          })
+          this.createAlert({
+            title: "Вы успешно вошли в аккаунт.",
+            level: "success",
+          });
           this.$emit('close-modal')
 
           document.cookie = `access=${response.data.access}; path=/`
@@ -101,10 +103,10 @@ export default {
         .catch(error => {
           if (error.response.status === 400) {
             for (const field in error.response.data) {
-              this.$emit('create-alert', {
+              this.createAlert({
                 title: this.parseErrors(error.response.data, field),
-                level: 'danger'
-              })
+                level: "danger",
+              });
             }
           } else this.$emit('api-error', error)
         })

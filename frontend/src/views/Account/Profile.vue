@@ -11,7 +11,6 @@
       :user="user"
       :profileViewAccess="profileViewAccess"
       v-if="!loading"
-      @create-alert="createAlert"
       @load-profile="setUserProfileInfo"
     />
     <profile-table v-if="profileViewAccess && !loading" :user="user" :extraText="extraText" />
@@ -70,9 +69,6 @@ export default {
           this.$emit('api-error', error)
         })
     },
-    createAlert(alert) {
-      this.$emit('create-alert', alert)
-    }
   },
   mounted() {
     this.setUserProfileInfo()

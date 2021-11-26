@@ -1,4 +1,5 @@
 <script>
+import { mapMutations } from "vuex";
 import axios from 'axios'
 
 export default {
@@ -17,27 +18,28 @@ export default {
           document.cookie = `refresh=${response.data.refresh}; path=/`
 
           this.$emit('load-user')
-          this.$emit('create-alert', {
-            title: 'Вы успешно авторизовались.',
-            level: 'success'
-          })
+          this.createAlert({
+            title: "Вы успешно авторизовались.",
+            level: "success"
+          });
         })
         .catch(error => {
           if (error.response.status === 400) {
-            this.$emit('create-alert', {
-              title: 'Произошла ошибка. Попробуйте еще.',
-              level: 'danger'
-            })
+            this.createAlert({
+              title: "Произошла ошибка. Попробуйте еще.",
+              level: "danger",
+            });
           } else if (error.response.status === 404) {
-            this.$emit('create-alert', {
-              title: 'Ваш аккаунт удален.',
-              level: 'danger'
-            })
+            this.createAlert({
+              title: "Ваш аккаунт удален.",
+              level: "danger",
+            });
           } else this.$emit('api-error', error)
         })
 
       await this.$router.push('/')
     }
-  }
+  },
+  methods: mapMutations(["createAlert"]),
 }
 </script>
