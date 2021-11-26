@@ -38,6 +38,16 @@ export default {
       for (const playerIndex in getters.players) {
         commit("resetSecondsRemaining", playerIndex);
         commit("updateIntervalHandle", { playerIndex });
+
+        const eatenPieces = getters.players[playerIndex].eatenPieces;
+        commit("updatePlayerEatenPieces", {
+          playerIndex,
+          queen: -1 * eatenPieces.queen,
+          knight: -1 * eatenPieces.knight,
+          rook: -1 * eatenPieces.rook,
+          bishop: -1 * eatenPieces.bishop,
+          pawn: -1 * eatenPieces.pawn,
+        });
       }
     },
     returnMove({ dispatch, commit, getters }) {
@@ -91,6 +101,10 @@ export default {
 
               if (lastMove.eatenPiece) {
                 commit("createPiece", lastMove.eatenPiece);
+                commit("updatePlayerEatenPieces", {
+                  playerIndex: getters.waitingPlayerIndex,
+                  [lastMove.eatenPiece.name]: -1,
+                });
               }
             }
 
@@ -211,6 +225,7 @@ export default {
       };
 
       if (getters.field[coordinate].edible) {
+        commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.pieces[coordinate].name]: 1 });
         newMove.eatenPiece = getters.field[coordinate].edible;
         commit("removePiece", newMove.eatenPiece.coordinate);
       }
@@ -449,6 +464,14 @@ export default {
 
     updateShowTransformPawnModal(state, value) {
       state.open = ref(value);
+    },
+
+    updatePlayerEatenPieces(state, { playerIndex, queen = 0, knight = 0, rook = 0, bishop = 0, pawn = 0}) {
+      state.players[playerIndex].eatenPieces.queen += queen;
+      state.players[playerIndex].eatenPieces.knight += knight;
+      state.players[playerIndex].eatenPieces.rook += rook;
+      state.players[playerIndex].eatenPieces.bishop += bishop;
+      state.players[playerIndex].eatenPieces.pawn += pawn;
     }
   },
   state: {
@@ -470,6 +493,9 @@ export default {
         color: WHITE,
         secondsRemaining: 10 * 60,
         intervalHandle: null,
+        eatenPieces: {
+          queen: 0, knight: 0, rook: 0, bishop: 0, pawn: 0,
+        },
       },
       {
         user: {
@@ -479,6 +505,9 @@ export default {
         color: BLACK,
         secondsRemaining: 10 * 60,
         intervalHandle: null,
+        eatenPieces: {
+          queen: 0, knight: 0, rook: 0, bishop: 0, pawn: 0,
+        },
       }
     ],
     open: ref(false),

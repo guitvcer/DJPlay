@@ -5,7 +5,7 @@
       currentColor === WHITE ? 'flex-col' : 'flex-col-reverse',
     ]"
   >
-    <chess-player :player="players[1]" />
+    <chess-player :index="1" />
     <div
       id="chessBoard"
       :class="[
@@ -32,7 +32,7 @@
         >
       </div>
     </div>
-    <chess-player :player="players[0]" />
+    <chess-player :index="0" />
 
     <modal
       action="transformPawn"
