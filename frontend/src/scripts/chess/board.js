@@ -69,7 +69,7 @@ export function onBoardClick(event) {
         if (store.getters.field[coordinate].selectable) {
           store.dispatch("movePiece", { coordinate }).then();
         } else if (store.getters.field[coordinate].castling) {
-          store.dispatch("castle", { coordinate }).then();
+          store.dispatch("castle", coordinate).then();
         } else if (store.getters.field[coordinate].edible) {
           store.dispatch("movePiece", { coordinate }).then();
         }
