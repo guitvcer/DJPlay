@@ -10,58 +10,63 @@
         'bg-main-light text-white dark:bg-main-dark2 dark:border-main',
         ' border px-2 py-1 rounded select-text break-all'
       ]"
-      style="max-width: 80%"
-    >{{ message.text }}<small class="ml-1.5 select-none">{{ parseTime(message.date) }}</small></div>
+      style="max-width: 80%;"
+    >
+      {{ message.text }}
+      <small class="ml-1.5 select-none">{{ parseTime(message.date) }}</small>
+    </div>
   </div>
 </template>
 
 <script>
-import { DateTime } from 'luxon'
-import ChatSmallText from '@/components/Chat/ChatSmallText'
+import { DateTime } from "luxon";
+import ChatSmallText from "./ChatSmallText.vue";
 
 export default {
   props: {
     message: {
       type: Object,
-      required: true
+      required: true,
     },
     index: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      currentUsername: document.getElementById('username').innerHTML
+      currentUsername: document.getElementById("username").innerHTML,
     }
   },
-  components: {
-    ChatSmallText
-  },
+  components: { ChatSmallText },
   methods: {
     parseTime(date) {
-      return DateTime.fromISO(date).setLocale('ru').toFormat('H:m')
+      return DateTime.fromISO(date).setLocale("ru").toFormat("H:m");
     },
     parseDate(date) {
-      const messageDate = DateTime.fromISO(date)
+      const messageDate = DateTime.fromISO(date);
 
-      if (messageDate.year === DateTime.now().year)
-        return messageDate.setLocale('ru').toFormat('d MMMM')
-      else return messageDate.setLocale('ru').toFormat('d MMMM y') + ' г.'
+      if (messageDate.year === DateTime.now().year) {
+        return messageDate.setLocale("ru").toFormat("d MMMM");
+      } else {
+        return messageDate.setLocale("ru").toFormat("d MMMM y") + " г.";
+      }
     },
     otherDay(index, date) {
-      if (index === 0) return true
+      if (index === 0) {
+        return true;
+      }
 
-      const messageDate = DateTime.fromISO(date)
-      const nextMessageDate = DateTime.fromISO(this.$parent.messages[this.index - 1].date)
+      const messageDate = DateTime.fromISO(date);
+      const nextMessageDate = DateTime.fromISO(this.$parent.messages[this.index - 1].date);
 
       return (messageDate.day !== nextMessageDate.day) ||
              (messageDate.month !== nextMessageDate.month) ||
-             (messageDate.year !== nextMessageDate.year)
+             (messageDate.year !== nextMessageDate.year);
     }
   },
   mounted() {
-    this.$parent.scrollToEnd()
-  }
+    this.$parent.scrollToEnd();
+  },
 }
 </script>

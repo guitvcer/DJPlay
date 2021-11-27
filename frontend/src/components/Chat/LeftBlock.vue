@@ -7,21 +7,19 @@
 </template>
 
 <script>
-import ChatList from '@/components/Chat/ChatList'
+import ChatList from "./ChatList.vue";
 
 export default {
-  components: {
-    ChatList
-  },
+  components: { ChatList },
   props: {
     display: {
       type: String,
-      required: true
+      required: true,
     },
     chats: {
       type: Array,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>

@@ -6,19 +6,20 @@
       Выберите чат, чтобы написать.
     </chat-small-text>
 
-    <div v-if="chat" class="w-full h-full" style="max-height: calc(100% - 55px)">
+    <div v-if="chat" class="w-full h-full" style="max-height: calc(100% - 55px);">
       <the-chat-header :interlocutor="interlocutor" @unselectChat="$emit('unselectChat')" />
       <messages ref="messages" :messages="chat.messages" />
     </div>
+
     <send-message-form v-if="chat" @submit-message="submitMessage" />
   </div>
 </template>
 
 <script>
-import ChatSmallText from '@/components/Chat/ChatSmallText'
-import SendMessageForm from '@/components/Chat/SendMessageForm'
-import Messages from '@/components/Chat/Messages'
-import TheChatHeader from '@/components/Chat/TheChatHeader'
+import ChatSmallText from "./ChatSmallText.vue";
+import SendMessageForm from "./SendMessageForm.vue";
+import Messages from "./Messages.vue";
+import TheChatHeader from "./TheChatHeader";
 
 export default {
   components: {
@@ -30,34 +31,37 @@ export default {
   props: {
     display: {
       type: String,
-      required: true
+      required: true,
     },
     chat: {
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      interlocutor: null
+      interlocutor: null,
     }
   },
   methods: {
     setInterlocutor() {
-      const username = document.getElementById('username').innerHTML
+      const username = document.getElementById("username").innerHTML;
 
-      if (this.chat['user1']['username'] === username) this.interlocutor = this.chat['user2']
-      else this.interlocutor = this.chat['user1']
+      if (this.chat["user1"]["username"] === username) {
+        this.interlocutor = this.chat["user2"];
+      } else {
+        this.interlocutor = this.chat["user1"];
+      }
     },
     submitMessage(messageText) {
-      this.$emit('submit-message', messageText)
-    }
+      this.$emit("submit-message", messageText);
+    },
   },
   watch: {
     chat() {
       if (this.chat) {
-        this.setInterlocutor()
+        this.setInterlocutor();
       }
-    }
-  }
+    },
+  },
 }
 </script>

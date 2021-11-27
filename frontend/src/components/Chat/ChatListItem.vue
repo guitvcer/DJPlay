@@ -26,33 +26,38 @@ export default {
   props: {
     chat: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       interlocutor: {},
-      currentUsername: document.getElementById('username').innerHTML
+      currentUsername: document.getElementById("username").innerHTML,
     }
   },
   mounted() {
-    this.setInterlocutor()
+    this.setInterlocutor();
   },
   methods: {
     setInterlocutor() {
-      if (this.chat['user1']['username'] === this.currentUsername) this.interlocutor = this.chat['user2']
-      else this.interlocutor = this.chat['user1']
-    }
+      if (this.chat["user1"]["username"] === this.currentUsername) {
+        this.interlocutor = this.chat["user2"];
+      } else {
+        this.interlocutor = this.chat["user1"];
+      }
+    },
   },
   computed: {
     lastMessage() {
-      if (this.chat['lastMessage']['sentFrom']['username'] === this.currentUsername)
-        return `Вы: ${this.chat['lastMessage']['text']}`
-      else return this.chat['lastMessage']['text']
+      if (this.chat['lastMessage']['sentFrom']['username'] === this.currentUsername) {
+        return `Вы: ${this.chat["lastMessage"]["text"]}`;
+      } else {
+        return this.chat["lastMessage"]["text"];
+      }
     },
     selected() {
-      return this.interlocutor.username === this.$route.params.username
-    }
-  }
+      return this.interlocutor.username === this.$route.params.username;
+    },
+  },
 }
 </script>

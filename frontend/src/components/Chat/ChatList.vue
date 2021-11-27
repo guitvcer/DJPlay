@@ -11,17 +11,15 @@
 </template>
 
 <script>
-import ChatListItem from '@/components/Chat/ChatListItem'
+import ChatListItem from "./ChatListItem.vue";
 
 export default {
-  components: {
-    ChatListItem
-  },
+  components: { ChatListItem },
   props: {
     chats: {
       type: Array,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>
