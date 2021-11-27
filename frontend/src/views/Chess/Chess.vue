@@ -1,7 +1,7 @@
 <template>
   <section
     class="flex flex-col-reverse 2xl:flex-row mx-auto justify-center 2xl:justify-between px-0 md:px-16"
-    style="max-width: 1800px"
+    style="max-width: 1800px;"
   >
     <loading v-if="loading" class="m-auto" />
     <chess-board v-if="!loading" name="Chess" />
@@ -19,10 +19,10 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Loading from "../../components/Interface/Loading";
-import ChessBoard from "../../components/Chess/ChessBoard";
-import StartPanel from "../../components/Chess/StartPanel";
-import ControlPanel from "../../components/Chess/ControlPanel";
+import Loading from "../../components/Interface/Loading.vue";
+import ChessBoard from "../../components/Chess/ChessBoard.vue";
+import StartPanel from "../../components/Chess/StartPanel.vue";
+import ControlPanel from "../../components/Chess/ControlPanel.vue";
 
 export default {
   components: {

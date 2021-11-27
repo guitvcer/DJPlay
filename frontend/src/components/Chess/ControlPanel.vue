@@ -82,6 +82,6 @@ export default {
   methods: {
     ...mapActions(["resetBoard", "returnMove"]),
   },
-  computed: mapGetters(["players"])
+  computed: mapGetters(["players"]),
 }
 </script>

@@ -47,8 +47,8 @@
 import { mapGetters, mapMutations } from "vuex";
 import { WHITE } from "../../scripts/chess/constants";
 import { onResizeBoard, onBoardClick } from "../../scripts/chess/board";
-import ChessPlayer from "./ChessPlayer";
-import Modal from "../Interface/Modal";
+import ChessPlayer from "./ChessPlayer.vue";
+import Modal from "../Interface/Modal.vue";
 
 export default {
   data() {
