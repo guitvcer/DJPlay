@@ -27,34 +27,21 @@
         buttonName="userProfileEditChangePassword"
         title="Сменить пароль"
         type="button"
-        @click="showChangePasswordModal = true"
+        @click="updateModalAction('changePassword'); updateOpenModal(true);"
       />
       <profile-button
         buttonName="userProfileEditDelete"
         title="Удалить аккаунт"
         type="button"
-        @click="showDeleteProfileModal = true"
+        @click="updateModalAction('deleteProfile'); updateOpenModal(true);"
       />
     </div>
-
-    <modal
-      action="changePassword"
-      v-if="showChangePasswordModal"
-      @close-modal="showChangePasswordModal = false"
-      @load-user="$emit('load-user')"
-    />
-    <modal
-      action="deleteProfile"
-      v-if="showDeleteProfileModal"
-      @close-modal="showDeleteProfileModal = false"
-      @load-user="$emit('load-user')"
-    />
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 import AvatarInput from "./AvatarInput.vue";
-import Modal from "../Interface/Modal.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
 
 export default {
@@ -67,12 +54,9 @@ export default {
   data() {
     return {
       avatar: null,
-      showChangePasswordModal: false,
-      showDeleteProfileModal: false,
     }
   },
-  components: {
-    AvatarInput, Modal, ProfileButton,
-  },
+  components: { AvatarInput, ProfileButton },
+  methods: mapMutations(["updateModalAction", "updateOpenModal"]),
 }
 </script>

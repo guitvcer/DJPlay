@@ -34,7 +34,7 @@
           dark:hover:bg-red-600
         "
         ref="cancelButtonRef"
-        @click="$emit('close-modal')"
+        @click="updateOpenModal(false)"
       >Отмена</button>
     </div>
   </form>
@@ -70,7 +70,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateOpenModal"]),
     async submitForm() {
       await axios
         .patch(this.action, this.body)
