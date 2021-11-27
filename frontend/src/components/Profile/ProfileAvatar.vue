@@ -47,22 +47,12 @@
         v-else-if="user['isMe']"
       />
     </div>
-
-    <modal
-      action="authorization"
-      :open="open"
-      v-if="showAuthorizationModal"
-      @close-modal="closeModal"
-      @load-user="$emit('load-user')"
-    />
   </div>
 </template>
 
 <script>
 import { mapMutations } from "vuex";
-import { ref } from "vue";
-import axios from "axios";
-import Modal from "../Interface/Modal.vue";
+import api from "../../api/index";
 import ProfileButton from "./ProfileButton.vue";
 
 export default {
@@ -76,36 +66,18 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      open: ref(false),
-      showAuthorizationModal: false,
-    }
-  },
-  components: { Modal, ProfileButton },
+  components: { ProfileButton },
   methods: {
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateOpenModal", "updateModalAction"]),
     async friendRequest() {
       if (this.isAuthenticated()) {
-        await axios
-          .get(this.host + "/api" + window.location.pathname + "friend-request")
-          .then(response => {
-            this.createAlert({
-              title: response.data.title,
-              level: "success",
-            });
-            this.$emit('load-profile');
-          })
-          .catch(error => this.$emit("api-error", error));
+        await api.account.sendFriendRequest("/api" + window.location.pathname + "friend-request")
+        this.$emit("load-profile");
       } else {
-        this.open = true;
-        this.showAuthorizationModal = true;
+        this.updateModalAction("authorization");
+        this.updateOpenModal(true);
       }
     },
-    closeModal() {
-      this.showAuthorizationModal = false;
-      this.showRegistrationModal = false;
-    }
   }
 }
 </script>

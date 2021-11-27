@@ -7,10 +7,12 @@
     style="max-width: 1200px;"
   >
     <loading v-if="loading" />
+
     <div class="md:flex justify-between" v-if="!loading">
       <the-search @sent="loadList" />
       <h2 class="text-2xl md:text-3xl pl-3 md:pl-0 pt-3 md:pt-0 font-semibold">Найдено: {{ usersList.length }}</h2>
     </div>
+
     <div class="md:flex flex-wrap mt-8" v-if="usersList.length && !loading">
       <user-list-item v-for="(user, index) in usersList" :key="index" :user="user" />
     </div>

@@ -240,6 +240,17 @@ export default function(instance) {
         .get(url)
         .then(response => response.data)
         .catch(error => store.commit("updateStatus", error.response.status));
+    },
+    async sendFriendRequest(url) {
+      return await instance
+        .get(url)
+        .then(response => {
+          store.commit("createAlert", {
+            title: response.data.title,
+            level: "success",
+          });
+        })
+        .catch(error => store.commit('updateStatus', error.response.status));
     }
   }
 }
