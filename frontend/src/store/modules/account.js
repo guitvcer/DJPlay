@@ -2,6 +2,7 @@ import { ref } from "vue";
 import router from "../../router";
 import api from "../../api/index";
 import { isAuthenticated, refreshToken } from "../../utilities";
+import instance from "../../api/instance";
 
 export default {
   actions: {
@@ -21,7 +22,7 @@ export default {
         const user = await api.account.getUser();
 
         if (user.username === getters.guest.username) {
-          if (await refreshToken()) {
+          if (await api.account.refreshToken()) {
             commit("createAlert", {
               title: "Данные авторизации были обновлены.",
               level: "simple",

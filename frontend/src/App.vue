@@ -51,33 +51,6 @@ export default {
   methods: {
     ...mapActions(["loadUser"]),
     ...mapMutations(["createAlert", "updateStatus"]),
-    async setUserInfo() {
-      if (await this.isAuthenticated()) {
-        this.user = await this.getUserInfo()
-
-        if (this.user.username === 'Гость') {
-          if (await this.refreshToken()) {
-            this.createAlert({
-              title: "Данные авторизации были обновлены.",
-              level: "success",
-            });
-            await this.setUserInfo()
-          } else {
-            this.createAlert({
-              title: "Данные авторизации устарели. Войдите в аккаунт заново.",
-              level: "warning",
-            });
-          }
-          this.$router.push('/')
-        } else this.openChatSocket()
-      } else {
-        this.user = this.guest
-
-        if (this.chatSocket != null && this.chatSocket.readyState === 1) {
-          this.chatSocket.close()
-        }
-      }
-    },
     chatSocketOnOpen() {
       this.chatSocket.send(JSON.stringify({
         access: this.getCookie('access')

@@ -4,6 +4,8 @@ import { getCookie, parseErrors } from "../utilities";
 export default function(instance) {
   return {
     async getUser() {
+      /* Получить пользователя или гостя */
+
       return instance
         .get("/api/account/")
         .then(response => response.data)
@@ -11,7 +13,9 @@ export default function(instance) {
           return store.getters.guest;
         });
     },
-    refreshToken() {
+    async refreshToken() {
+      /* Обновить access токен используя refresh токен */
+
       return instance
         .post("/api/account/refresh-token", {
           access: getCookie("access"),
@@ -24,6 +28,8 @@ export default function(instance) {
         .catch(error => false);
     },
     async auth(action, body) {
+      /* Авторизовать */
+
       return await instance
         .post(action, body)
         .then(response => {
@@ -53,6 +59,8 @@ export default function(instance) {
         });
     },
     async register(action, body) {
+      /* Зарегистрировать */
+
       return await instance
         .post(action, body)
         .then(response => {
