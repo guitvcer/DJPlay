@@ -133,6 +133,8 @@ export default function(instance) {
         });
     },
     async changePassword(action, body) {
+      /* Изменить пароль */
+
       return await instance
         .patch(action, body)
         .then(async response => {
@@ -161,6 +163,8 @@ export default function(instance) {
         });
     },
     async deleteProfile(action, data) {
+      /* Удалить профиль */
+
       return await instance
         .delete(action, { data })
         .then(response => {
@@ -180,6 +184,34 @@ export default function(instance) {
           if (error.response.status === 400) {
             for (const field in error.response.data) {
               store.commit("createAlert", {
+                title: parseErrors(error.response.data, field),
+                level: "danger",
+              });
+            }
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
+        });
+    },
+    async editProfile(action, body) {
+      return await instance
+        .patch(action, body, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(response => {
+          store.commit("createAlert",{
+            title: "Вы успешно обновили профиль.",
+            level: "success",
+          });
+          store.dispatch("loadUser");
+          router.push("/account/");
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              store.commit("createAlert",{
                 title: parseErrors(error.response.data, field),
                 level: "danger",
               });

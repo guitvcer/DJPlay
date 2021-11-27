@@ -129,7 +129,7 @@ class UserProfileEditSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs.get('clear_avatar'):
-            self.instance.avatar = '/user.png'
+            self.instance.avatar = '/avatars/user.png'
 
         return super().validate(attrs)
 

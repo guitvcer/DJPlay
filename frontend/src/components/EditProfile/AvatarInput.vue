@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { CameraIcon, XIcon } from "@heroicons/vue/outline"
+import { CameraIcon, XIcon } from "@heroicons/vue/outline";
 
 export default {
   props: {
@@ -91,7 +91,7 @@ export default {
   },
   computed: {
     avatarStyle() {
-      return `background-image: linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)), url(${this.src}); background-size: 100%;`
+      return `background-image: linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)), url(${this.src}); background-size: 100%;`;
     }
   }
 };

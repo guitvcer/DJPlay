@@ -8,7 +8,7 @@ import api from './api/index'
 import ru from 'javascript-time-ago/locale/ru'
 import store from './store'
 import './assets/tailwind.css'
-import { getCookie, isAuthenticated, getUserInfo, parseErrors, refreshToken } from './utilities'
+import { getCookie, isAuthenticated, parseErrors } from './utilities'
 
 
 const app = createApp(App)
@@ -20,9 +20,7 @@ app.config.globalProperties.host = `${httpProtocol}://${domain}`
 app.config.globalProperties.webSocketHost = `${webSocketProtocol}://${domain}/api`
 app.config.globalProperties.getCookie = getCookie
 app.config.globalProperties.isAuthenticated = isAuthenticated
-app.config.globalProperties.getUserInfo = getUserInfo
 app.config.globalProperties.parseErrors = parseErrors
-app.config.globalProperties.refreshToken = refreshToken
 app.provide('$api', api)
 
 axios.interceptors.request.use(async config => {

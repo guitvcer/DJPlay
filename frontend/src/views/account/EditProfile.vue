@@ -6,23 +6,19 @@
     <loading v-if="loading" class="m-auto" />
     <form
       v-if="!loading"
-      :action="action"
+      :action="this.host + action"
       @submit.prevent="submitForm"
       class="block lg:flex justify-around"
     >
-      <edit-profile-avatar
-        :user="user"
-        @submit="submitForm"
-        @load-user="$emit('load-user')"
-      />
-      <edit-profile-table :user="user" />
+      <edit-profile-avatar @submit="submitForm" />
+      <edit-profile-table />
     </form>
   </section>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-import axios from "axios";
+import { mapActions, mapMutations } from "vuex";
+import api from "../../api/index";
 import EditProfileAvatar from "../../components/EditProfile/EditProfileAvatar";
 import EditProfileTable from "../../components/EditProfile/EditProfileTable";
 import Loading from "../../components/Interface/Loading";
@@ -30,82 +26,35 @@ import Loading from "../../components/Interface/Loading";
 export default {
   data() {
     return {
-      action: this.host + "/api/account/edit/",
-      user: {},
+      action: "/api/account/edit/",
       loading: true,
     }
   },
   components: { EditProfileAvatar, EditProfileTable, Loading },
   methods: {
+    ...mapActions(["loadUser"]),
     ...mapMutations(["createAlert"]),
-    async setUserProfileInfo() {
-      await axios
-        .get(this.host + "/api/account/")
-        .then(response => {
-          this.user = response.data;
-          this.loading = false;
-        })
-        .catch(error => {
-          if (error.response.status === 401 || error.response.status === 500) {
-            this.$emit("api-error", error);
-          }
-        });
-    },
     async submitForm(event) {
-      const editProfileData = new FormData();
+      const editProfileData = new FormData(event.target);
 
-      if (event.target.avatar.files[0]) {
-        editProfileData.append("avatar", event.target.avatar.files[0]);
-      } else {
+      if (!event.target.avatar.files[0]) {
         editProfileData.append("clearAvatar", event.target.avatar.dataset.clear);
       }
 
-      editProfileData.append("username", event.target.username.value);
-      editProfileData.append("email", event.target.email.value);
-      editProfileData.append("birthday", event.target["birthday"].value);
-      editProfileData.append("firstName", event.target["firstName"].value);
-      editProfileData.append("lastName", event.target["lastName"].value);
-      editProfileData.append("gender", event.target["gender"].value);
-      editProfileData.append("isPrivate", event.target["isPrivate"].value);
-
-      await axios
-        .patch(this.action, editProfileData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          }
-        })
-        .then(response => {
-          this.createAlert({
-            title: "Вы успешно обновили профиль.",
-            level: "success",
-          });
-          this.$emit("load-user");
-          this.$router.push("/account/");
-        })
-        .catch(error => {
-          if (error.response.status === 400) {
-            for (const field in error.response.data) {
-              this.createAlert({
-                title: this.parseErrors(error.response.data, field),
-                level: "danger",
-              });
-            }
-          } else {
-            this.$emit('api-error', error);
-          }
-        });
+      await api.account.editProfile(this.action, editProfileData);
     },
   },
-  mounted() {
-    if (this.isAuthenticated()) {
-      this.setUserProfileInfo();
+  async mounted() {
+    if (await this.isAuthenticated()) {
+      await this.loadUser();
+      this.loading = false;
       document.title = "Изменить профиль";
     } else {
       this.createAlert({
         title: "Вы не авторизованы.",
         level: "danger",
       });
-      this.$router.push('/');
+      await this.$router.push('/');
     }
   },
 }

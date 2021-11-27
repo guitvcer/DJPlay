@@ -8,8 +8,7 @@
         v-for="(field, index) in mainInformation"
         :key="index"
         :field="field"
-        @input="mainInformation[field.name] = field.value"
-        @change="mainInformation[field.name] = field.value"
+        v-model="field.value"
       />
     </div>
 
@@ -21,23 +20,17 @@
         v-for="(field, index) in additionalInformation"
         :key="index"
         :field="field"
-        @input="additionalInformation[field.name] = field.value"
-        @change="additionalInformation[field.name] = field.value"
+        v-model="field.value"
       />
     </div>
   </div>
 </template>
 
 <script>
+import store from "../../store/index";
 import EditProfileInput from "./EditProfileInput.vue";
 
 export default {
-  props: {
-    user: {
-      type: Object,
-      required: true,
-    }
-  },
   components: { EditProfileInput },
   data() {
     return {
@@ -48,7 +41,7 @@ export default {
           required: true,
           placeholder: "Имя пользователя",
           max_length: 48,
-          value: this.user.username,
+          value: store.getters.user.username,
         },
         {
           type: "email",
@@ -56,7 +49,7 @@ export default {
           required: true,
           placeholder: "Эл. почта",
           max_length: 64,
-          value: this.user.email,
+          value: store.getters.user.email,
         }
       ],
       additionalInformation: [
@@ -64,21 +57,21 @@ export default {
           type: "date",
           name: "birthday",
           placeholder: "Дата рождения",
-          value: this.user["birthday"],
+          value: store.getters.user["birthday"],
         },
         {
           type: "text",
           name: "firstName",
           placeholder: "Имя",
           max_length: 64,
-          value: this.user["firstName"],
+          value: store.getters.user["firstName"],
         },
         {
           type: "text",
           name: "lastName",
           placeholder: "Фамилия",
           max_length: 64,
-          value: this.user["lastName"]
+          value: store.getters.user["lastName"]
         },
         {
           type: "select",
@@ -89,13 +82,13 @@ export default {
           ],
           name: "gender",
           placeholder: "Пол",
-          value: this.user["gender"],
+          value: store.getters.user["gender"],
         },
         {
           type: "checkbox",
           name: "isPrivate",
           placeholder: "Приватный аккаунт?",
-          value: this.user["isPrivate"],
+          value: store.getters.user["isPrivate"],
         },
       ],
     }

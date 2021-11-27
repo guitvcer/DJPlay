@@ -7,7 +7,7 @@
     />
     <h2
       class="text-3xl font-semibold mb-3 text-center lg:text-left select-text"
-      style="word-break: break-word"
+      style="word-break: break-word;"
     >{{ user.username }}</h2>
 
     <hr>
@@ -21,7 +21,7 @@
       <profile-button
         buttonName="userProfileEditCancel"
         title="Отменить"
-        :url="{ name: 'profile', params: { username: $props.user.username } }"
+        :url="{ name: 'profile', params: { username: user.username } }"
       />
       <profile-button
         buttonName="userProfileEditChangePassword"
@@ -40,23 +40,18 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import AvatarInput from "./AvatarInput.vue";
 import ProfileButton from "../Profile/ProfileButton.vue";
 
 export default {
-  props: {
-    user: {
-      type: Object,
-      required: true,
-    },
-  },
   data() {
     return {
       avatar: null,
     }
   },
   components: { AvatarInput, ProfileButton },
+  computed: mapGetters(["user"]),
   methods: mapMutations(["updateModalAction", "updateOpenModal"]),
 }
 </script>
