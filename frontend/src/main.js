@@ -46,7 +46,7 @@ axios.interceptors.request.use(async config => {
     return config
 })
 
-app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"] ?? "6LdAUyUcAAAAANujUGnroaWZd6C5woLmMVpQdRtD" })
+app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"]});
 app.config.globalProperties.recaptcha = async function(action) {
     await this.$recaptchaLoaded()
     return await this.$recaptcha(action)
@@ -54,9 +54,6 @@ app.config.globalProperties.recaptcha = async function(action) {
 
 TimeAgo.addDefaultLocale(ru)
 app.config.globalProperties.timeAgo = new TimeAgo()
-
-app.config.globalProperties.GOOGLE_CLIENT_ID = process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"] ?? "568731334008-liiq5eghbc2icnc51c4mrfcdcldsstvn.apps.googleusercontent.com"
-app.config.globalProperties.VK_CLIENT_ID = process.env["VUE_APP_VK_OAUTH2_PUBLIC"] ?? "7938245"
 
 app.use(store)
 

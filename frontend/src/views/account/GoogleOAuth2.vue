@@ -11,7 +11,7 @@ export default {
       await axios
         .post(`${this.host}/api/account/social-authorization`, {
           'code': code,
-          'google_client_id': this.GOOGLE_CLIENT_ID,
+          'google_client_id': process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"],
           'provider': 'Google'
         })
         .then(response => {

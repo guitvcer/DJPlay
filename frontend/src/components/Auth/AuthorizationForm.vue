@@ -70,7 +70,6 @@ export default {
         }
       ],
       action: this.host + "/api/account/authorization",
-      origin: window.location.origin,
     }
   },
   methods: {

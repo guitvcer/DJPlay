@@ -10,7 +10,7 @@ export default {
       await axios
         .post(`${this.host}/api/account/social-authorization`, {
           code: code,
-          vk_client_id: this.VK_CLIENT_ID,
+          vk_client_id: process.env["VUE_APP_VK_OAUTH2_PUBLIC"],
           provider: 'VK'
         })
         .then(response => {
