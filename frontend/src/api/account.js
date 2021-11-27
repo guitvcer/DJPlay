@@ -226,6 +226,20 @@ export default function(instance) {
         .post("/api" + window.location.pathname, body)
         .then(response => response.data)
         .catch(error => store.commit("updateStatus", error.response.status));
+    },
+    async getUsersList() {
+      let url = "/api";
+
+      if (["usersFriends", "usersViewers", "friends", "viewers"].includes(router.currentRoute.value)) {
+        url += router.currentRoute.value;
+      } else {
+        url += "/account/users";
+      }
+
+      return await instance
+        .get(url)
+        .then(response => response.data)
+        .catch(error => store.commit("updateStatus", error.response.status));
     }
   }
 }

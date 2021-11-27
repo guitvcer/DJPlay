@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     async submitForm() {
-      this.$emit("sent", await api.account.search(body));
+      this.$emit("sent", await api.account.search(this.body));
     }
   }
 }
