@@ -1,9 +1,9 @@
 import { createStore } from "vuex";
-import djplay from "./modules/djplay";
+import account from "./modules/account";
 import chess from "./modules/chess";
 
 export default createStore({
   modules: {
-    djplay, chess,
+    account, chess,
   },
 })

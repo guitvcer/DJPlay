@@ -1,4 +1,4 @@
-import { WHITE, BLACK, NUMBERS, LETTERS, PIECE_Y } from "./constants";
+import { WHITE, BLACK, NUMBERS, LETTERS, PIECE_Y, GAME_STASUSES } from "./constants";
 import select from "./select";
 import store from "../../store/index";
 
@@ -46,6 +46,7 @@ export function onBoardClick(event) {
   /* При нажатии на доску */
 
   if (
+    [GAME_STASUSES.OFFLINE, null].includes(store.getters.gameStatus) &&
     store.getters.moveOf === store.getters.currentColor &&
     event.target.id !== "chessBoard"
   ) {

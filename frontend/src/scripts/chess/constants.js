@@ -14,4 +14,6 @@ export const PIECE_Y = {
   BLACK: 8,
 }
 
+export const GAME_STASUSES = { OFFLINE: "OFFLINE", FINISHED: "FINISHED" }
+
 export default { WHITE, BLACK, COLORS, NUMBERS, LETTERS, PAWN_Y, PIECE_Y }

@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import api from "../../api/index";
-import { WHITE, BLACK, PIECE_Y } from "../../scripts/chess/constants";
+import { WHITE, BLACK, PIECE_Y, GAME_STASUSES } from "../../scripts/chess/constants";
 import { getField, isCellEmpty, isCellHostile, eatingOnAisle, check, willCheckEntail } from "../../scripts/chess/board";
 import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
@@ -34,6 +34,7 @@ export default {
       commit("clearMoves");
       commit("updateColor", WHITE);
       commit("updateMoveOf", WHITE);
+      commit("updateGameStatus", null);
 
       for (const playerIndex in getters.players) {
         commit("resetSecondsRemaining", playerIndex);
@@ -53,7 +54,7 @@ export default {
     returnMove({ dispatch, commit, getters }) {
       /* Отменить предыдущий ход */
 
-      if (getters.moves.length > 0) {
+      if (getters.moves.length > 0 && getters.gameStatus === GAME_STASUSES.OFFLINE) {
         const lastMove = getters.moves[getters.moves.length - 1];
 
         for (let piece of Object.values(getters.pieces)) {
@@ -159,10 +160,20 @@ export default {
       check();
     },
 
-    startCountdown({ dispatch, commit }, playerIndex) {
+    startCountdown({ dispatch, commit, getters }, playerIndex) {
       /* Начать/продолжить отсчет */
 
       const intervalHandle = setInterval(() => {
+        if (getters.players[playerIndex].secondsRemaining === 0) {
+          const winnerUsername = getters.players[playerIndex === 0 ? 1 : 0].user.username;
+          const loserUsername = getters.players[playerIndex].user.username;
+
+          commit("createAlert", {
+            title: `Игрок "${winnerUsername}" выиграл. У игрока "${loserUsername}" закончилось время.`,
+            level: "simple",
+          }, { root: true });
+        }
+
         commit("updateSecondsRemaining", playerIndex);
       }, 1000);
 
@@ -400,6 +411,9 @@ export default {
       state.game = game;
       state.loading = false;
     },
+    updateGameStatus(state, gameStatus) {
+      state.gameStatus = gameStatus;
+    },
 
     createPiece(state, piece) {
       state.pieces[piece.coordinate] = piece;
@@ -439,6 +453,10 @@ export default {
     },
 
     addMove(state, move) {
+      if (state.moves.length === 0) {
+        state.gameStatus = GAME_STASUSES.OFFLINE;
+      }
+
       state.moves.push(move);
     },
     deleteLastMove(state) {
@@ -449,7 +467,12 @@ export default {
     },
 
     updateSecondsRemaining(state, playerIndex) {
-      state.players[playerIndex].secondsRemaining--;
+      if (state.players[playerIndex].secondsRemaining === 0) {
+        state.gameStatus = GAME_STASUSES.FINISHED;
+        clearInterval(state.players[playerIndex].intervalHandle);
+      } else {
+        state.players[playerIndex].secondsRemaining--;
+      }
     },
     resetSecondsRemaining(state, playerIndex) {
       state.players[playerIndex].secondsRemaining = 10 * 60;
@@ -477,6 +500,7 @@ export default {
   state: {
     game: null,
     loading: true,
+    gameStatus: null,
     currentColor: WHITE,
     moveOf: WHITE,
     field: getField(),
@@ -503,7 +527,7 @@ export default {
           avatar: "/media/avatars/user.png",
         },
         color: BLACK,
-        secondsRemaining: 10 * 60,
+        secondsRemaining: 1,
         intervalHandle: null,
         eatenPieces: {
           queen: 0, knight: 0, rook: 0, bishop: 0, pawn: 0,
@@ -518,6 +542,9 @@ export default {
     },
     loading(state) {
       return state.loading;
+    },
+    gameStatus(state) {
+      return state.gameStatus;
     },
     currentColor(state) {
       return state.currentColor;
