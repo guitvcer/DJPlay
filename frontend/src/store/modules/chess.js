@@ -527,7 +527,7 @@ export default {
           avatar: "/media/avatars/user.png",
         },
         color: BLACK,
-        secondsRemaining: 1,
+        secondsRemaining: 10 * 60,
         intervalHandle: null,
         eatenPieces: {
           queen: 0, knight: 0, rook: 0, bishop: 0, pawn: 0,
