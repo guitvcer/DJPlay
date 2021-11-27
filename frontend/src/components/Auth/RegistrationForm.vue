@@ -15,17 +15,7 @@
         >
       </div>
       <social-auth-links />
-      <div class="text-sm">
-        Этот сайт защищен Google reCAPTCHA<br>
-        <a
-          href="https://policies.google.com/privacy"
-          class="text-blue-500 hover:underline cursor-pointer"
-        >Политика конфиденциальности</a> и
-        <a
-          href="https://policies.google.com/terms"
-          class="text-blue-500 hover:underline cursor-pointer"
-        >Условия использования.</a>
-      </div>
+      <recaptcha-links />
     </div>
     <div class="bg-gray-50 dark:bg-main-dark py-3 px-6 flex flex-row-reverse">
       <button
@@ -54,6 +44,7 @@
 import { mapMutations } from "vuex";
 import axios from "axios";
 import SocialAuthLinks from "./SocialAuthLinks.vue";
+import RecaptchaLinks  from "./RecaptchaLinks.vue";
 
 export default {
   data() {
@@ -95,7 +86,7 @@ export default {
       origin: window.location.origin,
     }
   },
-  components: { SocialAuthLinks },
+  components: { SocialAuthLinks, RecaptchaLinks },
   methods: {
     ...mapMutations(["createAlert"]),
     async submitForm() {
