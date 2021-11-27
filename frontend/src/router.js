@@ -1,116 +1,116 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from './views/Account/Home'
+import { createRouter, createWebHistory } from "vue-router";
+import Home from "./views/account/Home.vue";
 
 const routes = [
     {
-        path: '/',
-        name: 'home',
-        component: Home
+        path: "/",
+        name: "home",
+        component: Home,
     },
     {
-        path: '/gomoku/',
-        component: () => import('./views/Gomoku/Gomoku'),
-        name: 'gomoku'
+        path: "/gomoku/",
+        component: () => import("./views/gomoku/Gomoku"),
+        name: "gomoku",
     },
     {
-        path: '/gomoku/:id/',
-        component: () => import('./views/Gomoku/GomokuParty'),
-        name: 'gomokuParty'
+        path: "/gomoku/:id/",
+        component: () => import("./views/gomoku/GomokuParty"),
+        name: "gomokuParty",
     },
     {
-        path: '/chess/',
-        component: () => import('./views/Chess/Chess'),
-        name: 'chess',
+        path: "/chess/",
+        component: () => import("./views/chess/Chess"),
+        name: "chess",
     },
     {
-        path: '/account/',
-        component: () => import('./views/Account/Profile'),
-        name: 'userProfile'
+        path: "/account/",
+        component: () => import("./views/account/Profile"),
+        name: "userProfile",
     },
     {
-        path: '/account/friends/',
-        component: () => import('./views/Account/UsersList'),
-        name: 'friends'
+        path: "/account/friends/",
+        component: () => import("./views/account/UsersList"),
+        name: "friends",
     },
     {
-        path: '/account/views/',
-        component: () => import('./views/Account/UsersList'),
-        name: 'viewers'
+        path: "/account/views/",
+        component: () => import("./views/account/UsersList"),
+        name: "viewers",
     },
     {
-        path: '/account/:username/',
-        name: 'profile',
-        component: () => import('./views/Account/Profile')
+        path: "/account/:username/",
+        name: "profile",
+        component: () => import("./views/account/Profile"),
     },
     {
-        path: '/account/:username/views/',
-        name: 'usersViewers',
-        component: () => import('./views/Account/UsersList')
+        path: "/account/:username/views/",
+        name: "usersViewers",
+        component: () => import("./views/account/UsersList"),
     },
     {
-        path: '/account/:username/friends/',
-        name: 'usersFriends',
-        component: () => import('./views/Account/UsersList')
+        path: "/account/:username/friends/",
+        name: "usersFriends",
+        component: () => import("./views/account/UsersList"),
     },
     {
-        path: '/account/:username/friend-request',
-        name: 'friendRequest',
-        redirect: '/:username/'
+        path: "/account/:username/friend-request",
+        name: "friendRequest",
+        redirect: "/:username/",
     },
     {
-        path: '/account/:username/chat',
-        name: 'userChat',
-        redirect: '/:username/'
+        path: "/account/:username/chat",
+        name: "userChat",
+        redirect: "/:username/",
     },
     {
-        path: '/account/:username/party-list/',
-        name: 'userPartyList',
-        component: () => import('./views/Account/UserPartyList')
+        path: "/account/:username/party-list/",
+        name: "userPartyList",
+        component: () => import("./views/account/UserPartyList"),
     },
     {
-        path: '/account/users/',
-        name: 'users',
-        component: () => import('./views/Account/UsersList')
+        path: "/account/users/",
+        name: "users",
+        component: () => import("./views/account/UsersList"),
     },
     {
-        path: '/account/edit/',
-        name: 'editProfile',
-        component: () => import('./views/Account/EditProfile')
+        path: "/account/edit/",
+        name: "editProfile",
+        component: () => import("./views/account/EditProfile"),
     },
     {
-        path: '/account/party-list/',
-        name: 'partyList',
-        component: () => import('./views/Account/UserPartyList')
+        path: "/account/party-list/",
+        name: "partyList",
+        component: () => import("./views/account/UserPartyList"),
     },
     {
-        path: '/account/google-oauth2/',
-        name: 'googleOAuth2',
-        component: () => import('./views/Account/GoogleOAuth2')
+        path: "/account/google-oauth2/",
+        name: "googleOAuth2",
+        component: () => import("./views/account/GoogleOAuth2"),
     },
     {
-        path: '/account/vk-oauth2/',
-        name: 'vkOAuth2',
-        component: () => import('./views/Account/VKOAuth2')
+        path: "/account/vk-oauth2/",
+        name: "vkOAuth2",
+        component: () => import("./views/account/VKOAuth2"),
     },
     {
-        path: '/chat/',
-        name: 'chats',
-        component: () => import('./views/Chat/Chat')
+        path: "/chat/",
+        name: "chats",
+        component: () => import("./views/chat/Chat"),
     },
     {
-        path: '/chat/:username/',
-        name: 'chat',
-        component: () => import('./views/Chat/Chat')
+        path: "/chat/:username/",
+        name: "chat",
+        component: () => import("./views/chat/Chat"),
     },
     {
-        path: '/:catchAll(.*)',
-        component: () => import('./components/ErrorPages/NotFound')
-    }
-]
+        path: "/:catchAll(.*)",
+        component: () => import("./components/ErrorPages/NotFound"),
+    },
+];
 
 const router = new createRouter({
     history: createWebHistory(),
-    routes
-})
+    routes,
+});
 
-export default router
+export default router;
