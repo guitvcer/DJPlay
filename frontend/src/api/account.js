@@ -52,5 +52,33 @@ export default function(instance) {
           }
         });
     },
+    async register(action, body) {
+      return await instance
+        .post(action, body)
+        .then(response => {
+          store.commit("createAlert", {
+            title: "Вы успешно вошли в аккаунт",
+            level: "success",
+          });
+          store.commit("updateOpenModal", false);
+
+          document.cookie = `access=${response.data.access}; path=/`;
+          document.cookie = `refresh=${response.data.refresh}; path=/`;
+
+          store.dispatch("loadUser");
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              store.commit("createAlert", {
+                title: parseErrors(error.response.data, field),
+                level: "danger",
+              });
+            }
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
+        });
+    }
   }
 }

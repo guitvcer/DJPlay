@@ -81,7 +81,7 @@
           <MenuItem v-slot="{ active }">
             <button
               :class="dropdownItemClass"
-              @click="showRegistrationModal = ref(true)"
+              @click="updateModalAction('registration'); updateOpenModal(true)"
             >Регистрация</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
@@ -105,7 +105,6 @@ import Modal from "./Modal.vue";
 export default {
   data() {
     return {
-      showRegistrationModal: ref(false),
       dropdownItemClass: 'hover:bg-main rounded hover:text-gray-200 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main-dark2 w-full text-left'
     }
   },

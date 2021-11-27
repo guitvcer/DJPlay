@@ -1,5 +1,5 @@
 <template>
-  <form :action="this.action" method="post" @submit.prevent="submitForm">
+  <form :action="this.host + this.action" method="post" @submit.prevent="submitForm">
     <div class="px-4 pt-12 pb-4">
       <h3 class="text-center text-4xl font-semibold">Регистрация</h3>
       <div class="flex flex-col mt-12">
@@ -14,6 +14,7 @@
           required
         >
       </div>
+
       <social-auth-links />
       <recaptcha-links />
     </div>
@@ -42,6 +43,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import api from "../../api/index";
 import axios from "axios";
 import SocialAuthLinks from "./SocialAuthLinks.vue";
 import RecaptchaLinks  from "./RecaptchaLinks.vue";
@@ -82,8 +84,7 @@ export default {
           placeholder: "Эл. почта",
         },
       ],
-      action: this.host + "/api/account/registration",
-      origin: window.location.origin,
+      action: "/api/account/registration",
     }
   },
   components: { SocialAuthLinks, RecaptchaLinks },
@@ -92,32 +93,7 @@ export default {
     async submitForm() {
       this.body.recaptcha = await this.recaptcha("registration");
 
-      await axios
-        .post(this.action, this.body)
-        .then(response => {
-          this.createAlert({
-            title: "Вы успешно вошли в аккаунт",
-            level: "success",
-          });
-          this.$emit("close-modal");
-
-          document.cookie = `access=${response.data.access}; path=/`;
-          document.cookie = `refresh=${response.data.refresh}; path=/`;
-
-          this.$emit("load-user");
-        })
-        .catch(error => {
-          if (error.response.status === 400) {
-            for (const field in error.response.data) {
-              this.createAlert({
-                title: this.parseErrors(error.response.data, field),
-                level: "danger",
-              });
-            }
-          } else {
-            this.$emit("api-error", error);
-          }
-        });
+      await api.account.register(this.action, this.body);
 
       this.body.username = '';
       this.body.password1 = '';
