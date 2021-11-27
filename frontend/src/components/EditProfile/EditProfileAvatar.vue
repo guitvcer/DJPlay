@@ -9,7 +9,9 @@
       class="text-3xl font-semibold mb-3 text-center lg:text-left select-text"
       style="word-break: break-word"
     >{{ user.username }}</h2>
+
     <hr>
+
     <div class="flex justify-center mt-3">
       <profile-button
         buttonName="userProfileEditSave"
@@ -34,6 +36,7 @@
         @click="showDeleteProfileModal = true"
       />
     </div>
+
     <modal
       action="changePassword"
       v-if="showChangePasswordModal"
@@ -50,26 +53,26 @@
 </template>
 
 <script>
-import AvatarInput from '@/components/EditProfile/AvatarInput'
-import Modal from '@/components/Interface/Modal'
-import ProfileButton from '@/components/Profile/ProfileButton'
+import AvatarInput from "./AvatarInput.vue";
+import Modal from "../Interface/Modal.vue";
+import ProfileButton from "../Profile/ProfileButton.vue";
 
 export default {
   props: {
     user: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       avatar: null,
       showChangePasswordModal: false,
-      showDeleteProfileModal: false
+      showDeleteProfileModal: false,
     }
   },
   components: {
-    AvatarInput, Modal, ProfileButton
+    AvatarInput, Modal, ProfileButton,
   },
 }
 </script>

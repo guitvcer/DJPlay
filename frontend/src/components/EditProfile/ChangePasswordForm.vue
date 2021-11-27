@@ -16,14 +16,23 @@
         >
       </div>
     </div>
+
     <div class="bg-gray-50 dark:bg-main-dark py-3 px-6 flex flex-row-reverse">
       <button
         type="submit"
-        class="inline-flex justify-center rounded-md border font-semibold border-transparent shadow-sm cursor-pointer px-4 py-2 bg-main text-base text-white hover:bg-main-dark ml-3 w-auto text-sm dark:bg-gray-100 dark:text-black dark:hover:bg-gray-300"
+        class="
+          inline-flex justify-center rounded-md border font-semibold border-transparent shadow-sm cursor-pointer
+          px-4 py-2 bg-main text-base text-white hover:bg-main-dark ml-3 w-auto text-sm dark:bg-gray-100 dark:text-black
+          dark:hover:bg-gray-300
+        "
       >Сменить</button>
       <button
         type="button"
-        class="inline-flex justify-center rounded-md border font-semibold border-main shadow-sm cursor-pointer px-4 py-2 bg-white text-base text-gray-700 hover:bg-gray-50 mt-0 ml-3 w-auto text-sm dark:bg-red-500 dark:text-gray-50 dark:hover:bg-red-600"
+        class="
+          inline-flex justify-center rounded-md border font-semibold border-main shadow-sm cursor-pointer px-4 py-2
+          bg-white text-base text-gray-700 hover:bg-gray-50 mt-0 ml-3 w-auto text-sm dark:bg-red-500 dark:text-gray-50
+          dark:hover:bg-red-600
+        "
         ref="cancelButtonRef"
         @click="$emit('close-modal')"
       >Отмена</button>
@@ -33,16 +42,16 @@
 
 <script>
 import { mapMutations } from "vuex";
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   data() {
     return {
-      action: this.host + '/api/account/change-password',
+      action: this.host + "/api/account/change-password",
       body: {
-        'oldpassword': '',
-        'password1': '',
-        'password2': ''
+        oldPassword: '',
+        password1: '',
+        password2: '',
       },
       inputs: [
         {
@@ -66,15 +75,15 @@ export default {
       await axios
         .patch(this.action, this.body)
         .then(response => {
-          document.cookie = 'access=; Max-Age=0; path=/'
-          document.cookie = 'refresh=; Max-Age=0; path=/'
+          document.cookie = "access=; Max-Age=0; path=/";
+          document.cookie = "refresh=; Max-Age=0; path=/";
 
-          this.$emit('load-user')
+          this.$emit("load-user");
           this.createAlert({
             title: "Вы успешно сменили пароль.",
             level: "success",
-          })
-          this.$router.push('/')
+          });
+          this.$router.push('/');
         })
         .catch(error => {
           if (error.response.status === 400) {
@@ -84,11 +93,13 @@ export default {
                 level: "danger",
               });
             }
-          } else this.$emit('api-error', error)
-        })
+          } else {
+            this.$emit('api-error', error);
+          }
+        });
 
-      this.body = {}
-    }
-  }
+      this.body = {};
+    },
+  },
 }
 </script>

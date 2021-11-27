@@ -3,6 +3,7 @@
     <div class="mb-5">
       <h3 class="font-bold text-xl">Основная информация</h3>
       <hr class="mb-2">
+
       <edit-profile-input
         v-for="(field, index) in mainInformation"
         :key="index"
@@ -11,9 +12,11 @@
         @change="mainInformation[field.name] = field.value"
       />
     </div>
+
     <div class="mb-5">
       <h3 class="font-bold text-xl">Дополнительная информация</h3>
       <hr class="mb-2">
+
       <edit-profile-input
         v-for="(field, index) in additionalInformation"
         :key="index"
@@ -26,87 +29,76 @@
 </template>
 
 <script>
-import EditProfileInput from '@/components/EditProfile/EditProfileInput'
+import EditProfileInput from "./EditProfileInput.vue";
 
 export default {
   props: {
     user: {
       type: Object,
-      required: true
+      required: true,
     }
   },
-  components: {
-    EditProfileInput
-  },
+  components: { EditProfileInput },
   data() {
     return {
       mainInformation: [
         {
-          type: 'text',
-          name: 'username',
+          type: "text",
+          name: "username",
           required: true,
-          placeholder: 'Имя пользователя',
+          placeholder: "Имя пользователя",
           max_length: 48,
-          value: this.user.username
+          value: this.user.username,
         },
         {
-          type: 'email',
-          name: 'email',
+          type: "email",
+          name: "email",
           required: true,
-          placeholder: 'Эл. почта',
+          placeholder: "Эл. почта",
           max_length: 64,
-          value: this.user.email
+          value: this.user.email,
         }
       ],
       additionalInformation: [
         {
-          type: 'date',
-          name: 'birthday',
-          placeholder: 'Дата рождения',
-          value: this.user['birthday']
+          type: "date",
+          name: "birthday",
+          placeholder: "Дата рождения",
+          value: this.user["birthday"],
         },
         {
-          type: 'text',
-          name: 'firstName',
-          placeholder: 'Имя',
+          type: "text",
+          name: "firstName",
+          placeholder: "Имя",
           max_length: 64,
-          value: this.user['firstName']
+          value: this.user["firstName"],
         },
         {
-          type: 'text',
-          name: 'lastName',
-          placeholder: 'Фамилия',
+          type: "text",
+          name: "lastName",
+          placeholder: "Фамилия",
           max_length: 64,
-          value: this.user['lastName']
+          value: this.user["lastName"]
         },
         {
-          type: 'select',
+          type: "select",
           options: [
-            {
-              value: 'M',
-              title: 'Мужской'
-            },
-            {
-              value: 'F',
-              title: 'Женский'
-            },
-            {
-              value: '',
-              title: 'Не указано'
-            }
+            { value: 'M', title: "Мужской" },
+            { value: 'F', title: "Женский" },
+            { value: '', title: "Не указано" },
           ],
-          name: 'gender',
-          placeholder: 'Пол',
-          value: this.user['gender']
+          name: "gender",
+          placeholder: "Пол",
+          value: this.user["gender"],
         },
         {
-          type: 'checkbox',
-          name: 'isPrivate',
-          placeholder: 'Приватный аккаунт?',
-          value: this.user['isPrivate']
-        }
-      ]
+          type: "checkbox",
+          name: "isPrivate",
+          placeholder: "Приватный аккаунт?",
+          value: this.user["isPrivate"],
+        },
+      ],
     }
-  }
+  },
 }
 </script>

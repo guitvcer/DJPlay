@@ -11,7 +11,11 @@
       v-if="field.type === 'select'"
       class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
     >
-      <option v-for="(option, index) in field.options" :key="index" :value="option.value">{{ option.title }}</option>
+      <option
+        v-for="(option, index) in field.options"
+        :key="index"
+        :value="option.value"
+      >{{ option.title }}</option>
     </select>
 
     <input
@@ -42,33 +46,41 @@ export default {
   props: {
     field: {
       type: Object,
-      required: true
+      required: true,
     }
   },
   methods: {
     check(event) {
-      if (event.target.value === 'true') event.target.value = 'false'
-      else event.target.value = 'true'
+      if (event.target.value === "true") {
+        event.target.value = "false";
+      } else {
+        event.target.value = "true";
+      }
     }
   },
   mounted() {
-    if (this.field.required)
-      document.querySelector('#' + this.field.name).setAttribute('required', "")
-
-    let options = document.querySelectorAll('option')
-
-    if (this.field.type === 'select')
-      for (let option of options) {
-        if (option.value === this.field.value || option.value === '' && this.field.value === null)
-          option.setAttribute('selected', '')
-      }
-
-    if (this.field.type === 'checkbox') {
-      let checkbox = document.querySelector('#isPrivate')
-
-      if (this.field.value === true) checkbox.setAttribute('checked', '')
+    if (this.field.required) {
+      document.querySelector('#' + this.field.name).setAttribute("required", '');
     }
-  }
+
+    let options = document.querySelectorAll("option");
+
+    if (this.field.type === "select") {
+      for (let option of options) {
+        if (option.value === this.field.value || option.value === '' && this.field.value === null) {
+          option.setAttribute("selected", '');
+        }
+      }
+    }
+
+    if (this.field.type === "checkbox") {
+      let checkbox = document.querySelector("#isPrivate");
+
+      if (this.field.value === true) {
+        checkbox.setAttribute("checked", '');
+      }
+    }
+  },
 }
 </script>
 
