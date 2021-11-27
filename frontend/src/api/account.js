@@ -159,6 +159,35 @@ export default function(instance) {
             store.commit("updateStatus", error.response.status);
           }
         });
+    },
+    async deleteProfile(action, data) {
+      return await instance
+        .delete(action, { data })
+        .then(response => {
+          store.commit("createAlert", {
+            title: "Вы успешно удалили профиль.",
+            level: "success",
+          });
+
+          document.cookie = "access=; Max-Age=0; path=/";
+          document.cookie = "refresh=; Max-Age=0; path=/";
+
+          store.dispatch("loadUser");
+          store.commit("updateOpenModal", false);
+          router.push('/');
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              store.commit("createAlert", {
+                title: parseErrors(error.response.data, field),
+                level: "danger",
+              });
+            }
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
+        });
     }
   }
 }

@@ -32,7 +32,7 @@
           dark:hover:bg-red-600
         "
         ref="cancelButtonRef"
-        @click="$emit('close-modal')"
+        @click="updateOpenModal(false)"
       >Отмена</button>
     </div>
   </form>
@@ -40,48 +40,21 @@
 
 <script>
 import { mapMutations } from "vuex";
-import axios from "axios";
+import api from "../../api/index";
 
 export default {
   data() {
     return {
-      action: this.host + "/api/account/delete",
+      action: "/api/account/delete",
       password: '',
     }
   },
   methods: {
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateOpenModal"]),
     async submitForm() {
-      await axios
-        .delete(this.action, {
-          data: {
-            password: this.password,
-          }
-        })
-        .then(response => {
-          this.createAlert({
-            title: "Вы успешно удалили профиль.",
-            level: "success",
-          });
-
-          document.cookie = "access=; Max-Age=0; path=/";
-          document.cookie = "refresh=; Max-Age=0; path=/";
-
-          this.$emit("load-user");
-          this.$router.push('/');
-        })
-        .catch(error => {
-          if (error.response.status === 400) {
-            for (const field in error.response.data) {
-              this.createAlert({
-                title: this.parseErrors(error.response.data, field),
-                level: "danger",
-              });
-            }
-          } else {
-            this.$emit("api-error", error);
-          }
-        })
+      await api.account.deleteProfile(this.action, {
+        password: this.password,
+      });
 
       this.password = '';
     },
