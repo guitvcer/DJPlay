@@ -19,55 +19,29 @@
 </template>
 
 <script>
-import axios from 'axios'
-import ProfileAvatar from '@/components/Profile/ProfileAvatar'
-import ProfileTable from '@/components/Profile/ProfileTable'
-import Loading from '@/components/Interface/Loading'
+import api from "../../api/index";
+import ProfileAvatar from "../../components/Profile/ProfileAvatar.vue";
+import ProfileTable from "../../components/Profile/ProfileTable.vue";
+import Loading from "../../components/Interface/Loading.vue";
 
 export default {
-  components: {
-    ProfileAvatar, ProfileTable, Loading
-  },
+  components: { ProfileAvatar, ProfileTable, Loading },
   data() {
     return {
       user: {},
       loading: true,
       profileViewAccess: false,
-      extraText: ''
+      extraText: '',
     }
   },
   methods: {
     async setUserProfileInfo() {
-      let url = this.host + '/api/account/'
+      const result = await api.account.getViewedUser();
 
-      if (this.$route.params.username)
-        url += this.$route.params.username
-
-      await axios
-        .get(url)
-        .then(async response => {
-          const viewer = await this.getUserInfo()
-          this.user = response.data
-
-          document.title = `${this.user.username} - Профиль`
-
-          if (this.user.username === viewer.username) {
-            if (this.user['isPrivate'])
-              this.extraText = 'Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.'
-            this.profileViewAccess = true
-          } else if (this.user['isPrivate']) {
-            if (this.user['friendRequest'] === 'accepted') this.profileViewAccess = true
-            else {
-              this.extraText = 'Приватный аккаунт. Информация скрыта.'
-              this.profileViewAccess = false
-            }
-          } else this.profileViewAccess = true
-
-          this.loading = false
-        })
-        .catch(error => {
-          this.$emit('api-error', error)
-        })
+      this.user = result.user;
+      this.profileViewAccess = result.profileViewAccess;
+      this.extraText = result.extraText;
+      this.loading = false;
     },
   },
   mounted() {

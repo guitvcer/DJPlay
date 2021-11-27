@@ -1,4 +1,5 @@
 import store from "../store/index";
+import router from "../router";
 import { getCookie, parseErrors } from "../utilities";
 
 export default function(instance) {
@@ -86,6 +87,49 @@ export default function(instance) {
           } else {
             store.commit("updateStatus", error.response.status);
           }
+        });
+    },
+    async getViewedUser() {
+      /* Получить информацию о просматриваемом пользователе */
+
+      let url = "/api/account/";
+
+      if (router.currentRoute["_value"].params.username) {
+        url += router.currentRoute["_value"].params.username;
+      }
+
+      return await instance
+        .get(url)
+        .then(async response => {
+          store.dispatch("loadUser").then();
+
+          const user = response.data;
+
+          document.title = `${user.username} - Профиль`;
+
+          let extraText;
+          let profileViewAccess;
+
+          if (user.username === store.getters.user.username) {
+            if (user["isPrivate"]) {
+              extraText = "Ваш аккаунт приватный, другие пользователи (кроме друзей) не смогут увидеть информацию о Вас.";
+            }
+            profileViewAccess = true;
+          } else if (user["isPrivate"]) {
+            if (user["friendRequest"] === "accepted") {
+              profileViewAccess = true;
+            } else {
+              extraText = "Приватный аккаунт. Информация скрыта.";
+              profileViewAccess = false;
+            }
+          } else {
+            profileViewAccess = true;
+          }
+
+          return { user, extraText, profileViewAccess };
+        })
+        .catch(error => {
+          store.commit("updateStatus", error.response.status);
         });
     }
   }
