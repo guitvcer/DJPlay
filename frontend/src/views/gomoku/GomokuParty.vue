@@ -62,43 +62,43 @@
 </template>
 
 <script>
-import axios from 'axios'
-import ControlPanel from '@/components/Gomoku/ControlPanel'
-import GomokuBoard from '@/components/Gomoku/GomokuBoard'
-import StartPanel from '@/components/Gomoku/StartPanel'
-import Loading from '@/components/Interface/Loading'
+import axios from "axios";
+import ControlPanel from "../../components/Gomoku/ControlPanel.vue";
+import GomokuBoard from "../../components/Gomoku/GomokuBoard.vue";
+import StartPanel from "../../components/Gomoku/StartPanel.vue";
+import Loading from "../../components/Interface/Loading.vue";
 import {DateTime} from "luxon";
 
 export default {
-  components: {
-    ControlPanel, GomokuBoard, StartPanel, Loading
-  },
+  components: { ControlPanel, GomokuBoard, StartPanel, Loading },
   data() {
     return {
       loading: true,
-      currentColor: 'white',
+      currentColor: "white",
       party: {},
       player1: {},
       player2: {},
       moves: [],
-      dotClassName: 'dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center'
+      dotClassName: "dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center"
     }
   },
   async mounted() {
     await axios
       .get(`${this.host}/api/gomoku/${this.$route.params.id}/`)
       .then(async response => {
-        this.party = response.data
+        this.party = response.data;
 
         await axios
           .get(`${this.host}/api/account/${this.party.player1}/`)
           .then(response => this.player1 = response.data)
           .catch(error => {
-            if (error.response.status === 401) this.$emit('api-error', error)
+            if (error.response.status === 401) {
+              this.$emit("api-error", error);
+            }
 
             this.player1 = {
               username: this.party.player1,
-              avatar: '/media/avatars/user.png'
+              avatar: "/media/avatars/user.png",
             }
           })
 
@@ -106,54 +106,54 @@ export default {
           .get(`${this.host}/api/account/${this.party.player2}/`)
           .then(response => this.player2 = response.data)
           .catch(error => {
-            if (error.response.status === 401) this.$emit('api-error', error)
+            if (error.response.status === 401) this.$emit("api-error", error);
 
             this.player2 = {
               username: this.party.player2,
-              avatar: '/media/avatars/user.png'
+              avatar: "/media/avatars/user.png"
             }
           })
 
-        this.loading = false
+        this.loading = false;
       })
-      .catch(error => this.$emit('api-error', error))
+      .catch(error => this.$emit("api-error", error));
 
-    document.title = `${this.party.player1} VS. ${this.party.player2}`
+    document.title = `${this.party.player1} VS. ${this.party.player2}`;
   },
   methods: {
     firstMove() {
-      const firstMoveCoordinate = this.party.moves[0]['coordinate']
-      const firstDot = document.getElementById(firstMoveCoordinate)
+      const firstMoveCoordinate = this.party.moves[0]["coordinate"];
+      const firstDot = document.getElementById(firstMoveCoordinate);
 
-      this.$refs.controlPanel.resetBoard()
-      this.$refs.gomokuBoard.selectDot(firstDot)
+      this.$refs.controlPanel.resetBoard();
+      this.$refs.gomokuBoard.selectDot(firstDot);
     },
     prevMove() {
-      if (this.loading || this.moves.length === 1) return
+      if (this.loading || this.moves.length === 1) return;
 
-      this.moves.pop()
-      const penultDot = this.moves[this.moves.length - 1]
-      const lastDot = document.querySelector('.border-yellow-500')
-      penultDot.classList.add('border-yellow-500')
-      lastDot.className = this.dotClassName
-      lastDot.innerHTML = ''
+      this.moves.pop();
+      const penultDot = this.moves[this.moves.length - 1];
+      const lastDot = document.querySelector(".border-yellow-500");
+      penultDot.classList.add("border-yellow-500");
+      lastDot.className = this.dotClassName;
+      lastDot.innerHTML = "";
 
-      if (this.currentColor === 'white') this.currentColor = 'blue'
-      else this.currentColor = 'white'
+      if (this.currentColor === "white") this.currentColor = "blue";
+      else this.currentColor = "white";
     },
     nextMove() {
-      if (this.loading || this.moves.length === this.party.moves.length) return
+      if (this.loading || this.moves.length === this.party.moves.length) return;
 
-      const nextMoveCoordinate = this.party.moves[this.moves.length]['coordinate']
-      const nextMove = document.getElementById(nextMoveCoordinate)
+      const nextMoveCoordinate = this.party.moves[this.moves.length]["coordinate"];
+      const nextMove = document.getElementById(nextMoveCoordinate);
 
-      this.$refs.gomokuBoard.selectDot(nextMove)
+      this.$refs.gomokuBoard.selectDot(nextMove);
     },
     lastMove() {
-      this.$refs.gomokuBoard.selectPartyDots()
+      this.$refs.gomokuBoard.selectPartyDots();
     },
     parseDate(date) {
-      return DateTime.fromISO(date).setLocale('ru').toFormat('d MMMM y') + ' г.'
+      return DateTime.fromISO(date).setLocale("ru").toFormat("d MMMM y") + " г.";
     }
   }
 }

@@ -68,18 +68,18 @@ import {
   UserGroupIcon,
   UserAddIcon,
   UserRemoveIcon
-} from '@heroicons/vue/outline'
+} from "@heroicons/vue/outline";
 
 export default {
   props: {
     buttonName: {
       type: String,
-      required: true
+      required: true,
     },
     friendsCount: Number,
     url: Object,
     type: String,
-    friendRequest: [String, Boolean]
+    friendRequest: [String, Boolean],
   },
   components: {
     ArrowSmLeftIcon,
@@ -91,13 +91,16 @@ export default {
     TrashIcon,
     UserGroupIcon,
     UserAddIcon,
-    UserRemoveIcon
+    UserRemoveIcon,
   },
   computed: {
     title() {
-      if (this.buttonName === 'friendRequest') return 'Добавить в друзья'
-      else if (this.buttonName === 'sendMessage') return 'Написать сообщение'
-    }
-  }
+      if (this.buttonName === "friendRequest") {
+        return "Добавить в друзья";
+      } else if (this.buttonName === 'sendMessage') {
+        return "Написать сообщение";
+      }
+    },
+  },
 }
 </script>

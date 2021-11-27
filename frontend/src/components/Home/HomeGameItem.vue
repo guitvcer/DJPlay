@@ -15,8 +15,8 @@ export default {
   props: {
     game: {
       type: Object,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>

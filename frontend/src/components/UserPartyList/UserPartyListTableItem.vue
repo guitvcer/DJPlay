@@ -11,28 +11,32 @@
 </template>
 
 <script>
-import { DateTime } from "luxon"
+import { DateTime } from "luxon";
 
 export default {
   props: {
     party: {
       type: Object,
-      required: true
+      required: true,
     },
     currentUsername: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     parseDate(date) {
-      return DateTime.fromISO(date).setLocale('ru').toFormat('d MMMM y H:m')
+      return DateTime.fromISO(date).setLocale("ru").toFormat("d MMMM y H:m");
     },
     getResult(winner) {
-      if (winner === null) return 'Н/Д'
-      else if (winner === this.currentUsername) return 'Выигрыш'
-      else return 'Проигрыш'
-    }
-  }
+      if (winner === null) {
+        return "Н/Д";
+      } else if (winner === this.currentUsername) {
+        return "Выигрыш";
+      } else {
+        return "Проигрыш";
+      }
+    },
+  },
 }
 </script>

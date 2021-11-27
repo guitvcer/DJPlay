@@ -105,7 +105,9 @@ import Modal from "./Modal.vue";
 export default {
   data() {
     return {
-      dropdownItemClass: 'hover:bg-main rounded hover:text-gray-200 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main-dark2 w-full text-left'
+      dropdownItemClass:
+        "hover:bg-main rounded hover:text-gray-200 text-gray-700 block px-4 py-2 dark:text-gray-50 " +
+        "dark:hover:text-gray-50 dark:hover:bg-main-dark2 w-full text-left",
     }
   },
   computed: mapGetters(["user"]),

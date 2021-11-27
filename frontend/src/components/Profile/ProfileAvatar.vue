@@ -60,53 +60,51 @@
 
 <script>
 import { mapMutations } from "vuex";
-import { ref } from 'vue'
-import axios from 'axios'
-import Modal from '@/components/Interface/Modal'
-import ProfileButton from '@/components/Profile/ProfileButton'
+import { ref } from "vue";
+import axios from "axios";
+import Modal from "../Interface/Modal.vue";
+import ProfileButton from "./ProfileButton.vue";
 
 export default {
   props: {
     user: {
       type: Object,
-      required: true
+      required: true,
     },
     profileViewAccess: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       open: ref(false),
-      showAuthorizationModal: false
+      showAuthorizationModal: false,
     }
   },
-  components: {
-    Modal, ProfileButton
-  },
+  components: { Modal, ProfileButton },
   methods: {
     ...mapMutations(["createAlert"]),
     async friendRequest() {
       if (this.isAuthenticated()) {
         await axios
-          .get(this.host + '/api' + window.location.pathname + 'friend-request')
+          .get(this.host + "/api" + window.location.pathname + "friend-request")
           .then(response => {
             this.createAlert({
               title: response.data.title,
               level: "success",
             });
-            this.$emit('load-profile')
+            this.$emit('load-profile');
           })
-          .catch(error => this.$emit('api-error', error))
+          .catch(error => this.$emit("api-error", error));
       } else {
-        this.open = true
-        this.showAuthorizationModal = true
+        this.open = true;
+        this.showAuthorizationModal = true;
       }
     },
     closeModal() {
-      this.showAuthorizationModal = false
-      this.showRegistrationModal = false
+      this.showAuthorizationModal = false;
+      this.showRegistrationModal = false;
     }
   }
 }

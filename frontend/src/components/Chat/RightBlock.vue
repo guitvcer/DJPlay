@@ -26,7 +26,7 @@ export default {
     ChatSmallText,
     SendMessageForm,
     Messages,
-    TheChatHeader
+    TheChatHeader,
   },
   props: {
     display: {

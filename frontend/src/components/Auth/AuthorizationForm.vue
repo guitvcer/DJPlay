@@ -44,8 +44,8 @@
 <script>
 import { mapMutations } from "vuex";
 import api from "../../api/index";
-import SocialAuthLinks from "./SocialAuthLinks";
-import RecaptchaLinks from "./RecaptchaLinks";
+import SocialAuthLinks from "./SocialAuthLinks.vue";
+import RecaptchaLinks from "./RecaptchaLinks.vue";
 
 export default {
   components: { RecaptchaLinks, SocialAuthLinks },

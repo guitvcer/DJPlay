@@ -1,26 +1,26 @@
 <script>
 import { mapMutations } from "vuex";
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   async mounted() {
-    const code = new URL(window.location.href).searchParams.get('code')
+    const code = new URL(window.location.href).searchParams.get("code")
 
     if (code) {
       await axios
         .post(`${this.host}/api/account/social-authorization`, {
           code: code,
           vk_client_id: process.env["VUE_APP_VK_OAUTH2_PUBLIC"],
-          provider: 'VK'
+          provider: "VK",
         })
         .then(response => {
-          document.cookie = `access=${response.data.access}; path=/`
-          document.cookie = `refresh=${response.data.refresh}; path=/`
+          document.cookie = `access=${response.data.access}; path=/`;
+          document.cookie = `refresh=${response.data.refresh}; path=/`;
 
-          this.$emit('load-user')
+          this.$emit("load-user");
           this.createAlert({
             title: "Вы успешно авторизовались.",
-            level: "success"
+            level: "success",
           });
         })
         .catch(error => {
@@ -34,10 +34,12 @@ export default {
               title: "Ваш аккаунт удален.",
               level: "danger",
             });
-          } else this.$emit('api-error', error)
+          } else {
+            this.$emit("api-error", error);
+          }
         })
 
-      await this.$router.push('/')
+      await this.$router.push('/');
     }
   },
   methods: mapMutations(["createAlert"]),

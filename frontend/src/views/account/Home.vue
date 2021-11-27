@@ -16,33 +16,31 @@
 
 <script>
 import axios from 'axios'
-import HomeGameItem from '@/components/Home/HomeGameItem'
-import Loading from '@/components/Interface/Loading'
+import HomeGameItem from "../../components/Home/HomeGameItem.vue";
+import Loading from "../../components/Interface/Loading.vue";
 
 export default {
-  components: {
-    HomeGameItem, Loading
-  },
+  components: { HomeGameItem, Loading },
   data() {
     return {
       games: [],
-      loading: true
+      loading: true,
     }
   },
   methods: {
     async loadGameList() {
       await axios
-        .get(this.host + '/api/account/games/')
+        .get(this.host + "/api/account/games/")
         .then(response => {
-          this.games = response.data
-          this.loading = false
-        })
+          this.games = response.data;
+          this.loading = false;
+        });
     }
   },
   async mounted() {
-    await this.loadGameList()
+    await this.loadGameList();
 
-    document.title = 'DJPlay'
-  }
+    document.title = "DJPlay";
+  },
 }
 </script>

@@ -19,9 +19,9 @@
 <script>
 import { mapActions, mapMutations } from "vuex";
 import api from "../../api/index";
-import EditProfileAvatar from "../../components/EditProfile/EditProfileAvatar";
-import EditProfileTable from "../../components/EditProfile/EditProfileTable";
-import Loading from "../../components/Interface/Loading";
+import EditProfileAvatar from "../../components/EditProfile/EditProfileAvatar.vue";
+import EditProfileTable from "../../components/EditProfile/EditProfileTable.vue";
+import Loading from "../../components/Interface/Loading.vue";
 
 export default {
   data() {

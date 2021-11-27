@@ -28,7 +28,7 @@ export default {
   props: {
     name: {
       type: String,
-      required: true
+      required: true,
     }
   },
   data() {
@@ -39,124 +39,133 @@ export default {
     }
   },
   mounted() {
-    setTimeout(this.resizeGomokuBoard, 1)
-    setTimeout(this.resizeGomokuBoard, 2)
-    window.addEventListener('resize', this.resizeGomokuBoard)
+    setTimeout(this.resizeGomokuBoard, 1);
+    setTimeout(this.resizeGomokuBoard, 2);
+    window.addEventListener("resize", this.resizeGomokuBoard);
 
-    if (this.name === 'GomokuParty') this.selectPartyDots()
+    if (this.name === "GomokuParty") this.selectPartyDots();
   },
   methods: {
     registerMove(target, sendToServer = true) {
-      if (this.name === 'GomokuParty') return
+      if (this.name === "GomokuParty") return;
 
-      if (this.$parent.gameStatus === 'playing') {
+      if (this.$parent.gameStatus === "playing") {
         if (this.$parent.myMove) {
           if (sendToServer) {
             this.$parent.gomokuPartySocket.send(JSON.stringify({
-              move: target.id
-            }))
-          } else this.selectDot(target)
+              move: target.id,
+            }));
+          } else {
+            this.selectDot(target);
+          }
         }
-      } else this.selectDot(target)
+      } else this.selectDot(target);
     },
     resizeGomokuBoard() {
       try {
-        const gomokuBoard = document.querySelector('#gomokuBoard')
-        gomokuBoard.setAttribute('style',
-            'height: ' + gomokuBoard.offsetWidth + 'px'
-        )
+        const gomokuBoard = document.querySelector("#gomokuBoard");
+        gomokuBoard.setAttribute("style",
+          "height: " + gomokuBoard.offsetWidth + "px"
+        );
       } catch (e) {}
     },
     selectDot(target) {
       // выйти из функции, если нажата уже нажатый ход
       if (
-          target.classList.contains('bg-white') ||
-          target.classList.contains('bg-main') ||
-          target.classList.contains('bg-red-400')
-      ) return
+        target.classList.contains("bg-white") ||
+        target.classList.contains("bg-main") ||
+        target.classList.contains("bg-red-400")
+      ) return;
 
       // удалить желтую окантовку последнего хода
       try {
-        const lastMove = document.querySelector('.border-yellow-500')
-        lastMove.classList.remove('border-yellow-500')
-        lastMove.classList.add('border-main')
+        const lastMove = document.querySelector(".border-yellow-500");
+        lastMove.classList.remove("border-yellow-500");
+        lastMove.classList.add("border-main");
       } catch (e) {}
 
       // добавить соответствующие классы для "точки"
       if (
-          (this.$parent.myMove && this.$parent.currentColor === 'white') ||
-          (!this.$parent.myMove && this.$parent.currentColor === 'blue')
+        (this.$parent.myMove && this.$parent.currentColor === "white") ||
+        (!this.$parent.myMove && this.$parent.currentColor === "blue")
       ) {
-        target.classList.add('bg-white')
-        target.classList.add('dark:bg-gray-300')
-        target.classList.add('text-black')
+        target.classList.add("bg-white");
+        target.classList.add("dark:bg-gray-300");
+        target.classList.add("text-black");
       } else if (
-          (this.$parent.myMove && this.$parent.currentColor === 'blue') ||
-          (!this.$parent.myMove && this.$parent.currentColor === 'white')
+        (this.$parent.myMove && this.$parent.currentColor === "blue") ||
+        (!this.$parent.myMove && this.$parent.currentColor === "white")
       ) {
-        target.classList.add('bg-main')
-        target.classList.add('dark:bg-main-dark2')
-        target.classList.add('text-gray-100')
+        target.classList.add("bg-main");
+        target.classList.add("dark:bg-main-dark2");
+        target.classList.add("text-gray-100");
       }
 
       // сменить текущий цвет, если оффлайн игра
-      if (this.$parent.gameStatus !== 'playing') {
-        if (this.$parent.currentColor === 'white') this.$parent.currentColor = 'blue'
-        else this.$parent.currentColor = 'white'
+      if (this.$parent.gameStatus !== "playing") {
+        if (this.$parent.currentColor === "white") {
+          this.$parent.currentColor = "blue";
+        } else {
+          this.$parent.currentColor = "white";
+        }
       }
 
       // добавить желтую окантовку для последней точки
-      target.classList.add('border-yellow-500')
-      target.classList.add('border-2')
+      target.classList.add("border-yellow-500");
+      target.classList.add("border-2");
 
       // добавить последний ход в список
-      this.$parent.moves.push(target)
+      this.$parent.moves.push(target);
 
       // добавить порядковый номер внутрь "точки"
-      target.innerHTML = this.$parent.moves.length
+      target.innerHTML = this.$parent.moves.length;
 
       try {
-        this.newMoveSound.currentTime = 0
-        this.newMoveSound.play()
+        this.newMoveSound.currentTime = 0;
+        this.newMoveSound.play();
       } catch (e) {}
     },
     selectPartyDots() {
       for (const move of this.$parent.party.moves) {
-        const dot = document.getElementById(move['coordinate'])
-        this.selectDot(dot)
+        const dot = document.getElementById(move["coordinate"]);
+        this.selectDot(dot);
       }
     },
     focusToLeft() {
-      if (this.$route.name === 'gomokuParty') return
+      if (this.$route.name === "gomokuParty") return;
 
-      const tabIndex = +document.activeElement.getAttribute('tabindex') - 1
+      const tabIndex = +document.activeElement.getAttribute("tabindex") - 1;
 
-      if (tabIndex > 3)
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+      if (tabIndex > 3) {
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
+      }
     },
     focusToDown() {
-      if (this.$route.name === 'gomokuParty') return
+      if (this.$route.name === "gomokuParty") return;
 
-      const tabIndex = +document.activeElement.getAttribute('tabindex') + 15
+      const tabIndex = +document.activeElement.getAttribute("tabindex") + 15;
 
-      if (tabIndex < 229)
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+      if (tabIndex < 229) {
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
+      }
     },
     focusToUp() {
-      if (this.$route.name === 'gomokuParty') return
+      if (this.$route.name === "gomokuParty") return;
 
-      const tabIndex = +document.activeElement.getAttribute('tabindex') - 15
+      const tabIndex = +document.activeElement.getAttribute("tabindex") - 15;
 
-      if (tabIndex > 3)
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+      if (tabIndex > 3) {
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
+      }
     },
     focusToRight() {
-      if (this.$route.name === 'gomokuParty') return
+      if (this.$route.name === "gomokuParty") return;
 
-      const tabIndex = +document.activeElement.getAttribute('tabindex') + 1
+      const tabIndex = +document.activeElement.getAttribute("tabindex") + 1;
 
-      if (tabIndex < 229)
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus()
+      if (tabIndex < 229) {
+        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
+      }
     }
   }
 }

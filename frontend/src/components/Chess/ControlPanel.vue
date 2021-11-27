@@ -77,7 +77,7 @@ export default {
     ChevronDoubleRightIcon,
     ClockIcon,
     RefreshIcon,
-    ReplyIcon
+    ReplyIcon,
   },
   methods: {
     ...mapActions(["resetBoard", "returnMove"]),

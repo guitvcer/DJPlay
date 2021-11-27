@@ -58,13 +58,13 @@ import {
   ChevronDoubleRightIcon,
   RefreshIcon,
   ReplyIcon
-} from '@heroicons/vue/outline'
+} from "@heroicons/vue/outline";
 
 export default {
   props: {
     name: {
       type: String,
-      required: true
+      required: true,
     }
   },
   components: {
@@ -73,7 +73,7 @@ export default {
     ChevronRightIcon,
     ChevronDoubleRightIcon,
     RefreshIcon,
-    ReplyIcon
+    ReplyIcon,
   },
   methods: {
     ...mapMutations(["createAlert"]),
@@ -81,10 +81,10 @@ export default {
       if (this.$parent.moves.length !== 0) {
         const lastDot = this.$parent.moves[this.$parent.moves.length - 1]
 
-        if (this.$parent.gameStatus === 'playing') {
+        if (this.$parent.gameStatus === "playing") {
           if (
-              (this.$parent.currentColor === 'white' && lastDot.classList.contains('bg-main')) ||
-              (this.$parent.currentColor === 'blue' && lastDot.classList.contains('bg-white'))
+              (this.$parent.currentColor === "white" && lastDot.classList.contains("bg-main")) ||
+              (this.$parent.currentColor === "blue" && lastDot.classList.contains("bg-white"))
           ) {
             this.createAlert({
               title: "Последний ход не Ваш.",
@@ -92,37 +92,40 @@ export default {
             });
           } else {
             this.$parent.returnMoveSocket.send(JSON.stringify({
-              access_token: this.getCookie('access'),
-              command: 'return_move',
+              access_token: this.getCookie("access"),
+              command: "return_move",
               returnable_move: lastDot.id,
-              returner: this.$parent.username
-            }))
+              returner: this.$parent.username,
+            }));
           }
         } else {
-          lastDot.className = this.$parent.dotClassName
-          lastDot.innerHTML = ''
+          lastDot.className = this.$parent.dotClassName;
+          lastDot.innerHTML = "";
 
-          this.$parent.moves.pop()
+          this.$parent.moves.pop();
 
-          if (this.$parent.currentColor === 'white') this.$parent.currentColor = 'blue'
-          else this.$parent.currentColor = 'white'
+          if (this.$parent.currentColor === "white") {
+            this.$parent.currentColor = "blue";
+          } else {
+            this.$parent.currentColor = "white";
+          }
         }
       }
     },
     resetBoard(showAlert = true) {
-      if (this.$parent.gameStatus === 'playing' && showAlert) {
+      if (this.$parent.gameStatus === "playing" && showAlert) {
         this.createAlert({
           title: "Во время игры нельзя очищать поле.",
           level: "warning",
         });
       } else {
-        for (let dot of document.querySelectorAll('.dot')) {
-          dot.className = this.$parent.dotClassName
-          dot.innerHTML = ''
+        for (let dot of document.querySelectorAll(".dot")) {
+          dot.className = this.$parent.dotClassName;
+          dot.innerHTML = "";
         }
 
-        this.$parent.moves = []
-        this.$parent.currentColor = 'white'
+        this.$parent.moves = [];
+        this.$parent.currentColor = "white";
       }
     }
   }

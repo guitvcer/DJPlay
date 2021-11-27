@@ -31,19 +31,17 @@
 </template>
 
 <script>
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/outline'
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/outline";
 
 export default {
   props: {
     page: {
       type: Number,
-      required: true
+      required: true,
     },
     nextPage: String,
-    previousPage: String
+    previousPage: String,
   },
-  components: {
-    ChevronLeftIcon, ChevronRightIcon
-  }
+  components: { ChevronLeftIcon, ChevronRightIcon },
 }
 </script>

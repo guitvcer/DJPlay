@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon'
+import { DateTime } from "luxon";
 
 export default {
   props: {
@@ -33,24 +33,27 @@ export default {
   },
   computed: {
     getFieldValue() {
-      if (this.field.fieldValue === null) return 'Не указано'
+      if (this.field.fieldValue === null) return "Не указано";
 
-      if (typeof this.field.fieldValue === 'string') {
-        if (this.field.fieldValue === '') return 'Не указано'
-        else if (this.field.fieldName === 'Был(-а) онлайн' ||
-            this.field.fieldName === 'Был онлайн' ||
-            this.field.fieldName === 'Была онлайн'
-        ) return this.timeAgo.format(Date.parse(this.field.fieldValue))
-        else if (this.field.fieldName === 'Дата рождения' || this.field.fieldName === 'Дата регистрации') {
-          const date = DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('d MMMM y') + ' г.'
+      if (typeof this.field.fieldValue === "string") {
+        if (this.field.fieldValue === "") {
+          return "Не указано";
+        } else if (["Был(-а) онлайн", "Был онлайн", "Была онлайн"].includes(this.field.fieldName)) {
+          return this.timeAgo.format(Date.parse(this.field.fieldValue));
+        } else if (this.field.fieldName === "Дата рождения" || this.field.fieldName === "Дата регистрации") {
+          const date = DateTime.fromISO(this.field.fieldValue).setLocale("ru").toFormat("d MMMM y") + " г.";
 
-          if (this.field.fieldName === 'Дата регистрации') {
-            return date + ' ' + DateTime.fromISO(this.field.fieldValue).setLocale('ru').toFormat('H:m')
-          } else return date
-        } else this.field.fieldValue.substr(0, 48)
+          if (this.field.fieldName === "Дата регистрации") {
+            return date + ' ' + DateTime.fromISO(this.field.fieldValue).setLocale("ru").toFormat("H:m");
+          } else {
+            return date;
+          }
+        } else {
+          this.field.fieldValue.substr(0, 48);
+        }
       }
 
-      return this.field.fieldValue
+      return this.field.fieldValue;
     }
   }
 }

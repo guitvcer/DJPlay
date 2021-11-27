@@ -44,7 +44,6 @@
 <script>
 import { mapMutations } from "vuex";
 import api from "../../api/index";
-import axios from "axios";
 import SocialAuthLinks from "./SocialAuthLinks.vue";
 import RecaptchaLinks  from "./RecaptchaLinks.vue";
 

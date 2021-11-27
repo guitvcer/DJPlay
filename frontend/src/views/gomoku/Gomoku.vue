@@ -22,11 +22,11 @@
 
 <script>
 import { mapMutations } from "vuex";
-import axios from 'axios'
-import Loading from '@/components/Interface/Loading'
-import ControlPanel from '@/components/Gomoku/ControlPanel'
-import GomokuBoard from '@/components/Gomoku/GomokuBoard'
-import StartPanel from '@/components/Gomoku/StartPanel'
+import axios from "axios";
+import Loading from "../../components/Interface/Loading.vue";
+import ControlPanel from "../../components/Gomoku/ControlPanel.vue";
+import GomokuBoard from "../../components/Gomoku/GomokuBoard.vue";
+import StartPanel from "../../components/Gomoku/StartPanel.vue";
 
 export default {
   data() {
@@ -43,18 +43,16 @@ export default {
       myMove: true,
       data: null,
       moves: [],
-      currentColor: 'white',
-      dotClassName: 'dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center'
+      currentColor: "white",
+      dotClassName: "dot rounded-full pointer text-center text-xs sm:text-base flex items-center justify-center",
     }
   },
-  components: {
-    ControlPanel, GomokuBoard, StartPanel, Loading
-  },
+  components: { ControlPanel, GomokuBoard, StartPanel, Loading },
   async mounted() {
-    await this.loadGame()
+    await this.loadGame();
 
-    this.username = document.querySelector('#username').innerHTML
-    document.title = 'Гомоку - DJPlay'
+    this.username = document.querySelector("#username").innerHTML;
+    document.title = "Гомоку - DJPlay";
   },
   computed: {
     gameBackgroundUrl() {
@@ -66,60 +64,64 @@ export default {
     ...mapMutations(["createAlert"]),
     async loadGame() {
       await axios
-        .get( this.host + '/api/gomoku/')
+        .get( this.host + "/api/gomoku/")
         .then(response => {
-          this.game = response.data
-          this.loading = false
+          this.game = response.data;
+          this.loading = false;
         })
         .catch(error => {
-          this.$emit('api-error', error)
-        })
+          this.$emit("api-error", error)
+        });
     },
 
     findOpponent() {
-      if (this.username === 'Гость') {
+      if (this.username === "Гость") {
         this.createAlert({
           title: "Вы не авторизованы",
           level: "danger",
         });
-        return
+
+        return;
       }
 
-      this.gameStatus = 'finding'
-      this.findOpponentSocket = new WebSocket(this.webSocketHost + '/gomoku/ws/find')
-      this.findOpponentSocket.onopen = this.findOpponentSocketOnOpen
-      this.findOpponentSocket.onmessage = this.findOpponentSocketOnMessage
-      this.findOpponentSocket.onclose = this.findOpponentSocketOnClose
+      this.gameStatus = "finding";
+      this.findOpponentSocket = new WebSocket(this.webSocketHost + "/gomoku/ws/find");
+      this.findOpponentSocket.onopen = this.findOpponentSocketOnOpen;
+      this.findOpponentSocket.onmessage = this.findOpponentSocketOnMessage;
+      this.findOpponentSocket.onclose = this.findOpponentSocketOnClose;
     },
     cancelFinding() {
-      this.findOpponentSocket.close()
+      this.findOpponentSocket.close();
     },
     giveUp() {
-      this.gomokuPartySocket.close()
+      this.gomokuPartySocket.close();
     },
 
     findOpponentSocketOnMessage(e) {
-      let data = JSON.parse(e.data)
+      let data = JSON.parse(e.data);
 
-      this.partyID = data['party_id']
+      this.partyID = data["party_id"];
 
-      if (data['player_1'] === this.username) this.opponent = data['player_2']
-      else this.opponent = data['player_1']
+      if (data["player_1"] === this.username) {
+        this.opponent = data["player_2"];
+      } else {
+        this.opponent = data["player_1"];
+      }
 
-      this.findOpponentSocket.close()
+      this.findOpponentSocket.close();
 
-      this.gomokuPartySocket = new WebSocket(this.webSocketHost + '/gomoku/ws/play/' + data['party_id'])
-      this.gomokuPartySocket.onopen = this.gomokuPartySocketOnOpen
-      this.gomokuPartySocket.onmessage = this.gomokuPartySocketOnMessage
-      this.gomokuPartySocket.onclose = this.gomokuPartySocketOnClose
+      this.gomokuPartySocket = new WebSocket(this.webSocketHost + "/gomoku/ws/play/" + data["party_id"]);
+      this.gomokuPartySocket.onopen = this.gomokuPartySocketOnOpen;
+      this.gomokuPartySocket.onmessage = this.gomokuPartySocketOnMessage;
+      this.gomokuPartySocket.onclose = this.gomokuPartySocketOnClose;
 
-      this.returnMoveSocket = new WebSocket(this.webSocketHost + '/gomoku/ws/chat/' + data['party_id'])
-      this.returnMoveSocket.onmessage = this.returnMoveSocketOnMessage
+      this.returnMoveSocket = new WebSocket(this.webSocketHost + "/gomoku/ws/chat/" + data["party_id"]);
+      this.returnMoveSocket.onmessage = this.returnMoveSocketOnMessage;
     },
     findOpponentSocketOnOpen() {
       this.findOpponentSocket.send(JSON.stringify({
-        'access_token': this.getCookie('access')
-      }))
+        "access_token": this.getCookie("access")
+      }));
     },
     findOpponentSocketOnClose(e) {
       if (e.code === 1006) {
@@ -129,26 +131,26 @@ export default {
         });
       }
 
-      this.gameStatus = false
+      this.gameStatus = false;
     },
 
     gomokuPartySocketOnClose(e) {
       if (e.code === 1000) {
         try {
-          if (this.data.move === 'exit' && this.data.username === this.opponent) {
+          if (this.data.move === "exit" && this.data.username === this.opponent) {
             this.createAlert({
               title: "Вы выиграли. Соперник сдался.",
               level: "success",
             });
-          } else if (this.data['win']) {
-            for (let dotID of JSON.parse(this.data['row_moves'])) {
-              const dot = document.querySelector('#' + dotID)
-              this.$refs.gomokuBoard.selectDot(dot)
-              dot.classList.add('bg-red-400')
-              dot.classList.remove('bg-main')
-              dot.classList.remove('dark:bg-main-dark2')
-              dot.classList.remove('bg-white')
-              dot.classList.remove('dark:bg-gray-300')
+          } else if (this.data["win"]) {
+            for (let dotID of JSON.parse(this.data["row_moves"])) {
+              const dot = document.querySelector("#" + dotID);
+              this.$refs.gomokuBoard.selectDot(dot);
+              dot.classList.add("bg-red-400");
+              dot.classList.remove("bg-main");
+              dot.classList.remove("dark:bg-main-dark2");
+              dot.classList.remove("bg-white");
+              dot.classList.remove("dark:bg-gray-300");
             }
             if (this.data.username === this.username) {
               this.createAlert({
@@ -172,46 +174,49 @@ export default {
         this.createAlert({
           title: "Соединение потеряно.",
           level: "danger",
-        })
+        });
       }
-      this.partyID = null
-      this.opponent = null
-      this.myMove = true
-      this.data = null
-      this.gameStatus = false
-      this.returnMoveSocket.close()
+      this.partyID = null;
+      this.opponent = null;
+      this.myMove = true;
+      this.data = null;
+      this.gameStatus = false;
+      this.returnMoveSocket.close();
     },
     gomokuPartySocketOnMessage(e) {
-      this.data = JSON.parse(e.data)
+      this.data = JSON.parse(e.data);
 
-      if (this.data.move === 'exit') {
+      if (this.data.move === "exit") {
         if (this.data.username === this.opponent) {
-          this.gomokuPartySocket.close()
+          this.gomokuPartySocket.close();
         }
-      } else if (this.data['win']) {
-        this.gomokuPartySocket.close()
+      } else if (this.data["win"]) {
+        this.gomokuPartySocket.close();
       } else {
-        let dot = document.querySelector('#' + this.data.move)
-        this.$refs.gomokuBoard.selectDot(dot)
+        let dot = document.querySelector("#" + this.data.move);
+        this.$refs.gomokuBoard.selectDot(dot);
 
-        if (this.data.username === this.username) this.myMove = false
-        else if (this.data.username === this.opponent) {
-          this.myMove = true
+        if (this.data.username === this.username) {
+          this.myMove = false;
+        } else if (this.data.username === this.opponent) {
+          this.myMove = true;
 
-          if (this.moves.length === 1) this.currentColor = 'blue'
+          if (this.moves.length === 1) {
+            this.currentColor = "blue";
+          }
         }
 
         try {
-          document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
+          document.querySelector("button.acceptReturnMoveButton").closest("[role='alert']").remove();
         } catch (e) {}
       }
     },
     gomokuPartySocketOnOpen() {
       this.gomokuPartySocket.send(JSON.stringify({
-        'access_token': this.getCookie('access')
-      }))
-      this.$refs.controlPanel.resetBoard()
-      this.gameStatus = 'playing'
+        "access_token": this.getCookie("access")
+      }));
+      this.$refs.controlPanel.resetBoard();
+      this.gameStatus = "playing";
       this.createAlert({
         title: `Вы играете против ${this.opponent}`,
         level: "simple",
@@ -219,13 +224,14 @@ export default {
     },
 
     returnMoveSocketOnMessage(e) {
-      const data = JSON.parse(e.data)
+      const data = JSON.parse(e.data);
 
-      if (data['command'] === 'return_move') {
-        let alert_title
+      if (data["command"] === "return_move") {
+        let alert_title;
 
-        if (data['returner'] === this.username) alert_title = 'Вы отправили запрос на отмену хода.'
-        else if (data['returner'] === this.opponent) {
+        if (data["returner"] === this.username) {
+          alert_title = "Вы отправили запрос на отмену хода.";
+        } else if (data["returner"] === this.opponent) {
           alert_title = `
             <div class="flex items-center">
               <p>Соперник запрашивает отмену хода.</p>
@@ -241,7 +247,7 @@ export default {
                   </svg>
                 </button>
               </div>
-            </div>`
+            </div>`;
         }
 
         this.createAlert({
@@ -249,49 +255,49 @@ export default {
           level: "simple",
         });
 
-        const _socket = this.returnMoveSocket
-        const _accessToken = this.getCookie('access')
+        const _socket = this.returnMoveSocket;
+        const _accessToken = this.getCookie("access");
 
         setTimeout(function(socket = _socket, accessToken = _accessToken) {
           const acceptOrDeclineReturnMove = function(command) {
             socket.send(JSON.stringify({
               command: command,
-              returner: data['returner'],
+              returner: data["returner"],
               access_token: accessToken,
-              returnable_move: data['returnable_move']
-            }))
+              returnable_move: data["returnable_move"]
+            }));
           }
 
-          for (let acceptReturnMoveButton of document.querySelectorAll('button.acceptReturnMoveButton')) {
-            acceptReturnMoveButton.addEventListener('click', function() {
-              acceptOrDeclineReturnMove('return_move_accept')
-            })
+          for (let acceptReturnMoveButton of document.querySelectorAll("button.acceptReturnMoveButton")) {
+            acceptReturnMoveButton.addEventListener("click", function() {
+              acceptOrDeclineReturnMove("return_move_accept");
+            });
           }
 
-          for (let declineReturnMoveButton of document.querySelectorAll('button.declineReturnMoveButton')) {
-            declineReturnMoveButton.addEventListener('click', function() {
-              acceptOrDeclineReturnMove('return_move_decline')
-            })
+          for (let declineReturnMoveButton of document.querySelectorAll("button.declineReturnMoveButton")) {
+            declineReturnMoveButton.addEventListener("click", function() {
+              acceptOrDeclineReturnMove("return_move_decline");
+            });
           }
         }, 1000)
-      } else if (data['command'] === 'return_move_accept') {
-        const returnableMoveID = data['returnable_move']
-        const returnableMove = document.querySelector('#' + returnableMoveID)
-        const index = this.moves.indexOf(returnableMoveID)
+      } else if (data["command"] === "return_move_accept") {
+        const returnableMoveID = data["returnable_move"];
+        const returnableMove = document.querySelector("#" + returnableMoveID);
+        const index = this.moves.indexOf(returnableMoveID);
 
-        returnableMove.className = this.dotClassName
-        returnableMove.innerHTML = ''
+        returnableMove.className = this.dotClassName;
+        returnableMove.innerHTML = "";
 
-        this.moves.splice(index, 1)
+        this.moves.splice(index, 1);
 
-        let alert_title
+        let alert_title;
 
-        if (data['returner'] === this.username) {
-          alert_title = 'Вы отменили ход.'
-          this.myMove = true
-        } else if (data['returner'] === this.opponent) {
-          alert_title = 'Соперник отменил ход.'
-          this.myMove = false
+        if (data["returner"] === this.username) {
+          alert_title = "Вы отменили ход.";
+          this.myMove = true;
+        } else if (data["returner"] === this.opponent) {
+          alert_title = "Соперник отменил ход.";
+          this.myMove = false;
         }
 
         this.createAlert({
@@ -300,15 +306,15 @@ export default {
         });
 
         try {
-          document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
+          document.querySelector("button.acceptReturnMoveButton").closest("[role='alert']").remove();
         } catch (e) {}
-      } else if (data['command'] === 'return_move_decline') {
-        if (data['returner'] === this.username) {
+      } else if (data["command"] === "return_move_decline") {
+        if (data["returner"] === this.username) {
           this.createAlert({
             title: "Вы не отменили ход.",
             level: "danger",
           });
-        } else if (data['returner'] === this.opponent) {
+        } else if (data["returner"] === this.opponent) {
           this.createAlert({
             title: "Соперник не отменил ход.",
             level: "simple",
@@ -316,7 +322,7 @@ export default {
         }
 
         try {
-          document.querySelector('button.acceptReturnMoveButton').closest('[role="alert"]').remove()
+          document.querySelector("button.acceptReturnMoveButton").closest("[role='alert']").remove();
         } catch (e) {}
       }
     }

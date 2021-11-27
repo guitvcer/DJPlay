@@ -4,7 +4,7 @@
       !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
       'mx-auto px-4 md:px-12 py-8 md:py-16'
     ]"
-    style="max-width: 1200px"
+    style="max-width: 1200px;"
   >
     <loading v-if="loading" />
     <div class="md:flex justify-between" v-if="!loading">
@@ -18,64 +18,66 @@
 </template>
 
 <script>
-import axios from 'axios'
-import TheSearch from '@/components/UsersList/TheSearch'
-import UserListItem from '@/components/UsersList/UserListItem'
-import Loading from '@/components/Interface/Loading'
+import axios from "axios";
+import TheSearch from "../../components/UsersList/TheSearch.vue";
+import UserListItem from "../../components/UsersList/UserListItem.vue";
+import Loading from "../../components/Interface/Loading.vue";
 
 export default {
-  components: {
-    TheSearch, UserListItem, Loading
-  },
+  components: { TheSearch, UserListItem, Loading },
   data() {
     return {
       usersList: [],
-      loading: true
+      loading: true,
     }
   },
   methods: {
     loadList(usersList) {
-      this.usersList = usersList
+      this.usersList = usersList;
     },
     apiError(error) {
-      this.$emit('api-error', error)
+      this.$emit("api-error", error);
     },
     async loadUsersList() {
-      let url = this.host + '/api'
+      let url = this.host + "/api";
 
       if (
-        this.$route.name === 'usersFriends' ||
-        this.$route.name === 'usersViewers' ||
-        this.$route.name === 'friends' ||
-        this.$route.name === 'viewers'
+        this.$route.name === "usersFriends" ||
+        this.$route.name === "usersViewers" ||
+        this.$route.name === "friends" ||
+        this.$route.name === "viewers"
       ) {
-        url += this.$route.path
+        url += this.$route.path;
       } else {
-        url += '/account/users'
+        url += "/account/users";
       }
 
       await axios
         .get(url)
         .then(response => {
-          this.usersList = response.data
-          this.loading = false
+          this.usersList = response.data;
+          this.loading = false;
         })
-        .catch(error => this.$emit('api-error', error))
+        .catch(error => this.$emit("api-error", error));
     },
     focusToSearch(event) {
-      if (event.code === 'Slash') {
+      if (event.code === "Slash") {
         try {
-          const search = document.getElementById('usersListSearch')
-          if (document.activeElement !== search) event.preventDefault()
-          search.focus()
+          const search = document.getElementById("usersListSearch");
+
+          if (document.activeElement !== search) {
+            event.preventDefault();
+          }
+
+          search.focus();
         } catch (e) {}
       }
     }
   },
   async mounted() {
-    await this.loadUsersList()
-    document.addEventListener('keydown', this.focusToSearch)
-    document.title = 'Пользователи DJPlay'
+    await this.loadUsersList();
+    document.addEventListener("keydown", this.focusToSearch);
+    document.title = "Пользователи DJPlay";
   }
 }
 </script>

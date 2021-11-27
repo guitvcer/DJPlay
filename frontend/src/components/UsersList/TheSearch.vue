@@ -33,28 +33,26 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { SearchIcon } from '@heroicons/vue/outline'
+import axios from "axios";
+import { SearchIcon } from "@heroicons/vue/outline";
 
 export default {
-  components: {
-    SearchIcon
-  },
+  components: { SearchIcon },
   data() {
     return {
       body: {
         query: '',
         isOnline: false,
-        isFriend: (this.$route.name === 'friends') ? null : false
+        isFriend: (this.$route.name === "friends") ? null : false,
       }
     }
   },
   methods: {
     async submitForm() {
       await axios
-        .post(this.host + '/api' + window.location.pathname, this.body)
-        .then(response => this.$emit('sent', response.data))
-        .catch(error => this.$emit('api-error', error))
+        .post(this.host + "/api" + window.location.pathname, this.body)
+        .then(response => this.$emit("sent", response.data))
+        .catch(error => this.$emit("api-error", error));
     }
   }
 }

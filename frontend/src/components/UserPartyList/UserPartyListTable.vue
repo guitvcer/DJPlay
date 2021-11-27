@@ -17,21 +17,19 @@
 </template>
 
 <script>
-import UserPartyListTableItem from '@/components/UserPartyList/UserPartyListTableItem'
+import UserPartyListTableItem from "./UserPartyListTableItem.vue";
 
 export default {
-  components: {
-    UserPartyListTableItem
-  },
+  components: { UserPartyListTableItem },
   props: {
     partyList: {
       type: Array,
-      required: true
+      required: true,
     },
     currentUsername: {
       type: String,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>

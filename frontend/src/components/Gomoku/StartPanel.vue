@@ -60,18 +60,16 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon'
-
 export default {
   props: {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     game: Object,
     party: Object,
     player1: Object,
-    player2: Object
+    player2: Object,
   },
 }
 </script>
