@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import Modal from "./Modal.vue";
@@ -111,29 +111,10 @@ export default {
   },
   computed: mapGetters(["user"]),
   components: { Menu, MenuButton, MenuItem, MenuItems, Modal },
-  mounted() {
-    console.log(this.user);
-  },
   methods: {
-    ...mapMutations(["createAlert", "updateOpenModal", "updateModalAction"]),
+    ...mapActions(["logout"]),
+    ...mapMutations(["updateOpenModal", "updateModalAction"]),
     ref,
-    logout() {
-      this.$parent.$parent.chatSocket.close();
-
-      document.cookie = "access=; Max-Age=0; path=/";
-      document.cookie = "refresh=; Max-Age=0; path=/";
-
-      this.$emit("load-user");
-      this.createAlert({
-        title: "Вы успешно вышли из аккаунта.",
-        level: "success"
-      });
-      this.$router.push("/");
-    },
-    closeModal() {
-      this.showAuthorizationModal = false;
-      this.showRegistrationModal = false;
-    },
   }
 }
 </script>

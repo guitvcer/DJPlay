@@ -35,6 +35,7 @@ export default {
             });
 
             commit("updateUser", user);
+            await router.push('/');
           }
         } else {
           commit("updateUser", user);
@@ -45,6 +46,19 @@ export default {
 
       commit("updateUserLoading", false);
     },
+    logout({ dispatch, commit }) {
+      // this.$parent.$parent.chatSocket.close();
+
+      document.cookie = "access=; Max-Age=0; path=/";
+      document.cookie = "refresh=; Max-Age=0; path=/";
+
+      dispatch("loadUser");
+      commit("createAlert",{
+        title: "Вы успешно вышли из аккаунта.",
+        level: "success"
+      });
+      router.push("/").then();
+    }
   },
   mutations: {
     createAlert(state, alert) {
@@ -70,7 +84,6 @@ export default {
 
     updateUser(state, user) {
       state.user = user;
-      console.log(state.user);
     },
     updateUserLoading(state, value) {
       state.userLoading = value;
