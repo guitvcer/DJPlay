@@ -27,25 +27,11 @@
           <div
             class="inline-block bg-white dark:bg-main-dark2 rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 max-w-lg w-full relative bottom-10 mx-4"
           >
-            <authorization-form
-              v-if="modalAction === 'authorization'"
-              @load-user="$emit('load-user')"
-            />
-            <registration-form
-              v-if="modalAction === 'registration'"
-              @load-user="$emit('load-user')"
-            />
-            <change-password-form
-              v-if="modalAction === 'changePassword'"
-              @load-user="$emit('load-user')"
-            />
-            <delete-profile-form
-              v-if="modalAction === 'deleteProfile'"
-              @load-user="$emit('load-user')"
-            />
-            <transform-pawn
-              v-if="modalAction === 'transformPawn'"
-            />
+            <authorization-form v-if="modalAction === 'authorization'" />
+            <registration-form v-else-if="modalAction === 'registration'" />
+            <change-password-form v-else-if="modalAction === 'changePassword'" />
+            <delete-profile-form v-else-if="modalAction === 'deleteProfile'" />
+            <transform-pawn v-else-if="modalAction === 'transformPawn'" />
           </div>
         </TransitionChild>
       </div>

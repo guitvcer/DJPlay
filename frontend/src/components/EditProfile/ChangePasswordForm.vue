@@ -1,5 +1,5 @@
 <template>
-  <form :action="action" @submit.prevent="submitForm">
+  <form :action="this.host + action" @submit.prevent="submitForm">
     <div class="px-4 py-12">
       <h3 class="text-center text-4xl font-semibold">Сменить пароль</h3>
       <div class="flex flex-col mt-12">
@@ -42,12 +42,12 @@
 
 <script>
 import { mapMutations } from "vuex";
-import axios from "axios";
+import api from "../../api/index";
 
 export default {
   data() {
     return {
-      action: this.host + "/api/account/change-password",
+      action: "/api/account/change-password",
       body: {
         oldPassword: '',
         password1: '',
@@ -55,49 +55,24 @@ export default {
       },
       inputs: [
         {
-          placeholder: 'Старый пароль',
-          name: 'oldPassword'
+          placeholder: "Старый пароль",
+          name: "oldPassword",
         },
         {
-          placeholder: 'Новый пароль',
-          name: 'password1'
+          placeholder: "Новый пароль",
+          name: "password1",
         },
         {
-          placeholder: 'Новый пароль (повторно)',
-          name: 'password2'
-        }
-      ]
+          placeholder: "Новый пароль (повторно)",
+          name: "password2",
+        },
+      ],
     }
   },
   methods: {
     ...mapMutations(["createAlert", "updateOpenModal"]),
     async submitForm() {
-      await axios
-        .patch(this.action, this.body)
-        .then(response => {
-          document.cookie = "access=; Max-Age=0; path=/";
-          document.cookie = "refresh=; Max-Age=0; path=/";
-
-          this.$emit("load-user");
-          this.createAlert({
-            title: "Вы успешно сменили пароль.",
-            level: "success",
-          });
-          this.$router.push('/');
-        })
-        .catch(error => {
-          if (error.response.status === 400) {
-            for (const field in error.response.data) {
-              this.createAlert({
-                title: this.parseErrors(error.response.data, field),
-                level: "danger",
-              });
-            }
-          } else {
-            this.$emit('api-error', error);
-          }
-        });
-
+      await api.account.changePassword(this.action, this.body);
       this.body = {};
     },
   },

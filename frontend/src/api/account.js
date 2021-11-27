@@ -131,6 +131,34 @@ export default function(instance) {
         .catch(error => {
           store.commit("updateStatus", error.response.status);
         });
+    },
+    async changePassword(action, body) {
+      return await instance
+        .patch(action, body)
+        .then(async response => {
+          document.cookie = "access=; Max-Age=0; path=/";
+          document.cookie = "refresh=; Max-Age=0; path=/";
+
+          await store.dispatch("loadUser");
+          store.commit("createAlert", {
+            title: "Вы успешно сменили пароль.",
+            level: "success",
+          });
+          store.commit("updateOpenModal", false);
+          await router.push('/');
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            for (const field in error.response.data) {
+              store.commit("createAlert",{
+                title: parseErrors(error.response.data, field),
+                level: "danger",
+              });
+            }
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
+        });
     }
   }
 }
