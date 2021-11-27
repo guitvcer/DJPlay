@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "../../api/index";
 import { SearchIcon } from "@heroicons/vue/outline";
 
 export default {
@@ -49,10 +49,7 @@ export default {
   },
   methods: {
     async submitForm() {
-      await axios
-        .post(this.host + "/api" + window.location.pathname, this.body)
-        .then(response => this.$emit("sent", response.data))
-        .catch(error => this.$emit("api-error", error));
+      this.$emit("sent", await api.account.search(body));
     }
   }
 }

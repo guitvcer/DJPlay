@@ -220,6 +220,12 @@ export default function(instance) {
             store.commit("updateStatus", error.response.status);
           }
         });
+    },
+    async search(body) {
+      return await instance
+        .post("/api" + window.location.pathname, body)
+        .then(response => response.data)
+        .catch(error => store.commit("updateStatus", error.response.status));
     }
   }
 }
