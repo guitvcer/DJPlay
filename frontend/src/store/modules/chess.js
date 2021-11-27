@@ -223,7 +223,8 @@ export default {
         +coordinate[1] === PIECE_Y[getters.currentColor === BLACK ? WHITE : BLACK]
       ) {
         commit("updateSelectedCell", coordinate);
-        commit("updateShowTransformPawnModal", true);
+        commit("updateModalAction", "transformPawn", { root: true});
+        commit("updateOpenModal", true, { root: true });
 
         return;
       }
@@ -253,7 +254,7 @@ export default {
         newMove.transformed = true;
         piece.name = pawnTo;
         piece.image = '/media/chess/pieces/' + piece.color + '/' + pawnTo + '.png';
-        commit("updateShowTransformPawnModal", false);
+        commit("updateOpenModal", false, { root: true });
       }
 
       commit("createPiece", piece);
@@ -485,10 +486,6 @@ export default {
       }
     },
 
-    updateShowTransformPawnModal(state, value) {
-      state.open = ref(value);
-    },
-
     updatePlayerEatenPieces(state, { playerIndex, queen = 0, knight = 0, rook = 0, bishop = 0, pawn = 0}) {
       state.players[playerIndex].eatenPieces.queen += queen;
       state.players[playerIndex].eatenPieces.knight += knight;
@@ -534,7 +531,6 @@ export default {
         },
       }
     ],
-    open: ref(false),
   },
   getters: {
     game(state) {
@@ -575,9 +571,6 @@ export default {
     },
     waitingPlayerIndex(state) {
       return state.players[0].color === state.moveOf ? 1 : 0;
-    },
-    open(state) {
-      return state.open;
     },
   }
 }

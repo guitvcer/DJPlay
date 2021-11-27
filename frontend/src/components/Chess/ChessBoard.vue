@@ -33,22 +33,14 @@
       </div>
     </div>
     <chess-player :index="0" />
-
-    <modal
-      action="transformPawn"
-      :open="open"
-      v-if="open"
-      @close-modal="updateShowTransformPawnModal(false)"
-    />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters } from "vuex";
 import { WHITE } from "../../scripts/chess/constants";
 import { onResizeBoard, onBoardClick } from "../../scripts/chess/board";
 import ChessPlayer from "./ChessPlayer.vue";
-import Modal from "../Interface/Modal.vue";
 
 export default {
   data() {
@@ -57,15 +49,14 @@ export default {
   mounted() {
     onResizeBoard();
   },
-  components: { ChessPlayer, Modal },
-  methods: { ...mapMutations(["updateShowTransformPawnModal"]), onBoardClick },
+  components: { ChessPlayer },
+  methods: { onBoardClick },
   computed: mapGetters([
     "currentColor",
     "field",
     "pieces",
     "players",
     "selectedPiece",
-    "open",
   ]),
 }
 </script>
