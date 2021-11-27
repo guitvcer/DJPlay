@@ -13,8 +13,6 @@
 
       <!-- User Dropdown -->
       <dropdown
-        :user="user"
-        @load-user="$emit('load-user')"
         tabindex="2"
       />
     </div>
@@ -25,14 +23,6 @@
 import Dropdown from "../Interface/Dropdown.vue";
 
 export default {
-  props: {
-    user: {
-      type: Object,
-      required: true,
-    }
-  },
-  components: {
-    Dropdown,
-  },
+  components: { Dropdown },
 }
 </script>

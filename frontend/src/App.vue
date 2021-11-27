@@ -1,14 +1,18 @@
 <template>
   <div id="app" class="h-full">
+    <loading v-if="userLoading" />
     <the-header
-      v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
-      :user="user"
+      v-if="!userLoading && $route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
       @load-user="setUserInfo"
     />
-    <alerts />
+    <alerts v-if="!userLoading" />
+    <modal v-if="!userLoading" />
 
     <!-- Content -->
-    <main :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8 overflow-y-auto']">
+    <main
+      v-if="!userLoading"
+      :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8 overflow-y-auto']"
+    >
       <router-view v-if="status === 200" @load-user="setUserInfo" @api-error="apiError" />
       <forbidden v-else-if="status === 403" />
       <not-found v-else-if="status === 404" />
@@ -18,12 +22,14 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
-import Alerts from "./components/Interface/Alerts";
-import TheHeader from '@/components/Home/TheHeader'
-import Forbidden from '@/components/ErrorPages/Forbidden'
-import NotFound from '@/components/ErrorPages/NotFound'
-import ServerError from '@/components/ErrorPages/ServerError'
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import Alerts from "./components/Interface/Alerts.vue";
+import Modal from "./components/Interface/Modal.vue";
+import TheHeader from "./components/Home/TheHeader.vue";
+import Loading from "./components/Interface/Loading";
+import Forbidden from "./components/ErrorPages/Forbidden.vue";
+import NotFound from "./components/ErrorPages/NotFound.vue";
+import ServerError from "./components/ErrorPages/ServerError.vue";
 
 export default {
   name: 'App',
@@ -38,11 +44,12 @@ export default {
       newMessageSound: new Audio(`${this.host}/media/sounds/message.mp3`)
     }
   },
-  computed: mapGetters(["status"]),
+  computed: mapGetters(["status", "userLoading"]),
   components: {
-    Alerts, TheHeader, Forbidden, NotFound, ServerError
+    Alerts, Modal, TheHeader, Loading, Forbidden, NotFound, ServerError
   },
   methods: {
+    ...mapActions(["loadUser"]),
     ...mapMutations(["createAlert", "updateStatus"]),
     async setUserInfo() {
       if (await this.isAuthenticated()) {
@@ -119,7 +126,8 @@ export default {
     }
   },
   async mounted() {
-    await this.setUserInfo()
+    await this.loadUser();
+    // await this.setUserInfo();
   }
 }
 </script>

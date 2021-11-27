@@ -1,5 +1,5 @@
 <template>
-  <form :action="this.action" method="post" @submit.prevent="submitForm">
+  <form :action="this.host + this.action" method="post" @submit.prevent="submitForm">
     <div class="px-4 pt-12">
       <h3 class="text-center text-4xl font-semibold">Вход в аккаунт</h3>
       <div class="flex flex-col mt-12">
@@ -14,6 +14,7 @@
           required
         >
       </div>
+
       <social-auth-links />
       <recaptcha-links />
     </div>
@@ -34,7 +35,7 @@
           dark:text-gray-50 dark:hover:bg-red-600
         "
         ref="cancelButtonRef"
-        @click="$emit('close-modal')"
+        @click="updateOpenModal(false)"
       >Отмена</button>
     </div>
   </form>
@@ -42,7 +43,7 @@
 
 <script>
 import { mapMutations } from "vuex";
-import axios from "axios";
+import api from "../../api/index";
 import SocialAuthLinks from "./SocialAuthLinks";
 import RecaptchaLinks from "./RecaptchaLinks";
 
@@ -69,40 +70,15 @@ export default {
           placeholder: "Пароль",
         }
       ],
-      action: this.host + "/api/account/authorization",
+      action: "/api/account/authorization",
     }
   },
   methods: {
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateOpenModal"]),
     async submitForm() {
       this.body.recaptcha = await this.recaptcha("authorization");
 
-      await axios
-        .post(this.action, this.body)
-        .then(response => {
-          this.createAlert({
-            title: "Вы успешно вошли в аккаунт.",
-            level: "success",
-          });
-          this.$emit("close-modal");
-
-          document.cookie = `access=${response.data.access}; path=/`;
-          document.cookie = `refresh=${response.data.refresh}; path=/`;
-
-          this.$emit("load-user");
-        })
-        .catch(error => {
-          if (error.response.status === 400) {
-            for (const field in error.response.data) {
-              this.createAlert({
-                title: this.parseErrors(error.response.data, field),
-                level: "danger",
-              });
-            }
-          } else {
-            this.$emit("api-error", error);
-          }
-        });
+      await api.account.auth(this.action, this.body);
 
       this.body.username = '';
       this.body.password = '';

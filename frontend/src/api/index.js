@@ -1,6 +1,8 @@
-import instance from "./instance"
-import chessModule from "./chess"
+import instance from "./instance";
+import chess from "./chess";
+import account from "./account";
 
 export default {
-  chess: chessModule(instance),
+  chess: chess(instance),
+  account: account(instance),
 }

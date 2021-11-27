@@ -1,6 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="true">
-    <Dialog as="div" static class="fixed z-10 inset-0 overflow-y-auto" @close="$emit('close-modal')">
+  <TransitionRoot as="template" :show="openModal">
+    <Dialog as="div" static class="fixed z-10 inset-0 overflow-y-auto" @close="updateOpenModal(false)">
       <div class="items-end justify-center min-h-screen text-center flex items-center p-0">
         <TransitionChild
           as="template"
@@ -28,28 +28,23 @@
             class="inline-block bg-white dark:bg-main-dark2 rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 max-w-lg w-full relative bottom-10 mx-4"
           >
             <authorization-form
-              v-if="action === 'authorization'"
-              @close-modal="$emit('close-modal')"
+              v-if="modalAction === 'authorization'"
               @load-user="$emit('load-user')"
             />
             <registration-form
-              v-if="action === 'registration'"
-              @close-modal="$emit('close-modal')"
+              v-if="modalAction === 'registration'"
               @load-user="$emit('load-user')"
             />
             <change-password-form
-              v-if="action === 'changePassword'"
-              @close-modal="$emit('close-modal')"
+              v-if="modalAction === 'changePassword'"
               @load-user="$emit('load-user')"
             />
             <delete-profile-form
-              v-if="action === 'deleteProfile'"
-              @close-modal="$emit('close-modal')"
+              v-if="modalAction === 'deleteProfile'"
               @load-user="$emit('load-user')"
             />
             <transform-pawn
-              v-if="action === 'transformPawn'"
-              @close-modal="$emit('close-modal')"
+              v-if="modalAction === 'transformPawn'"
             />
           </div>
         </TransitionChild>
@@ -59,12 +54,13 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from "vuex";
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import AuthorizationForm from '@/components/Auth/AuthorizationForm'
-import RegistrationForm from '@/components/Auth/RegistrationForm'
-import ChangePasswordForm from '@/components/EditProfile/ChangePasswordForm'
-import DeleteProfileForm from '@/components/EditProfile/DeleteProfileForm'
-import TransformPawn from '@/components/Chess/TransformPawn'
+import AuthorizationForm from "../Auth/AuthorizationForm";
+import RegistrationForm from "../Auth/RegistrationForm";
+import ChangePasswordForm from "../EditProfile/ChangePasswordForm";
+import DeleteProfileForm from "../EditProfile/DeleteProfileForm";
+import TransformPawn from "../Chess/TransformPawn";
 
 export default {
   components: {
@@ -79,11 +75,7 @@ export default {
     DeleteProfileForm,
     TransformPawn,
   },
-  props: {
-    action: {
-      type: String,
-      required: true
-    }
-  },
+  computed: mapGetters(["openModal", "modalAction"]),
+  methods: mapMutations(["updateOpenModal"]),
 }
 </script>

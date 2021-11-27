@@ -75,13 +75,13 @@
           <MenuItem v-slot="{ active }">
             <button
               :class="dropdownItemClass"
-              @click="open = true; showAuthorizationModal = true"
+              @click="updateModalAction('authorization'); updateOpenModal(true)"
             >Войти</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
             <button
               :class="dropdownItemClass"
-              @click="open = true; showRegistrationModal = true"
+              @click="showRegistrationModal = ref(true)"
             >Регистрация</button>
           </MenuItem>
           <MenuItem v-slot="{ active }">
@@ -93,25 +93,11 @@
         </div>
       </MenuItems>
     </transition>
-    <modal
-      action="authorization"
-      :open="open"
-      v-if="showAuthorizationModal"
-      @close-modal="closeModal"
-      @load-user="$emit('load-user')"
-    />
-    <modal
-      action="registration"
-      :open="open"
-      v-if="showRegistrationModal"
-      @close-modal="closeModal"
-      @load-user="$emit('load-user')"
-    />
   </Menu>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { ref } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import Modal from "./Modal.vue";
@@ -119,24 +105,18 @@ import Modal from "./Modal.vue";
 export default {
   data() {
     return {
-      open: ref(false),
-      showAuthorizationModal: false,
-      showRegistrationModal: false,
+      showRegistrationModal: ref(false),
       dropdownItemClass: 'hover:bg-main rounded hover:text-gray-200 text-gray-700 block px-4 py-2 dark:text-gray-50 dark:hover:text-gray-50 dark:hover:bg-main-dark2 w-full text-left'
     }
   },
-  props: {
-    user: {
-      type: Object,
-      default: {
-        username: "Гость",
-        avatar: "/media/avatars/user.png",
-      },
-    },
-  },
+  computed: mapGetters(["user"]),
   components: { Menu, MenuButton, MenuItem, MenuItems, Modal },
+  mounted() {
+    console.log(this.user);
+  },
   methods: {
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateOpenModal", "updateModalAction"]),
+    ref,
     logout() {
       this.$parent.$parent.chatSocket.close();
 
