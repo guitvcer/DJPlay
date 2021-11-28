@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import api from "../../api/index";
 import HomeGameItem from "../../components/home/HomeGameItem.vue";
 import Loading from "../../components/interfaace/Loading.vue";
 
@@ -28,17 +28,13 @@ export default {
     }
   },
   methods: {
-    async loadGameList() {
-      await axios
-        .get(this.host + "/api/account/games/")
-        .then(response => {
-          this.games = response.data;
-          this.loading = false;
-        });
+    async loadListOfGames() {
+      this.games = await api.account.getListOfGames();
+      this.loading = false;
     }
   },
   async mounted() {
-    await this.loadGameList();
+    await this.loadListOfGames();
 
     document.title = "DJPlay";
   },

@@ -321,6 +321,12 @@ export default function(instance) {
             store.commit("updateStatus", error.response.status);
           }
         });
+    },
+    async getListOfGames() {
+      return await instance
+        .get("/api/account/games/")
+        .then(response => response.data)
+        .catch(error => store.commit("updateStatus", error.response.status));
     }
   }
 }

@@ -1,5 +1,4 @@
 <script>
-import { mapMutations } from "vuex";
 import api from "../../api/index";
 
 export default {
@@ -12,6 +11,5 @@ export default {
 
     await this.$router.push('/');
   },
-  methods: mapMutations(["createAlert"]),
 }
 </script>
