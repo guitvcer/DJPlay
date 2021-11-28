@@ -22,7 +22,6 @@
 <script>
 import { mapMutations } from "vuex";
 import api from "../../api/index";
-import axios from 'axios'
 import Loading from "../../components/interfaace/Loading.vue";
 import LeftBlock from "../../components/chat/LeftBlock.vue";
 import RightBlock from "../../components/chat/RightBlock.vue";

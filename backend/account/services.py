@@ -18,6 +18,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from chat.services import get_or_create_chat
+from .exceptions import Gone
 from .models import User, FriendRequest, Game, UserView
 
 
@@ -196,7 +197,12 @@ def get_specific_or_current_user_info(
 
     # получить информацию определенного пользователя
     if username:
-        user = get_object_or_404(User.active.all(), username=username)
+        user = get_object_or_404(User.objects.all(), username=username)
+
+        # вернуть 204, если профиль не активный
+        if not user.is_active:
+            raise Gone
+
         return get_user_profile_info(user, current_user, serializer), user
 
     # получить информацию о текущем пользователе

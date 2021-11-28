@@ -4,14 +4,22 @@ import { getCookie, parseErrors } from "../utilities";
 
 export default function(instance) {
   return {
-    async getUser() {
+    async getUser(username = "") {
       /* Получить пользователя или гостя */
 
       return instance
-        .get("/api/account/")
+        .get(`/api/account/${username}`)
         .then(response => response.data)
         .catch(error => {
-          return store.getters.guest;
+          if (error.response.status === 404) {
+            return store.getters.guest;
+          } else if (error.response.status === 410) {
+            return {
+              username, avatar: "/media/avatars/user.png",
+            }
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
         });
     },
     async refreshToken() {

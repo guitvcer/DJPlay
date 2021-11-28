@@ -62,12 +62,12 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "../../api/index";
 import ControlPanel from "../../components/gomoku/ControlPanel.vue";
 import GomokuBoard from "../../components/gomoku/GomokuBoard.vue";
 import StartPanel from "../../components/gomoku/StartPanel.vue";
 import Loading from "../../components/interfaace/Loading.vue";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 export default {
   components: { ControlPanel, GomokuBoard, StartPanel, Loading },
@@ -83,40 +83,10 @@ export default {
     }
   },
   async mounted() {
-    await axios
-      .get(`${this.host}/api/gomoku/${this.$route.params.id}/`)
-      .then(async response => {
-        this.party = response.data;
-
-        await axios
-          .get(`${this.host}/api/account/${this.party.player1}/`)
-          .then(response => this.player1 = response.data)
-          .catch(error => {
-            if (error.response.status === 401) {
-              this.$emit("api-error", error);
-            }
-
-            this.player1 = {
-              username: this.party.player1,
-              avatar: "/media/avatars/user.png",
-            }
-          })
-
-        await axios
-          .get(`${this.host}/api/account/${this.party.player2}/`)
-          .then(response => this.player2 = response.data)
-          .catch(error => {
-            if (error.response.status === 401) this.$emit("api-error", error);
-
-            this.player2 = {
-              username: this.party.player2,
-              avatar: "/media/avatars/user.png"
-            }
-          })
-
-        this.loading = false;
-      })
-      .catch(error => this.$emit("api-error", error));
+    this.party = await api.gomoku.getParty(this.$route.params.id);
+    this.player1 = await api.account.getUser(this.party.player1);
+    this.player2 = await api.account.getUser(this.party.player2);
+    this.loading = false;
 
     document.title = `${this.party.player1} VS. ${this.party.player2}`;
   },

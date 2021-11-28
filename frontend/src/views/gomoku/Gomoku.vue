@@ -22,7 +22,7 @@
 
 <script>
 import { mapMutations } from "vuex";
-import axios from "axios";
+import api from "../../api/index";
 import Loading from "../../components/interfaace/Loading.vue";
 import ControlPanel from "../../components/gomoku/ControlPanel.vue";
 import GomokuBoard from "../../components/gomoku/GomokuBoard.vue";
@@ -56,22 +56,16 @@ export default {
   },
   computed: {
     gameBackgroundUrl() {
-      if (!this.loading)
-        return `${this.host}/media/${this.game.appName}/board_background.png`
+      if (!this.loading) {
+        return `${this.host}/media/${this.game.appName}/board_background.png`;
+      }
     }
   },
   methods: {
     ...mapMutations(["createAlert"]),
     async loadGame() {
-      await axios
-        .get( this.host + "/api/gomoku/")
-        .then(response => {
-          this.game = response.data;
-          this.loading = false;
-        })
-        .catch(error => {
-          this.$emit("api-error", error)
-        });
+      this.game = await api.gomoku.getGame();
+      this.loading = false;
     },
 
     findOpponent() {
