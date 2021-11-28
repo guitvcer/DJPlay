@@ -25,7 +25,7 @@ import api from "../../api/index";
 import Loading from "../../components/interfaace/Loading.vue";
 import LeftBlock from "../../components/chat/LeftBlock.vue";
 import RightBlock from "../../components/chat/RightBlock.vue";
-import { isAuthenticated } from "../../utilities";
+import { isAuthenticated, getCookie } from "../../utilities";
 
 export default {
   components: { Loading, LeftBlock, RightBlock },
@@ -99,7 +99,7 @@ export default {
     },
     chatSocketOnOpen() {
       this.chatSocket.send(JSON.stringify({
-        access: this.getCookie("access"),
+        access: getCookie("access"),
         chatId: this.chat.id,
       }));
     },

@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import TimeAgo from "javascript-time-ago";
 import { ArrowLeftIcon } from "@heroicons/vue/outline";
 
 export default {
@@ -43,7 +44,7 @@ export default {
         return "никогда";
       }
 
-      return this.timeAgo.format(Date.parse(date));
+      return new TimeAgo().format(Date.parse(date));
     },
     lastOnline() {
       if (this.interlocutor["gender"] === 'M') {

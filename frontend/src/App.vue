@@ -3,7 +3,6 @@
     <loading v-if="userLoading" />
     <the-header
       v-if="!userLoading && $route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
-      @load-user="setUserInfo"
     />
     <alerts v-if="!userLoading" />
     <modal v-if="!userLoading" />
@@ -13,7 +12,7 @@
       v-if="!userLoading"
       :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8 overflow-y-auto']"
     >
-      <router-view v-if="status === 200" @load-user="setUserInfo" @api-error="apiError" />
+      <router-view v-if="status === 200" />
       <forbidden v-else-if="status === 403" />
       <not-found v-else-if="status === 404" />
       <server-error v-else-if="status === 500" />
@@ -25,23 +24,19 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import Alerts from "./components/interfaace/Alerts.vue";
 import Modal from "./components/interfaace/Modal.vue";
-import TheHeader from "./components/home/TheHeader.vue";
 import Loading from "./components/interfaace/Loading";
+import TheHeader from "./components/home/TheHeader.vue";
 import Forbidden from "./components/error_pages/Forbidden.vue";
 import NotFound from "./components/error_pages/NotFound.vue";
 import ServerError from "./components/error_pages/ServerError.vue";
+import { getCookie } from "./utilities";
 
 export default {
   name: 'App',
   data() {
     return {
       chatSocket: null,
-      guest: {
-        username: 'Гость',
-        avatar: '/media/avatars/user.png'
-      },
-      user: this.guest,
-      newMessageSound: new Audio(`${this.baseURL}/media/sounds/message.mp3`)
+      newMessageSound: new Audio(`${this.baseURL}/media/sounds/message.mp3`),
     }
   },
   computed: mapGetters(["status", "userLoading"]),
@@ -53,17 +48,17 @@ export default {
     ...mapMutations(["createAlert", "updateStatus"]),
     chatSocketOnOpen() {
       this.chatSocket.send(JSON.stringify({
-        access: this.getCookie('access')
-      }))
+        access: getCookie('access'),
+      }));
     },
     chatSocketOnMessage(e) {
-      const data = JSON.parse(e.data)
+      const data = JSON.parse(e.data);
 
-      if (data.status === 400) return
+      if (data.status === 400) return;
 
-      const message = data.message
+      const message = data.message;
 
-      if (this.$route.params.username === message.sentFrom.username) return
+      if (this.$route.params.username === message.sentFrom.username) return;
 
       const title = `
         <div class="flex hover:bg-gray-100 p-2 rounded w-full">
@@ -79,29 +74,26 @@ export default {
             <h2 class="text-xl font-semibold">${message.sentFrom.username}</h2>
             <p class="text-gray-500 break-all">${message.text}</p>
           </div>
-        </div>`
+        </div>`;
 
       this.createAlert({
         level: "simple",
         url: `/chat/${message.sentFrom.username}/`,
         title: title,
       });
-      this.newMessageSound.currentTime = 0
-      this.newMessageSound.play()
+      this.newMessageSound.currentTime = 0;
+      this.newMessageSound.play();
     },
     openChatSocket() {
-      this.chatSocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + '/ws')
-      this.chatSocket.onopen = this.chatSocketOnOpen
-      this.chatSocket.onmessage = this.chatSocketOnMessage
+      this.chatSocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + "/ws");
+      this.chatSocket.onopen = this.chatSocketOnOpen;
+      this.chatSocket.onmessage = this.chatSocketOnMessage;
     },
-    async apiError(error) {
-      this.updateStatus(error.response.status);
-    }
   },
   async mounted() {
-    await this.loadUser();
+    await this.loadUser(true);
     // await this.setUserInfo();
-  }
+  },
 }
 </script>
 

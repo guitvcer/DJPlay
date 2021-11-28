@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import router from "../../router";
 import api from "../../api/index";
-import { isAuthenticated } from "../../utilities";
+import { isAuthenticated, getCookie } from "../../utilities";
 
 export default {
   actions: {
@@ -16,43 +16,43 @@ export default {
         }
       }
     },
-    async loadUser({ dispatch, commit, getters }) {
+    async loadUser({ commit, getters }, createAlert = false) {
       if (await isAuthenticated()) {
         const user = await api.account.getUser();
 
-        if (user.username === getters.guest.username) {
-          if (await api.account.refreshToken()) {
-            commit("createAlert", {
-              title: "Данные авторизации были обновлены.",
-              level: "simple",
-            });
-
-            await dispatch("loadUser");
-          } else {
-            commit("createAlert", {
-              title: "Данные авторизации устарели. Войдите в аккаунт заново.",
-              level: "warning",
-            });
-
-            commit("updateUser", user);
-            await router.push('/');
-          }
-        } else {
-          commit("updateUser", user);
-        }
+        commit("updateUser", user);
+        commit("updateUserLoading", false);
       } else {
-        commit("updateUser", getters.guest);
-      }
+        if (!getCookie("access") || !getCookie("refresh")) {
+          commit("updateUser", getters.guest);
+          commit("updateUserLoading", false);
+        } else {
+          if (await api.account.refreshToken()) {
+            const user = await api.account.getUser();
 
-      commit("updateUserLoading", false);
+            commit("updateUserLoading", false);
+            commit("updateUser", user);
+          } else {
+            if (createAlert) {
+              commit("createAlert", {
+                title: "Данные авторизации устарели. Войдите в аккаунт заново.",
+                level: "warning",
+              });
+            }
+
+            commit("updateUser", getters.guest);
+            commit("updateUserLoading", false);
+          }
+        }
+      }
     },
-    logout({ dispatch, commit }) {
+    async logout({ dispatch, commit }) {
       // this.$parent.$parent.chatSocket.close();
 
       document.cookie = "access=; Max-Age=0; path=/";
       document.cookie = "refresh=; Max-Age=0; path=/";
 
-      dispatch("loadUser");
+      await dispatch("loadUser");
       commit("createAlert",{
         title: "Вы успешно вышли из аккаунта.",
         level: "success"

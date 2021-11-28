@@ -27,6 +27,7 @@ import Loading from "../../components/interfaace/Loading.vue";
 import ControlPanel from "../../components/gomoku/ControlPanel.vue";
 import GomokuBoard from "../../components/gomoku/GomokuBoard.vue";
 import StartPanel from "../../components/gomoku/StartPanel.vue";
+import { getCookie } from "../../utilities";
 
 export default {
   data() {
@@ -114,7 +115,7 @@ export default {
     },
     findOpponentSocketOnOpen() {
       this.findOpponentSocket.send(JSON.stringify({
-        "access_token": this.getCookie("access")
+        access_token: getCookie("access")
       }));
     },
     findOpponentSocketOnClose(e) {
@@ -207,7 +208,7 @@ export default {
     },
     gomokuPartySocketOnOpen() {
       this.gomokuPartySocket.send(JSON.stringify({
-        "access_token": this.getCookie("access")
+        access_token: getCookie("access")
       }));
       this.$refs.controlPanel.resetBoard();
       this.gameStatus = "playing";
@@ -250,7 +251,7 @@ export default {
         });
 
         const _socket = this.returnMoveSocket;
-        const _accessToken = this.getCookie("access");
+        const _accessToken = getCookie("access");
 
         setTimeout(function(socket = _socket, accessToken = _accessToken) {
           const acceptOrDeclineReturnMove = function(command) {

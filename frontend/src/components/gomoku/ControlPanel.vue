@@ -59,6 +59,7 @@ import {
   RefreshIcon,
   ReplyIcon
 } from "@heroicons/vue/outline";
+import { getCookie } from "../../utilities";
 
 export default {
   props: {
@@ -92,7 +93,7 @@ export default {
             });
           } else {
             this.$parent.returnMoveSocket.send(JSON.stringify({
-              access_token: this.getCookie("access"),
+              access_token: getCookie("access"),
               command: "return_move",
               returnable_move: lastDot.id,
               returner: this.$parent.username,

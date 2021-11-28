@@ -16,6 +16,7 @@
         <search-icon class="h-6 w-6" />
       </button>
     </div>
+
     <div class="flex flex-col justify-end px-4">
       <div class="flex items-center">
         <label for="online" class="mr-2">Онлайн</label>
@@ -35,6 +36,7 @@
 <script>
 import api from "../../api/index";
 import { SearchIcon } from "@heroicons/vue/outline";
+import { isAuthenticated } from "../../utilities";
 
 export default {
   components: { SearchIcon },
@@ -48,9 +50,10 @@ export default {
     }
   },
   methods: {
+    isAuthenticated,
     async submitForm() {
       this.$emit("sent", await api.account.search(this.body));
-    }
+    },
   }
 }
 </script>

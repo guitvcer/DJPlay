@@ -39,9 +39,9 @@ export default function(instance) {
     async auth(action, body) {
       /* Авторизовать */
 
-      return await instance
+      await instance
         .post(action, body)
-        .then(response => {
+        .then(async response => {
           store.commit("createAlert",{
             title: "Вы успешно вошли в аккаунт.",
             level: "success",
@@ -51,7 +51,7 @@ export default function(instance) {
           document.cookie = `access=${response.data.access}; path=/`;
           document.cookie = `refresh=${response.data.refresh}; path=/`;
 
-          store.dispatch("loadUser");
+          await store.dispatch("loadUser");
         })
         .catch(error => {
           if (error.response.status === 400) {
@@ -71,7 +71,7 @@ export default function(instance) {
 
       return await instance
         .post(action, body)
-        .then(response => {
+        .then(async response => {
           store.commit("createAlert", {
             title: "Вы успешно вошли в аккаунт",
             level: "success",
@@ -81,7 +81,7 @@ export default function(instance) {
           document.cookie = `access=${response.data.access}; path=/`;
           document.cookie = `refresh=${response.data.refresh}; path=/`;
 
-          store.dispatch("loadUser");
+          await store.dispatch("loadUser");
         })
         .catch(error => {
           if (error.response.status === 400) {
@@ -174,7 +174,7 @@ export default function(instance) {
 
       return await instance
         .delete(action, { data })
-        .then(response => {
+        .then(async response => {
           store.commit("createAlert", {
             title: "Вы успешно удалили профиль.",
             level: "success",
@@ -183,9 +183,10 @@ export default function(instance) {
           document.cookie = "access=; Max-Age=0; path=/";
           document.cookie = "refresh=; Max-Age=0; path=/";
 
-          store.dispatch("loadUser");
+          await store.dispatch("loadUser");
           store.commit("updateOpenModal", false);
-          router.push('/');
+
+          await router.push('/');
         })
         .catch(error => {
           if (error.response.status === 400) {
@@ -207,13 +208,14 @@ export default function(instance) {
             "Content-Type": "multipart/form-data",
           },
         })
-        .then(response => {
+        .then(async response => {
           store.commit("createAlert",{
             title: "Вы успешно обновили профиль.",
             level: "success",
           });
-          store.dispatch("loadUser");
-          router.push("/account/");
+
+          await store.dispatch("loadUser");
+          await router.push("/account/");
         })
         .catch(error => {
           if (error.response.status === 400) {
@@ -268,11 +270,11 @@ export default function(instance) {
           google_client_id: process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"],
           provider: 'Google',
         })
-        .then(response => {
+        .then(async response => {
           document.cookie = `access=${response.data.access}; path=/`;
           document.cookie = `refresh=${response.data.refresh}; path=/`;
 
-          store.dispatch("loadUser");
+          await store.dispatch("loadUser");
           store.commit("createAlert", {
             title: "Вы успешно авторизовались.",
             level: "success",
@@ -303,11 +305,11 @@ export default function(instance) {
           vk_client_id: process.env["VUE_APP_VK_OAUTH2_PUBLIC"],
           provider: "VK",
         })
-        .then(response => {
+        .then(async response => {
           document.cookie = `access=${response.data.access}; path=/`;
           document.cookie = `refresh=${response.data.refresh}; path=/`;
 
-          store.dispatch("loadUser");
+          await store.dispatch("loadUser");
           store.commit("createAlert", {
             title: "Вы успешно авторизовались.",
             level: "success",

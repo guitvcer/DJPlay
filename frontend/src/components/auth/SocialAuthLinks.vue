@@ -19,7 +19,7 @@
       class="rounded hover:bg-gray-50 dark:hover:bg-main-dark p-2 mx-0.5 border dark:border-main"
       title="Авторизация через VK"
     >
-      <img :src="this.URL + '/media/icons/vk.svg'" alt="VK" class="w-8 h-8">
+      <img :src="this.baseURL + '/media/icons/vk.svg'" alt="VK" class="w-8 h-8">
     </a>
   </div>
 </template>

@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import TimeAgo from "javascript-time-ago";
 import { DateTime } from "luxon";
 
 export default {
@@ -39,7 +40,7 @@ export default {
         if (this.field.fieldValue === "") {
           return "Не указано";
         } else if (["Был(-а) онлайн", "Был онлайн", "Была онлайн"].includes(this.field.fieldName)) {
-          return this.timeAgo.format(Date.parse(this.field.fieldValue));
+          return new TimeAgo().format(Date.parse(this.field.fieldValue));
         } else if (this.field.fieldName === "Дата рождения" || this.field.fieldName === "Дата регистрации") {
           const date = DateTime.fromISO(this.field.fieldValue).setLocale("ru").toFormat("d MMMM y") + " г.";
 
