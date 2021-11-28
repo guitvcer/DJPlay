@@ -4,7 +4,7 @@
     class="py-2 md:p-4 px-3 rounded dark:hover:bg-main-dark2 mx-1 hover:bg-white flex w-full md:w-32 md:block items-center"
   >
     <div
-      :style="'background-image: url(' + this.host + user.avatar + '); background-size: 100% 100%'"
+      :style="'background-image: url(' + this.baseURL + user.avatar + '); background-size: 100% 100%'"
       class="w-12 h-12 md:w-24 md:h-24 rounded flex justify-end items-end"
     >
       <div v-if="user['isOnline']" class="rounded w-5 h-5 bg-green-500"></div>

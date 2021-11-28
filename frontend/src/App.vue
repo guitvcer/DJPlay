@@ -41,7 +41,7 @@ export default {
         avatar: '/media/avatars/user.png'
       },
       user: this.guest,
-      newMessageSound: new Audio(`${this.host}/media/sounds/message.mp3`)
+      newMessageSound: new Audio(`${this.baseURL}/media/sounds/message.mp3`)
     }
   },
   computed: mapGetters(["status", "userLoading"]),
@@ -69,7 +69,7 @@ export default {
         <div class="flex hover:bg-gray-100 p-2 rounded w-full">
           <div>
             <div
-              style="background-image: url(${this.host}${message.sentFrom.avatar}); background-size: 100% 100%"
+              style="background-image: url(${this.baseURL}${message.sentFrom.avatar}); background-size: 100% 100%"
               class="w-12 h-12 rounded flex justify-end items-end"
             >
               <div class="rounded w-4 h-4 bg-green-500"></div>
@@ -90,7 +90,7 @@ export default {
       this.newMessageSound.play()
     },
     openChatSocket() {
-      this.chatSocket = new WebSocket(this.webSocketHost + '/ws')
+      this.chatSocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + '/ws')
       this.chatSocket.onopen = this.chatSocketOnOpen
       this.chatSocket.onmessage = this.chatSocketOnMessage
     },

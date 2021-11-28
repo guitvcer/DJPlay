@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 dark:bg-main-dark dark:hover:bg-main rounded hover:bg-white pt-8 pb-24 px-16 flex flex-col items-center mx-5 my-4">
-    <img :src="this.host + game.image" :alt="game.name" class="w-60 mb-10 dark:text-gray-200">
+    <img :src="this.baseURL + game.image" :alt="game.name" class="w-60 mb-10 dark:text-gray-200">
     <h3 class="font-bold text-3xl mb-4">{{ game.name }}</h3>
     <router-link
       :to="{ name: game.appName }"

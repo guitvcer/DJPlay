@@ -57,7 +57,7 @@ export default {
   computed: {
     gameBackgroundUrl() {
       if (!this.loading) {
-        return `${this.host}/media/${this.game.appName}/board_background.png`;
+        return `${this.baseURL}/media/${this.game.appName}/board_background.png`;
       }
     }
   },
@@ -79,7 +79,7 @@ export default {
       }
 
       this.gameStatus = "finding";
-      this.findOpponentSocket = new WebSocket(this.webSocketHost + "/gomoku/ws/find");
+      this.findOpponentSocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + "/gomoku/ws/find");
       this.findOpponentSocket.onopen = this.findOpponentSocketOnOpen;
       this.findOpponentSocket.onmessage = this.findOpponentSocketOnMessage;
       this.findOpponentSocket.onclose = this.findOpponentSocketOnClose;
@@ -104,12 +104,12 @@ export default {
 
       this.findOpponentSocket.close();
 
-      this.gomokuPartySocket = new WebSocket(this.webSocketHost + "/gomoku/ws/play/" + data["party_id"]);
+      this.gomokuPartySocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + "/gomoku/ws/play/" + data["party_id"]);
       this.gomokuPartySocket.onopen = this.gomokuPartySocketOnOpen;
       this.gomokuPartySocket.onmessage = this.gomokuPartySocketOnMessage;
       this.gomokuPartySocket.onclose = this.gomokuPartySocketOnClose;
 
-      this.returnMoveSocket = new WebSocket(this.webSocketHost + "/gomoku/ws/chat/" + data["party_id"]);
+      this.returnMoveSocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + "/gomoku/ws/chat/" + data["party_id"]);
       this.returnMoveSocket.onmessage = this.returnMoveSocketOnMessage;
     },
     findOpponentSocketOnOpen() {

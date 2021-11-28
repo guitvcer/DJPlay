@@ -7,8 +7,8 @@ export default function(instance) {
     async getUser(username = "") {
       /* Получить пользователя или гостя */
 
-      return instance
-        .get(`/api/account/${username}`)
+      return await instance
+        .get(`/account/${username}`)
         .then(response => response.data)
         .catch(error => {
           if (error.response.status === 404) {
@@ -25,8 +25,8 @@ export default function(instance) {
     async refreshToken() {
       /* Обновить access токен используя refresh токен */
 
-      return instance
-        .post("/api/account/refresh-token", {
+      return await instance
+        .post("/account/refresh-token", {
           access: getCookie("access"),
           refresh: getCookie("refresh"),
         })
@@ -52,7 +52,6 @@ export default function(instance) {
           document.cookie = `refresh=${response.data.refresh}; path=/`;
 
           store.dispatch("loadUser");
-          // this.$emit("load-user");
         })
         .catch(error => {
           if (error.response.status === 400) {
@@ -100,7 +99,7 @@ export default function(instance) {
     async getViewedUser() {
       /* Получить информацию о просматриваемом пользователе */
 
-      let url = "/api/account/";
+      let url = "/account/";
 
       if (router.currentRoute["_value"].params.username) {
         url += router.currentRoute["_value"].params.username;
@@ -231,17 +230,17 @@ export default function(instance) {
     },
     async search(body) {
       return await instance
-        .post("/api" + window.location.pathname, body)
+        .post(window.location.pathname, body)
         .then(response => response.data)
         .catch(error => store.commit("updateStatus", error.response.status));
     },
     async getUsersList() {
-      let url = "/api";
+      let url;
 
       if (["usersFriends", "usersViewers", "friends", "viewers"].includes(router.currentRoute.value)) {
-        url += router.currentRoute.value;
+        url = router.currentRoute.value;
       } else {
-        url += "/account/users";
+        url = "/account/users";
       }
 
       return await instance
@@ -264,7 +263,7 @@ export default function(instance) {
       /* Авторизоваться через Google отправив code полученный из Google бэкенду */
 
       await instance
-        .post("/api/account/social-authorization", {
+        .post("/account/social-authorization", {
           code,
           google_client_id: process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"],
           provider: 'Google',
@@ -299,7 +298,7 @@ export default function(instance) {
       /* Авторизоваться через VK отправив code полученный из VK бэкенду */
 
       await instance
-        .post("/api/account/social-authorization", {
+        .post("/account/social-authorization", {
           code,
           vk_client_id: process.env["VUE_APP_VK_OAUTH2_PUBLIC"],
           provider: "VK",
@@ -332,13 +331,13 @@ export default function(instance) {
     },
     async getListOfGames() {
       return await instance
-        .get("/api/account/games/")
+        .get("/account/games/")
         .then(response => response.data)
         .catch(error => store.commit("updateStatus", error.response.status));
     },
     async getUserPartyList(username = null, game, page) {
       return await instance
-        .get("/api/account" + (username ? "/" + username : "") + "/party-list/" + game + "/?page=" + page)
+        .get("/account" + (username ? "/" + username : "") + "/party-list/" + game + "/?page=" + page)
         .then(response => {
           const result = { title: null, data: response.data };
 

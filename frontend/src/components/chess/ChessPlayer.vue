@@ -7,7 +7,7 @@
           class="flex rounded hover:bg-gray-200 dark:hover:bg-main p-1"
         >
           <img
-            :src="this.host + players[index].user.avatar"
+            :src="this.baseURL + players[index].user.avatar"
             alt="Фото пользователя"
             class="w-10 h-10 rounded mx-2"
           >
@@ -84,7 +84,7 @@ export default {
   computed: {
     ...mapGetters(["players"]),
     url() {
-      return this.host + '/media/chess/pieces/' + (this.players[this.index].color === WHITE ? BLACK : WHITE);
+      return this.baseURL + '/media/chess/pieces/' + (this.players[this.index].color === WHITE ? BLACK : WHITE);
     }
   }
 }

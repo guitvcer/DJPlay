@@ -7,19 +7,13 @@ import api from "./api/index";
 import ru from "javascript-time-ago/locale/ru";
 import store from "./store";
 import "./assets/tailwind.css";
-import { getCookie, isAuthenticated, parseErrors } from "./utilities";
+import { getCookie } from "./utilities";
 
 
 const app = createApp(App);
-const domain = process.env["VUE_APP_BACKEND_HOST"];
-const httpProtocol = process.env["VUE_APP_HTTP_PROTOCOL"] ?? "http";
-const webSocketProtocol = process.env["VUE_APP_WEBSOCKET_PROTOCOL"] ?? "ws";
 
-app.config.globalProperties.host = `${httpProtocol}://${domain}`;
-app.config.globalProperties.webSocketHost = `${webSocketProtocol}://${domain}/api`;
+app.config.globalProperties.baseURL = process.env["VUE_APP_BASE_URL"];
 app.config.globalProperties.getCookie = getCookie;
-app.config.globalProperties.isAuthenticated = isAuthenticated;
-app.config.globalProperties.parseErrors = parseErrors;
 app.provide("$api", api);
 
 app.use(VueReCaptcha, { siteKey: process.env["VUE_APP_RECAPTCHA_PUBLIC"]});
@@ -34,5 +28,3 @@ app.config.globalProperties.timeAgo = new TimeAgo();
 app.use(store);
 
 app.use(router).mount("#app");
-
-export default app.config.globalProperties.host;

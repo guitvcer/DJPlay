@@ -22,7 +22,7 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   data() {
     return {
-      pieceImageUrl: this.host + '/media/chess/pieces/',
+      pieceImageUrl: this.baseURL + '/media/chess/pieces/',
       pieces: [
         { name: "queen", title: "Ферзь" },
         { name: "knight", title: "Конь" },

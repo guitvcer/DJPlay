@@ -1,8 +1,7 @@
 import { ref } from "vue";
 import router from "../../router";
 import api from "../../api/index";
-import { isAuthenticated, refreshToken } from "../../utilities";
-import instance from "../../api/instance";
+import { isAuthenticated } from "../../utilities";
 
 export default {
   actions: {

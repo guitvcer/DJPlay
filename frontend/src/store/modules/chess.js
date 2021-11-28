@@ -1,7 +1,13 @@
-import { ref } from "vue";
 import api from "../../api/index";
 import { WHITE, BLACK, PIECE_Y, GAME_STASUSES } from "../../scripts/chess/constants";
-import { getField, isCellEmpty, isCellHostile, eatingOnAisle, check, willCheckEntail } from "../../scripts/chess/board";
+import {
+  getField,
+  isCellEmpty,
+  isCellHostile,
+  eatingOnAisle,
+  check,
+  willCheckEntail
+} from "../../scripts/chess/board";
 import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
@@ -10,9 +16,7 @@ export default {
     async loadChess({ commit }) {
       /* Загрузить информацию о Шахматах */
 
-      const response = await api.chess.load();
-
-      commit("updateGame", response.data);
+      commit("updateGame", await api.chess.getGame());
     },
 
     swapMoveOf({ dispatch, commit, getters }) {

@@ -6,7 +6,7 @@
     <loading v-if="loading" class="m-auto" />
     <form
       v-if="!loading"
-      :action="this.host + action"
+      :action="this.baseURL + '/api' + action"
       @submit.prevent="submitForm"
       class="block lg:flex justify-around"
     >
@@ -22,11 +22,12 @@ import api from "../../api/index";
 import EditProfileAvatar from "../../components/edit_profile/EditProfileAvatar.vue";
 import EditProfileTable from "../../components/edit_profile/EditProfileTable.vue";
 import Loading from "../../components/interfaace/Loading.vue";
+import { isAuthenticated } from "../../utilities";
 
 export default {
   data() {
     return {
-      action: "/api/account/edit/",
+      action: "/account/edit/",
       loading: true,
     }
   },
@@ -45,7 +46,7 @@ export default {
     },
   },
   async mounted() {
-    if (await this.isAuthenticated()) {
+    if (await isAuthenticated()) {
       await this.loadUser();
       this.loading = false;
       document.title = "Изменить профиль";

@@ -1,6 +1,6 @@
 <template>
   <div class="mx-2 lg:mx-12 mb-12 flex-shrink-0">
-    <img :src="host + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">
+    <img :src="this.baseURL + user.avatar" alt="Фото пользователя" class="w-56 h-56 rounded mb-6 mx-auto">
     <h2
       class="text-3xl font-semibold mb-3 text-center lg:text-left select-text"
       style="word-break: break-word"
@@ -54,6 +54,7 @@
 import { mapMutations } from "vuex";
 import api from "../../api/index";
 import ProfileButton from "./ProfileButton.vue";
+import { isAuthenticated } from "../../utilities";
 
 export default {
   props: {
@@ -70,7 +71,7 @@ export default {
   methods: {
     ...mapMutations(["createAlert", "updateOpenModal", "updateModalAction"]),
     async friendRequest() {
-      if (this.isAuthenticated()) {
+      if (await isAuthenticated()) {
         await api.account.sendFriendRequest("/api" + window.location.pathname + "friend-request")
         this.$emit("load-profile");
       } else {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getCookie, isAuthenticated } from "../utilities";
 
-const baseURL = process.env.VUE_APP_HTTP_HOST;
+const baseURL = process.env.VUE_APP_BASE_URL + "/api";
 const instance = axios.create({ baseURL });
 
 instance.interceptors.request.use(async config => {
@@ -10,7 +10,7 @@ instance.interceptors.request.use(async config => {
   await isAuthenticated().then(value => isAuthorized = value);
 
   if (isAuthorized) {
-    await fetch("${baseURL}/api/account/", {
+    await fetch(`${baseURL}/account/`, {
       headers: {
         Authorization: "Bearer " + getCookie("access"),
       }

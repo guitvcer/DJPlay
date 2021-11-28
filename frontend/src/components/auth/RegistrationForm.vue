@@ -1,5 +1,5 @@
 <template>
-  <form :action="this.host + this.action" method="post" @submit.prevent="submitForm">
+  <form :action="this.baseURL + '/api' + this.action" method="post" @submit.prevent="submitForm">
     <div class="px-4 pt-12 pb-4">
       <h3 class="text-center text-4xl font-semibold">Регистрация</h3>
       <div class="flex flex-col mt-12">
@@ -83,7 +83,7 @@ export default {
           placeholder: "Эл. почта",
         },
       ],
-      action: "/api/account/registration",
+      action: "/account/registration",
     }
   },
   components: { SocialAuthLinks, RecaptchaLinks },

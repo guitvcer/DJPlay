@@ -25,6 +25,7 @@ import api from "../../api/index";
 import Loading from "../../components/interfaace/Loading.vue";
 import LeftBlock from "../../components/chat/LeftBlock.vue";
 import RightBlock from "../../components/chat/RightBlock.vue";
+import { isAuthenticated } from "../../utilities";
 
 export default {
   components: { Loading, LeftBlock, RightBlock },
@@ -58,7 +59,7 @@ export default {
 
         document.title = `Сообщения - ${this.interlocutor.username}`;
 
-        this.chatSocket = new WebSocket(`${this.webSocketHost}/ws`);
+        this.chatSocket = new WebSocket(`${process.env.VUE_APP_BASE_WS_URL}/ws`);
         this.chatSocket.onopen = this.chatSocketOnOpen;
         this.chatSocket.onmessage = this.chatSocketOnMessage;
       }, 10)
@@ -122,7 +123,7 @@ export default {
     },
   },
   async mounted() {
-    if (!this.isAuthenticated()) {
+    if (!await isAuthenticated()) {
       this.createAlert({
         title: "Вы не авторизованы.",
         level: "danger",

@@ -1,5 +1,5 @@
 <template>
-  <form :action="action" method="post" @submit.prevent="submitForm">
+  <form :action="this.baseURL + '/api' + action" method="post" @submit.prevent="submitForm">
     <div class="px-4 py-12">
       <h3 class="text-center text-4xl font-semibold">Удалить аккаунт</h3>
       <div class="flex flex-col mt-12">
@@ -45,7 +45,7 @@ import api from "../../api/index";
 export default {
   data() {
     return {
-      action: "/api/account/delete",
+      action: "/account/delete",
       password: '',
     }
   },

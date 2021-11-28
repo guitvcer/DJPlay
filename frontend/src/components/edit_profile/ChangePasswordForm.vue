@@ -1,5 +1,5 @@
 <template>
-  <form :action="this.host + action" @submit.prevent="submitForm">
+  <form :action="this.baseURL + '/api' + action" @submit.prevent="submitForm">
     <div class="px-4 py-12">
       <h3 class="text-center text-4xl font-semibold">Сменить пароль</h3>
       <div class="flex flex-col mt-12">
@@ -47,7 +47,7 @@ import api from "../../api/index";
 export default {
   data() {
     return {
-      action: "/api/account/change-password",
+      action: "/account/change-password",
       body: {
         oldPassword: '',
         password1: '',

@@ -1,7 +1,12 @@
+import store from "../store/index";
+
 export default function(instance) {
   return {
-    load() {
-      return instance.get("/api/chess/");
+    getGame() {
+      return instance
+        .get("/chess/")
+        .then(response => response.data)
+        .catch(error => store.commit("updateStatus", error.response.status));
     },
   }
 }

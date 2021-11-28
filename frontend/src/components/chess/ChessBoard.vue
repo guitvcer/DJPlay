@@ -27,7 +27,7 @@
       >
         <img
           v-if="pieces[coordinate]"
-          :src="this.host + pieces[coordinate].image"
+          :src="this.baseURL + pieces[coordinate].image"
           :alt="pieces[coordinate].name"
         >
       </div>
