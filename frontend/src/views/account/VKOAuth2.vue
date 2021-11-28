@@ -4,7 +4,7 @@ import api from "../../api/index";
 
 export default {
   async mounted() {
-    const code = new URL(window.location.href).searchParams.get("code")
+    const code = new URL(window.location.href).searchParams.get("code");
 
     if (code) {
       await api.account.vkAuth(code);

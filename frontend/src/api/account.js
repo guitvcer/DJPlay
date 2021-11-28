@@ -291,7 +291,7 @@ export default function(instance) {
       /* Авторизоваться через VK отправив code полученный из VK бэкенду */
 
       await instance
-        .post(`${this.host}/api/account/social-authorization`, {
+        .post("/api/account/social-authorization", {
           code,
           vk_client_id: process.env["VUE_APP_VK_OAUTH2_PUBLIC"],
           provider: "VK",
