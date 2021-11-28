@@ -251,6 +251,41 @@ export default function(instance) {
           });
         })
         .catch(error => store.commit('updateStatus', error.response.status));
+    },
+    async googleAuth(code) {
+      /* Авторизоваться через Google отправив code полученный из Google бэкенду */
+
+      await instance
+        .post("/api/account/social-authorization", {
+          code,
+          google_client_id: process.env["VUE_APP_GOOGLE_OAUTH2_PUBLIC"],
+          provider: 'Google',
+        })
+        .then(response => {
+          document.cookie = `access=${response.data.access}; path=/`;
+          document.cookie = `refresh=${response.data.refresh}; path=/`;
+
+          store.dispatch("loadUser");
+          store.commit("createAlert", {
+            title: "Вы успешно авторизовались.",
+            level: "success",
+          });
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            store.commit("createAlert", {
+              title: "Произошла ошибка. Попробуйте еще.",
+              level: "danger",
+            });
+          } else if (error.response.status === 404) {
+            store.commit("createAlert", {
+              title: "Ваш аккаунт удален.",
+              level: "danger",
+            });
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
+        })
     }
   }
 }
