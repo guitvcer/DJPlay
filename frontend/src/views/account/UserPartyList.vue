@@ -39,9 +39,9 @@
 
 <script>
 import axios from "axios";
-import UserPartyListTable from "../../components/UserPartyList/UserPartyListTable.vue";
-import Paginator from "../../components/Interface/Paginator.vue";
-import Loading from "../../components/Interface/Loading.vue";
+import UserPartyListTable from "../../components/user_party_list/UserPartyListTable.vue";
+import Paginator from "../../components/interfaace/Paginator.vue";
+import Loading from "../../components/interfaace/Loading.vue";
 
 export default {
   components: { UserPartyListTable, Paginator, Loading },

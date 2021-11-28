@@ -21,9 +21,9 @@
 
 <script>
 import api from "../../api/index";
-import TheSearch from "../../components/UsersList/TheSearch.vue";
-import UserListItem from "../../components/UsersList/UserListItem.vue";
-import Loading from "../../components/Interface/Loading.vue";
+import TheSearch from "../../components/users_list/TheSearch.vue";
+import UserListItem from "../../components/users_list/UserListItem.vue";
+import Loading from "../../components/interfaace/Loading.vue";
 
 export default {
   components: { TheSearch, UserListItem, Loading },

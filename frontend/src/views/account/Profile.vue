@@ -20,9 +20,9 @@
 
 <script>
 import api from "../../api/index";
-import ProfileAvatar from "../../components/Profile/ProfileAvatar.vue";
-import ProfileTable from "../../components/Profile/ProfileTable.vue";
-import Loading from "../../components/Interface/Loading.vue";
+import ProfileAvatar from "../../components/profile/ProfileAvatar.vue";
+import ProfileTable from "../../components/profile/ProfileTable.vue";
+import Loading from "../../components/interfaace/Loading.vue";
 
 export default {
   components: { ProfileAvatar, ProfileTable, Loading },

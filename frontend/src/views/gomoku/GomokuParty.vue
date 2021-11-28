@@ -63,10 +63,10 @@
 
 <script>
 import axios from "axios";
-import ControlPanel from "../../components/Gomoku/ControlPanel.vue";
-import GomokuBoard from "../../components/Gomoku/GomokuBoard.vue";
-import StartPanel from "../../components/Gomoku/StartPanel.vue";
-import Loading from "../../components/Interface/Loading.vue";
+import ControlPanel from "../../components/gomoku/ControlPanel.vue";
+import GomokuBoard from "../../components/gomoku/GomokuBoard.vue";
+import StartPanel from "../../components/gomoku/StartPanel.vue";
+import Loading from "../../components/interfaace/Loading.vue";
 import {DateTime} from "luxon";
 
 export default {

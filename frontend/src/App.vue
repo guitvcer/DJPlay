@@ -23,13 +23,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import Alerts from "./components/Interface/Alerts.vue";
-import Modal from "./components/Interface/Modal.vue";
-import TheHeader from "./components/Home/TheHeader.vue";
-import Loading from "./components/Interface/Loading";
-import Forbidden from "./components/ErrorPages/Forbidden.vue";
-import NotFound from "./components/ErrorPages/NotFound.vue";
-import ServerError from "./components/ErrorPages/ServerError.vue";
+import Alerts from "./components/interfaace/Alerts.vue";
+import Modal from "./components/interfaace/Modal.vue";
+import TheHeader from "./components/home/TheHeader.vue";
+import Loading from "./components/interfaace/Loading";
+import Forbidden from "./components/error_pages/Forbidden.vue";
+import NotFound from "./components/error_pages/NotFound.vue";
+import ServerError from "./components/error_pages/ServerError.vue";
 
 export default {
   name: 'App',

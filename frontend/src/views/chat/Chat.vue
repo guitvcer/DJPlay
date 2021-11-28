@@ -22,9 +22,9 @@
 <script>
 import { mapMutations } from "vuex";
 import axios from 'axios'
-import Loading from "../../components/Interface/Loading.vue";
-import LeftBlock from "../../components/Chat/LeftBlock.vue";
-import RightBlock from "../../components/Chat/RightBlock.vue";
+import Loading from "../../components/interfaace/Loading.vue";
+import LeftBlock from "../../components/chat/LeftBlock.vue";
+import RightBlock from "../../components/chat/RightBlock.vue";
 
 export default {
   components: {

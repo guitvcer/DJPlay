@@ -16,8 +16,8 @@
 
 <script>
 import axios from 'axios'
-import HomeGameItem from "../../components/Home/HomeGameItem.vue";
-import Loading from "../../components/Interface/Loading.vue";
+import HomeGameItem from "../../components/home/HomeGameItem.vue";
+import Loading from "../../components/interfaace/Loading.vue";
 
 export default {
   components: { HomeGameItem, Loading },

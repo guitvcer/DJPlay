@@ -42,11 +42,11 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import AuthorizationForm from "../Auth/AuthorizationForm.vue";
-import RegistrationForm from "../Auth/RegistrationForm.vue";
-import ChangePasswordForm from "../EditProfile/ChangePasswordForm.vue";
-import DeleteProfileForm from "../EditProfile/DeleteProfileForm.vue";
-import TransformPawn from "../Chess/TransformPawn.vue";
+import AuthorizationForm from "../auth/AuthorizationForm.vue";
+import RegistrationForm from "../auth/RegistrationForm.vue";
+import ChangePasswordForm from "../edit_profile/ChangePasswordForm.vue";
+import DeleteProfileForm from "../edit_profile/DeleteProfileForm.vue";
+import TransformPawn from "../chess/TransformPawn.vue";
 
 export default {
   components: {

@@ -104,7 +104,7 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    component: () => import("./components/ErrorPages/NotFound.vue"),
+    component: () => import("./components/error_pages/NotFound.vue"),
   },
 ];
 

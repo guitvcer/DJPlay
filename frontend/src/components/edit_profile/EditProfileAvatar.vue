@@ -42,7 +42,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import AvatarInput from "./AvatarInput.vue";
-import ProfileButton from "../Profile/ProfileButton.vue";
+import ProfileButton from "../profile/ProfileButton.vue";
 
 export default {
   data() {
