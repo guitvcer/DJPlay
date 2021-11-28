@@ -285,7 +285,42 @@ export default function(instance) {
           } else {
             store.commit("updateStatus", error.response.status);
           }
+        });
+    },
+    async vkAuth(code) {
+      /* Авторизоваться через VK отправив code полученный из VK бэкенду */
+
+      await instance
+        .post(`${this.host}/api/account/social-authorization`, {
+          code,
+          vk_client_id: process.env["VUE_APP_VK_OAUTH2_PUBLIC"],
+          provider: "VK",
         })
+        .then(response => {
+          document.cookie = `access=${response.data.access}; path=/`;
+          document.cookie = `refresh=${response.data.refresh}; path=/`;
+
+          store.dispatch("loadUser");
+          store.commit("createAlert", {
+            title: "Вы успешно авторизовались.",
+            level: "success",
+          });
+        })
+        .catch(error => {
+          if (error.response.status === 400) {
+            store.commit("createAlert", {
+              title: "Произошла ошибка. Попробуйте еще.",
+              level: "danger",
+            });
+          } else if (error.response.status === 404) {
+            store.commit("createAlert", {
+              title: "Ваш аккаунт удален.",
+              level: "danger",
+            });
+          } else {
+            store.commit("updateStatus", error.response.status);
+          }
+        });
     }
   }
 }
