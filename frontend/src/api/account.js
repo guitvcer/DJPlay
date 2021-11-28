@@ -327,6 +327,22 @@ export default function(instance) {
         .get("/api/account/games/")
         .then(response => response.data)
         .catch(error => store.commit("updateStatus", error.response.status));
+    },
+    async getUserPartyList(username = null, game, page) {
+      return await instance
+        .get("/api/account" + (username ? "/" + username : "") + "/party-list/" + game + "/?page=" + page)
+        .then(response => {
+          const result = { title: null, data: response.data };
+
+          if (username) {
+            result.title = "Партии " + username;
+          } else {
+            result.title = "Ваши партии";
+          }
+
+          return result;
+        })
+        .catch(error => store.commit("updateStatus", error.response.status));
     }
   }
 }

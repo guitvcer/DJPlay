@@ -4,7 +4,7 @@
       !loading ? 'bg-gray-50 dark:bg-main-dark ' : 'flex justify-center ',
       'block justify-around mx-auto px-4 md:px-12 py-8 md:py-16'
     ]"
-    style="max-width: 1200px"
+    style="max-width: 1200px;"
   >
     <loading v-if="loading" />
 
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "../../api/index";
 import UserPartyListTable from "../../components/user_party_list/UserPartyListTable.vue";
 import Paginator from "../../components/interfaace/Paginator.vue";
 import Loading from "../../components/interfaace/Loading.vue";
@@ -58,48 +58,21 @@ export default {
     }
   },
   methods: {
-    getUrl() {
-      let url = `${this.host}/api/account`;
-
-      if (this.$route.params.username) {
-        url += `/${this.$route.params.username}`;
-      }
-
-      url += `/party-list/${this.game}/`;
-
-      return url;
-    },
     async loadUserPartyList() {
-      let url = this.getUrl();
-
-      if (this.page == null)  {
-        this.page = 1;
-      } else {
-        url += `?page=${this.page}`;
-      }
+      this.loading = true;
+      this.page = this.page ?? 1;
 
       await this.$router.push(`?page=${this.page}`);
 
-      await axios
-        .get(url)
-        .then(response => {
-          this.partyListLength = response.data.count;
-          this.nextPage = response.data.next;
-          this.previousPage = response.data.previous;
-          this.partyList = response.data.results;
-          this.loading = false;
+      const result = await api.account.getUserPartyList(this.$route.params.username, this.game, this.page);
 
-          if (this.$route.params.username) {
-            this.title = `Партии ${this.$route.params.username}`;
-          } else {
-            this.title = "Ваши партии";
-          }
+      this.partyListLength = result.data.count;
+      this.nextPage = result.data.next;
+      this.previousPage = result.data.previous;
+      this.partyList = result.data.results;
+      this.loading = false;
 
-          document.title = this.title;
-        })
-        .catch(error => {
-          this.$emit("api-error", error);
-        });
+      document.title = result.title;
     },
     async loadFirstPage() {
       this.page = 1;
@@ -125,15 +98,6 @@ export default {
   },
   mounted() {
     this.loadUserPartyList();
-  },
-  computed: {
-    username() {
-      if (this.$route.params.username) {
-        return this.$route.params.username;
-      } else {
-        return document.querySelector('#username').innerHTML;
-      }
-    }
   },
   watch: {
     game() {
