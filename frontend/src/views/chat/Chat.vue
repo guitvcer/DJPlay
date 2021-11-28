@@ -21,15 +21,14 @@
 
 <script>
 import { mapMutations } from "vuex";
+import api from "../../api/index";
 import axios from 'axios'
 import Loading from "../../components/interfaace/Loading.vue";
 import LeftBlock from "../../components/chat/LeftBlock.vue";
 import RightBlock from "../../components/chat/RightBlock.vue";
 
 export default {
-  components: {
-    Loading, LeftBlock, RightBlock,
-  },
+  components: { Loading, LeftBlock, RightBlock },
   data() {
     return {
       chats: null,
@@ -43,37 +42,26 @@ export default {
   methods: {
     ...mapMutations(["createAlert"]),
     async loadChats() {
-      await axios
-        .get(`${this.host}/api/chat/`)
-        .then(response => {
-          this.chats = response.data;
-          this.loading = false;
-        })
-        .catch(error => this.$emit("api-error", error));
+      this.chats = await api.chat.getChats();
+      this.loading = false;
     },
     async loadChat() {
       setTimeout(async () => {
-        await axios
-          .get(`${this.host}/api/chat/${this.$route.params.username}`)
-          .then(response => {
-            this.chat = response.data;
-            this.display = "chat";
+        this.chat = await api.chat.getChat(this.$route.params.username);
 
-            const username = document.getElementById("username").innerHTML;
+        const username = document.getElementById("username").innerHTML;
 
-            if (this.chat['user1'].username === username) {
-              this.interlocutor = this.chat["user2"];
-            } else {
-              this.interlocutor = this.chat["user1"];
-            }
+        if (this.chat['user1'].username === username) {
+          this.interlocutor = this.chat["user2"];
+        } else {
+          this.interlocutor = this.chat["user1"];
+        }
 
-            document.title = `Сообщения - ${this.interlocutor.username}`;
+        document.title = `Сообщения - ${this.interlocutor.username}`;
 
-            this.chatSocket = new WebSocket(`${this.webSocketHost}/ws`);
-            this.chatSocket.onopen = this.chatSocketOnOpen;
-            this.chatSocket.onmessage = this.chatSocketOnMessage;
-          })
-          .catch(error => this.$emit("api-error", error));
+        this.chatSocket = new WebSocket(`${this.webSocketHost}/ws`);
+        this.chatSocket.onopen = this.chatSocketOnOpen;
+        this.chatSocket.onmessage = this.chatSocketOnMessage;
       }, 10)
     },
     unselectChat() {

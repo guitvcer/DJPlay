@@ -1,8 +1,10 @@
 import instance from "./instance";
-import chess from "./chess";
 import account from "./account";
+import chat from "./chat";
+import chess from "./chess";
 
 export default {
-  chess: chess(instance),
   account: account(instance),
+  chat: chat(instance),
+  chess: chess(instance),
 }
