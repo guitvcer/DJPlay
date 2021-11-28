@@ -1,15 +1,16 @@
 <template>
-  <div id="app" class="h-full">
-    <loading v-if="userLoading" />
+  <div v-if="userLoading" class="flex justify-center">
+    <loading />
+  </div>
+  <div id="app" class="h-full" v-else>
     <the-header
-      v-if="!userLoading && $route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
+      v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
     />
-    <alerts v-if="!userLoading" />
-    <modal v-if="!userLoading" />
+    <alerts />
+    <modal />
 
     <!-- Content -->
     <main
-      v-if="!userLoading"
       :class="[$route.name === 'chat' || $route.name === 'chats' ? '' : 'px-4 py-8 overflow-y-auto']"
     >
       <router-view v-if="status === 200" />
@@ -29,85 +30,34 @@ import TheHeader from "./components/home/TheHeader.vue";
 import Forbidden from "./components/error_pages/Forbidden.vue";
 import NotFound from "./components/error_pages/NotFound.vue";
 import ServerError from "./components/error_pages/ServerError.vue";
-import { getCookie } from "./utilities";
 
 export default {
   name: 'App',
-  data() {
-    return {
-      chatSocket: null,
-      newMessageSound: new Audio(`${this.baseURL}/media/sounds/message.mp3`),
-    }
-  },
   computed: mapGetters(["status", "userLoading"]),
   components: {
-    Alerts, Modal, TheHeader, Loading, Forbidden, NotFound, ServerError
+    Alerts, Modal, TheHeader, Loading, Forbidden, NotFound, ServerError,
   },
   methods: {
     ...mapActions(["loadUser"]),
     ...mapMutations(["createAlert", "updateStatus"]),
-    chatSocketOnOpen() {
-      this.chatSocket.send(JSON.stringify({
-        access: getCookie('access'),
-      }));
-    },
-    chatSocketOnMessage(e) {
-      const data = JSON.parse(e.data);
-
-      if (data.status === 400) return;
-
-      const message = data.message;
-
-      if (this.$route.params.username === message.sentFrom.username) return;
-
-      const title = `
-        <div class="flex hover:bg-gray-100 p-2 rounded w-full">
-          <div>
-            <div
-              style="background-image: url(${this.baseURL}${message.sentFrom.avatar}); background-size: 100% 100%"
-              class="w-12 h-12 rounded flex justify-end items-end"
-            >
-              <div class="rounded w-4 h-4 bg-green-500"></div>
-            </div>
-          </div>
-          <div class="ml-3">
-            <h2 class="text-xl font-semibold">${message.sentFrom.username}</h2>
-            <p class="text-gray-500 break-all">${message.text}</p>
-          </div>
-        </div>`;
-
-      this.createAlert({
-        level: "simple",
-        url: `/chat/${message.sentFrom.username}/`,
-        title: title,
-      });
-      this.newMessageSound.currentTime = 0;
-      this.newMessageSound.play();
-    },
-    openChatSocket() {
-      this.chatSocket = new WebSocket(process.env.VUE_APP_BASE_WS_URL + "/ws");
-      this.chatSocket.onopen = this.chatSocketOnOpen;
-      this.chatSocket.onmessage = this.chatSocketOnMessage;
-    },
   },
   async mounted() {
     await this.loadUser(true);
-    // await this.setUserInfo();
   },
 }
 </script>
 
 <style>
 main {
-  height: calc(100% - 98px)
+  height: calc(100% - 98px);
 }
 
 @media screen and (max-width: 768px) {
   main {
-    height: calc(100% - 90px)
+    height: calc(100% - 90px);
   }
 }
 .grecaptcha-badge {
-  opacity: 0
+  opacity: 0;
 }
 </style>

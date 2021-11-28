@@ -34,7 +34,6 @@
           bg-white text-base text-gray-700 hover:bg-gray-50 mt-0 ml-3 w-auto text-sm dark:bg-red-500 dark:text-gray-50
           dark:hover:bg-red-600
         "
-        @click="$emit('close-modal')"
         ref="cancelButtonRef"
       >Отмена</button>
     </div>

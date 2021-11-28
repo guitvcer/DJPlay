@@ -5,7 +5,7 @@ import { isAuthenticated, getCookie } from "../../utilities";
 
 export default {
   actions: {
-    clearSimilarAlerts({ commit, getters }, url) {
+    clearSimilarAlerts({commit, getters}, url) {
       let deletedAlertsCount = 0;
       const alertsLength = getters.alerts.length;
 
@@ -16,14 +16,19 @@ export default {
         }
       }
     },
-    async loadUser({ commit, getters }, createAlert = false) {
+    async loadUser({ dispatch, commit, getters }, createAlert = false) {
       if (await isAuthenticated()) {
         const user = await api.account.getUser();
 
         commit("updateUser", user);
         commit("updateUserLoading", false);
+
+        if (createAlert) {
+          dispatch("openChatSocket", { root: true });
+        }
       } else {
         if (!getCookie("access") || !getCookie("refresh")) {
+          dispatch("closeChatSocket", { root: true });
           commit("updateUser", getters.guest);
           commit("updateUserLoading", false);
         } else {
@@ -40,6 +45,7 @@ export default {
               });
             }
 
+            dispatch("closeChatSocket", { root: true });
             commit("updateUser", getters.guest);
             commit("updateUserLoading", false);
           }
@@ -47,18 +53,16 @@ export default {
       }
     },
     async logout({ dispatch, commit }) {
-      // this.$parent.$parent.chatSocket.close();
-
       document.cookie = "access=; Max-Age=0; path=/";
       document.cookie = "refresh=; Max-Age=0; path=/";
 
       await dispatch("loadUser");
-      commit("createAlert",{
+      commit("createAlert", {
         title: "Вы успешно вышли из аккаунта.",
         level: "success"
       });
       router.push("/").then();
-    }
+    },
   },
   mutations: {
     createAlert(state, alert) {
@@ -87,7 +91,7 @@ export default {
     },
     updateUserLoading(state, value) {
       state.userLoading = value;
-    }
+    },
   },
   state: {
     alerts: [],
