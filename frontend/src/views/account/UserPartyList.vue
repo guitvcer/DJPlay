@@ -40,8 +40,8 @@
 <script>
 import api from "../../api/index";
 import UserPartyListTable from "../../components/user_party_list/UserPartyListTable.vue";
-import Paginator from "../../components/interfaace/Paginator.vue";
-import Loading from "../../components/interfaace/Loading.vue";
+import Paginator from "../../components/interface/Paginator.vue";
+import Loading from "../../components/interface/Loading.vue";
 
 export default {
   components: { UserPartyListTable, Paginator, Loading },

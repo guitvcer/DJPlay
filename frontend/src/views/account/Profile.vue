@@ -22,7 +22,7 @@
 import api from "../../api/index";
 import ProfileAvatar from "../../components/profile/ProfileAvatar.vue";
 import ProfileTable from "../../components/profile/ProfileTable.vue";
-import Loading from "../../components/interfaace/Loading.vue";
+import Loading from "../../components/interface/Loading.vue";
 
 export default {
   components: { ProfileAvatar, ProfileTable, Loading },

@@ -71,7 +71,7 @@ import api from "../../api/index";
 import ControlPanel from "../../components/gomoku/ControlPanel.vue";
 import GomokuBoard from "../../components/gomoku/GomokuBoard.vue";
 import StartPanel from "../../components/gomoku/StartPanel.vue";
-import Loading from "../../components/interfaace/Loading.vue";
+import Loading from "../../components/interface/Loading.vue";
 import { DateTime } from "luxon";
 
 export default {

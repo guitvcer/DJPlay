@@ -22,7 +22,7 @@
 <script>
 import { mapMutations } from "vuex";
 import api from "../../api/index";
-import Loading from "../../components/interfaace/Loading.vue";
+import Loading from "../../components/interface/Loading.vue";
 import LeftBlock from "../../components/chat/LeftBlock.vue";
 import RightBlock from "../../components/chat/RightBlock.vue";
 import { isAuthenticated, getCookie } from "../../utilities";
@@ -123,14 +123,7 @@ export default {
     },
   },
   async mounted() {
-    if (!await isAuthenticated()) {
-      this.createAlert({
-        title: "Вы не авторизованы.",
-        level: "danger",
-      });
-
-      await this.$router.push('/');
-    } else {
+    if (await isAuthenticated()) {
       document.title = "Сообщения"
 
       await this.loadChats();
@@ -139,6 +132,13 @@ export default {
       if (this.$route.params.username) {
         await this.loadChat();
       }
+    } else {
+      this.createAlert({
+        title: "Вы не авторизованы.",
+        level: "danger",
+      });
+
+      await this.$router.push('/');
     }
   },
 }

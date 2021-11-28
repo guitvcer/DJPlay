@@ -19,7 +19,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Loading from "../../components/interfaace/Loading.vue";
+import Loading from "../../components/interface/Loading.vue";
 import ChessBoard from "../../components/chess/ChessBoard.vue";
 import StartPanel from "../../components/chess/StartPanel.vue";
 import ControlPanel from "../../components/chess/ControlPanel.vue";

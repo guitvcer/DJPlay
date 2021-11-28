@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import Dropdown from "../interfaace/Dropdown.vue";
+import Dropdown from "../interface/Dropdown.vue";
 
 export default {
   components: { Dropdown },

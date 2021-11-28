@@ -22,9 +22,9 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import Alerts from "./components/interfaace/Alerts.vue";
-import Modal from "./components/interfaace/Modal.vue";
-import Loading from "./components/interfaace/Loading";
+import Alerts from "./components/interface/Alerts.vue";
+import Modal from "./components/interface/Modal.vue";
+import Loading from "./components/interface/Loading";
 import TheHeader from "./components/home/TheHeader.vue";
 import Forbidden from "./components/error_pages/Forbidden.vue";
 import NotFound from "./components/error_pages/NotFound.vue";

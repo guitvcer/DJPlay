@@ -17,7 +17,7 @@
 <script>
 import api from "../../api/index";
 import HomeGameItem from "../../components/home/HomeGameItem.vue";
-import Loading from "../../components/interfaace/Loading.vue";
+import Loading from "../../components/interface/Loading.vue";
 
 export default {
   components: { HomeGameItem, Loading },
