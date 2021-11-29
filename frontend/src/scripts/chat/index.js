@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
 import TimeAgo from "javascript-time-ago";
+import router from "../../router";
 import store from "../../store/index";
 
 export function getInterlocutor(chat) {
-  return (chat.username === store.getters.user.username) ? chat["user2"] : chat["user1"];
+  return (chat["user1"].username === store.getters.user.username) ? chat["user2"] : chat["user1"];
 }
 
 export function scrollToEnd() {
@@ -61,9 +62,19 @@ export function otherDay(index, date) {
   }
 
   const messageDate = DateTime.fromISO(date);
-  const nextMessageDate = DateTime.fromISO(this.chat.messages[this.index - 1].date);
+  const nextMessageDate = DateTime.fromISO(store.getters.chat.messages[index - 1].date);
 
   return (messageDate.day !== nextMessageDate.day) ||
     (messageDate.month !== nextMessageDate.month) ||
     (messageDate.year !== nextMessageDate.year);
+}
+
+export function lastMessage(chat) {
+  if (chat["lastMessage"]["text"] !== "") {
+    if (chat["lastMessage"]['sentFrom']['username'] === router.currentRoute.value.params.username) {
+      return chat["lastMessage"]["text"];
+    } else {
+      return `Вы: ${chat["lastMessage"]["text"]}`;
+    }
+  }
 }

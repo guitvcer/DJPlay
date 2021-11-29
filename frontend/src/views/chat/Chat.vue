@@ -28,13 +28,14 @@ export default {
   computed: mapGetters(["chat", "chats", "interlocutor", "chatSocket", "show"]),
   methods: {
     ...mapActions(["loadChats", "loadChat", "unselectChat", "submitMessage"]),
-    ...mapMutations(["createAlert"]),
+    ...mapMutations(["createAlert", "updateChat"]),
   },
   async mounted() {
     await redirectIfNotAuthenticated();
 
     document.title = "Сообщения";
 
+    this.updateChat(null);
     await this.loadChats();
     this.loading = false;
     setEventForEscape();

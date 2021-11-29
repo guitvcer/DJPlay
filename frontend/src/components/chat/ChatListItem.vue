@@ -17,14 +17,14 @@
     </div>
     <div class="truncate">
       <p class="font-semibold">{{ interlocutor.username }}</p>
-      <p>{{ lastMessage }}</p>
+      <p>{{ lastMessage(chat) }}</p>
     </div>
   </router-link>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { getInterlocutor } from "../../scripts/chat/index";
+import { getInterlocutor, lastMessage } from "../../scripts/chat/index";
 
 export default {
   props: {
@@ -33,18 +33,14 @@ export default {
       required: true,
     },
   },
-  methods: mapActions(["loadChat"]),
+  methods: {
+    ...mapActions(["loadChat"]),
+    lastMessage,
+  },
   computed: {
     ...mapGetters(["user"]),
     interlocutor() {
       return getInterlocutor(this.chat);
-    },
-    lastMessage() {
-      if (this.chat['lastMessage']['sentFrom']['username'] === this.$route.params.username) {
-        return this.chat["lastMessage"]["text"];
-      } else {
-        return `Вы: ${this.chat["lastMessage"]["text"]}`;
-      }
     },
     selected() {
       return this.interlocutor.username === this.$route.params.username;
