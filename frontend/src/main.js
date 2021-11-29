@@ -1,10 +1,8 @@
 import { createApp } from "vue";
 import { VueReCaptcha } from "vue-recaptcha-v3";
 import App from "./App.vue";
-import TimeAgo from "javascript-time-ago";
 import router from "./router";
 import api from "./api/index";
-import ru from "javascript-time-ago/locale/ru";
 import store from "./store";
 import "./assets/tailwind.css";
 
@@ -18,9 +16,6 @@ app.config.globalProperties.recaptcha = async function(action) {
   await this.$recaptchaLoaded();
   return await this.$recaptcha(action);
 }
-
-TimeAgo.addDefaultLocale(ru);
-// app.config.globalProperties.timeAgo = new TimeAgo();
 
 app.use(store);
 

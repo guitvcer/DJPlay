@@ -130,7 +130,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
             # уведомить лично собеседника
             await self.channel_layer.group_send(
-                'chat_%s' % interlocutor.username,
+                'chat_%s' % interlocutor.username.replace(" ", ""),
                 {
                     'type': 'notify_room',
                     'message': serializer.data

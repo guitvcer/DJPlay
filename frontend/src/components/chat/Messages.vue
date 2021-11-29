@@ -1,8 +1,8 @@
 <template>
-  <div ref="messages" class="py-4 px-2 overflow-y-auto h-full" style="max-height: calc(100% - 81px);">
+  <div id="messages" class="py-4 px-2 overflow-y-auto h-full" style="max-height: calc(100% - 81px);">
     <message
-      v-if="messages.length"
-      v-for="(message, index) in messages"
+      v-if="chat.messages.length"
+      v-for="(message, index) in chat.messages"
       :key="index"
       :message="message"
       :index="index"
@@ -12,24 +12,14 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import ChatSmallText from "./ChatSmallText.vue";
 import Message from "./Message.vue";
+import { scrollToEnd } from "../../scripts/chat/index";
 
 export default {
-  props: {
-    messages: {
-      type: Array,
-      required: true,
-    },
-  },
   components: { ChatSmallText, Message },
-  methods: {
-    scrollToEnd() {
-      this.$refs.messages.scrollTo(0, this.$refs.messages.scrollHeight);
-    },
-  },
-  mounted() {
-    this.scrollToEnd();
-  },
+  computed: mapGetters(["chat"]),
+  mounted: scrollToEnd,
 }
 </script>

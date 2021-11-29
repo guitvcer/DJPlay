@@ -3,23 +3,18 @@
     <chat-list-item
       v-if="chats.length > 0"
       v-for="(chat, index) in chats"
-      :key="index"
       :chat="chat"
-      @load-chat="$emit('load-chat')"
+      :key="index"
     />
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import ChatListItem from "./ChatListItem.vue";
 
 export default {
   components: { ChatListItem },
-  props: {
-    chats: {
-      type: Array,
-      required: true,
-    },
-  },
+  computed: mapGetters(["chats"]),
 }
 </script>

@@ -7,61 +7,25 @@
     </chat-small-text>
 
     <div v-if="chat" class="w-full h-full" style="max-height: calc(100% - 55px);">
-      <the-chat-header :interlocutor="interlocutor" @unselectChat="$emit('unselectChat')" />
-      <messages ref="messages" :messages="chat.messages" />
+      <the-chat-header />
+      <messages />
     </div>
 
-    <send-message-form v-if="chat" @submit-message="submitMessage" />
+    <send-message-form v-if="chat" />
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import ChatSmallText from "./ChatSmallText.vue";
 import SendMessageForm from "./SendMessageForm.vue";
 import Messages from "./Messages.vue";
-import TheChatHeader from "./TheChatHeader";
+import TheChatHeader from "./TheChatHeader.vue";
 
 export default {
   components: {
-    ChatSmallText,
-    SendMessageForm,
-    Messages,
-    TheChatHeader,
+    ChatSmallText, SendMessageForm, Messages, TheChatHeader,
   },
-  props: {
-    display: {
-      type: String,
-      required: true,
-    },
-    chat: {
-      required: true,
-    },
-  },
-  data() {
-    return {
-      interlocutor: null,
-    }
-  },
-  methods: {
-    setInterlocutor() {
-      const username = document.getElementById("username").innerHTML;
-
-      if (this.chat["user1"]["username"] === username) {
-        this.interlocutor = this.chat["user2"];
-      } else {
-        this.interlocutor = this.chat["user1"];
-      }
-    },
-    submitMessage(messageText) {
-      this.$emit("submit-message", messageText);
-    },
-  },
-  watch: {
-    chat() {
-      if (this.chat) {
-        this.setInterlocutor();
-      }
-    },
-  },
+  computed: mapGetters(["chat"]),
 }
 </script>

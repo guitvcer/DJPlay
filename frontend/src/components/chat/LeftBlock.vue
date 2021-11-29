@@ -1,25 +1,21 @@
 <template>
   <div
-    :class="[display === 'chat' ? 'hidden ' : '', 'md:block w-full md:w-80 border-r dark:border-main-dark2 h-full']"
+    :class="[show === CHAT ? 'hidden ' : '', 'md:block w-full md:w-80 border-r dark:border-main-dark2 h-full']"
   >
-    <chat-list :chats="chats" @load-chat="$emit('load-chat')" />
+    <chat-list />
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import ChatList from "./ChatList.vue";
+import { CHAT } from "../../scripts/chat/constants";
 
 export default {
-  components: { ChatList },
-  props: {
-    display: {
-      type: String,
-      required: true,
-    },
-    chats: {
-      type: Array,
-      required: true,
-    },
+  data() {
+    return { CHAT }
   },
+  components: { ChatList },
+  computed: mapGetters(["show"]),
 }
 </script>

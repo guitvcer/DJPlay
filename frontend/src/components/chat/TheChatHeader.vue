@@ -1,7 +1,7 @@
 <template>
   <div class="px-4 py-2 border-b w-full flex items-center bg-white dark:bg-main-dark dark:border-main-dark2">
     <button
-      @click="$emit('unselectChat')"
+      @click="unselectChat"
       class="rounded p-2 bg-gray-50 hover:bg-gray-100 border dark:border-main dark:bg-main-dark2 dark:hover:bg-main"
     >
       <arrow-left-icon class="h-5 w-5" />
@@ -12,10 +12,10 @@
       class="flex items-center hover:bg-gray-100 mx-2 p-2 dark:hover:bg-main rounded w-full"
     >
       <div
-        :style="'background-image: url(' + this.interlocutor.avatar + '); background-size: 100% 100%;'"
+        :style="'background-image: url(' + interlocutor.avatar + '); background-size: 100% 100%;'"
         class="w-12 h-12 rounded flex justify-end items-end"
       >
-        <div v-if="this.interlocutor['isOnline']" class="rounded w-4 h-4 bg-green-500"></div>
+        <div v-if="interlocutor['isOnline']" class="rounded w-4 h-4 bg-green-500"></div>
       </div>
       <div class="ml-3">
         <h2 class="text-xl font-semibold">{{ interlocutor.username }}</h2>
@@ -27,34 +27,16 @@
 </template>
 
 <script>
-import TimeAgo from "javascript-time-ago";
+import { mapActions, mapGetters } from "vuex";
 import { ArrowLeftIcon } from "@heroicons/vue/outline";
+import { lastOnline, parseDate } from "../../scripts/chat/index";
 
 export default {
-  props: {
-    interlocutor: {
-      type: Object,
-      required: true,
-    }
-  },
   components: { ArrowLeftIcon },
+  computed: mapGetters(["interlocutor"]),
   methods: {
-    parseDate(date) {
-      if (date == null) {
-        return "никогда";
-      }
-
-      return new TimeAgo().format(Date.parse(date));
-    },
-    lastOnline() {
-      if (this.interlocutor["gender"] === 'M') {
-        return "Был в сети "
-      } else if (this.interlocutor["gender"] === 'F') {
-        return "Была в сети ";
-      } else {
-        return "Был(-а) в сети ";
-      }
-    },
+    ...mapActions(["unselectChat"]),
+    lastOnline, parseDate,
   },
 }
 </script>

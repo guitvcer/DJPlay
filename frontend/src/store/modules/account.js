@@ -24,11 +24,11 @@ export default {
         commit("updateUserLoading", false);
 
         if (createAlert) {
-          dispatch("openChatSocket", { root: true });
+          dispatch("openGlobalChatSocket", { root: true });
         }
       } else {
         if (!getCookie("access") || !getCookie("refresh")) {
-          dispatch("closeChatSocket", { root: true });
+          commit("closeGlobalChatSocket", { root: true });
           commit("updateUser", getters.guest);
           commit("updateUserLoading", false);
         } else {
@@ -45,7 +45,7 @@ export default {
               });
             }
 
-            dispatch("closeChatSocket", { root: true });
+            dispatch("closeGlobalChatSocket", { root: true });
             commit("updateUser", getters.guest);
             commit("updateUserLoading", false);
           }

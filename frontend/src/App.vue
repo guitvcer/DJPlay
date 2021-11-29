@@ -3,9 +3,7 @@
     <loading />
   </div>
   <div id="app" class="h-full" v-else>
-    <the-header
-      v-if="$route.name !== 'authorization' && $route.name !== 'registration' && status === 200"
-    />
+    <the-header v-if="status === 200" />
     <alerts />
     <modal />
 
@@ -23,6 +21,8 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
+import TimeAgo from "javascript-time-ago";
+import ru from "javascript-time-ago/locale/ru";
 import Alerts from "./components/interface/Alerts.vue";
 import Modal from "./components/interface/Modal.vue";
 import Loading from "./components/interface/Loading";
@@ -32,7 +32,7 @@ import NotFound from "./components/error_pages/NotFound.vue";
 import ServerError from "./components/error_pages/ServerError.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   computed: mapGetters(["status", "userLoading"]),
   components: {
     Alerts, Modal, TheHeader, Loading, Forbidden, NotFound, ServerError,
@@ -42,6 +42,7 @@ export default {
     ...mapMutations(["createAlert", "updateStatus"]),
   },
   async mounted() {
+    TimeAgo.addDefaultLocale(ru);
     await this.loadUser(true);
   },
 }
