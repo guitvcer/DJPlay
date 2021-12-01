@@ -43,7 +43,7 @@ export default {
               });
             }
 
-            dispatch("closeGlobalChatSocket", { root: true });
+            dispatch("closeGlobalChatSocket");
             commit("updateUser", getters.guest);
             commit("updateUserLoading", false);
             commit("closeGlobalChatSocket");

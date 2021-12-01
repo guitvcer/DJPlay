@@ -10,7 +10,11 @@
         :title="piece.title"
         @click="movePiece({ coordinate: selectedCell, pawnTo: piece.name})"
       >
-        <img :src="pieceImageUrl + currentColor + '/' + piece.name + '.png'" :alt="piece.title">
+        <img
+          class="w-16 h-16"
+          :src="pieceImageUrl + currentColor + '/' + piece.name + '.svg'"
+          :alt="piece.title"
+        >
       </button>
     </div>
   </div>

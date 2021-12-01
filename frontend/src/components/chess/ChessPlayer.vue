@@ -22,7 +22,7 @@
               {{ players[index].eatenPieces[piece.name] }}x
               <img
                 class="w-6 h-6"
-                :src="url + '/' + piece.name + '.png'"
+                :src="url + '/' + piece.name + '.svg'"
                 :alt="piece.title"
               >
             </div>
@@ -45,7 +45,7 @@
           {{ players[index].eatenPieces[piece.name] }}x
           <img
             class="w-6 h-6"
-            :src="url + '/' + piece.name + '.png'"
+            :src="url + '/' + piece.name + '.svg'"
             :alt="piece.title"
           >
         </div>

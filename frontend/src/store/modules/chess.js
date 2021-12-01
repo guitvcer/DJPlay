@@ -99,7 +99,7 @@ export default {
 
               if (lastMove.transformed) {
                 piece.name = "pawn";
-                piece.image = "/media/chess/pieces/" + piece.color + "/pawn.png";
+                piece.image = "/media/chess/pieces/" + piece.color + "/pawn.svg";
               }
 
               commit("createPiece", piece);
@@ -257,7 +257,7 @@ export default {
       if (pawnTo) {
         newMove.transformed = true;
         piece.name = pawnTo;
-        piece.image = '/media/chess/pieces/' + piece.color + '/' + pawnTo + '.png';
+        piece.image = '/media/chess/pieces/' + piece.color + '/' + pawnTo + '.svg';
         commit("updateOpenModal", false, { root: true });
       }
 

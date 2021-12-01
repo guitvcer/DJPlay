@@ -13,7 +13,7 @@ function getPawns(color) {
     pawns[coordinate] =  {
       name: "pawn",
       coordinate: coordinate,
-      image: `/media/chess/pieces/${color}/pawn.png`,
+      image: `/media/chess/pieces/${color}/pawn.svg`,
       color: color,
       id,
     }
@@ -35,7 +35,7 @@ function getRooks(color) {
     rooks[coordinate] = {
       name: "rook",
       coordinate: coordinate,
-      image: `/media/chess/pieces/${color}/rook.png`,
+      image: `/media/chess/pieces/${color}/rook.svg`,
       color: color,
       id,
     }
@@ -57,7 +57,7 @@ function getKnights(color) {
     knights[coordinate] = {
       name: "knight",
       coordinate: coordinate,
-      image: `/media/chess/pieces/${color}/knight.png`,
+      image: `/media/chess/pieces/${color}/knight.svg`,
       color: color,
       id,
     }
@@ -79,7 +79,7 @@ function getBishops(color) {
     bishops[coordinate] = {
       name: "bishop",
       coordinate: coordinate,
-      image: `/media/chess/pieces/${color}/bishop.png`,
+      image: `/media/chess/pieces/${color}/bishop.svg`,
       color: color,
       id,
     }
@@ -99,7 +99,7 @@ function getQueen(color) {
   queen[coordinate] = {
     name: "queen",
     coordinate: coordinate,
-    image: `/media/chess/pieces/${color}/queen.png`,
+    image: `/media/chess/pieces/${color}/queen.svg`,
     color: color,
     id,
   }
@@ -118,7 +118,7 @@ function getKing(color) {
   king[coordinate] = {
     name: "king",
     coordinate: coordinate,
-    image: `/media/chess/pieces/${color}/king.png`,
+    image: `/media/chess/pieces/${color}/king.svg`,
     color: color,
     id,
   }

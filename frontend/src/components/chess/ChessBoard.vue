@@ -16,6 +16,7 @@
     >
       <div
         v-for="coordinate of Object.keys(field)"
+        class="flex items-center justify-center"
         :id="coordinate"
         :class="['cell',
           selectedPiece && pieces[coordinate] !== undefined && pieces[coordinate].selected ? ' selected-piece' : '',
@@ -27,6 +28,7 @@
       >
         <img
           v-if="pieces[coordinate]"
+          class="w-full h-full"
           :src="this.baseURL + pieces[coordinate].image"
           :alt="pieces[coordinate].name"
         >
@@ -66,7 +68,6 @@ export default {
   width: 11%;
   height: 11%;
   margin: 0.75%;
-  padding: 3px;
   border-radius: 20px;
 }
 .selected-piece, .selectable-cell {
