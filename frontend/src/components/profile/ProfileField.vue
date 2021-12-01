@@ -5,25 +5,24 @@
       v-if="field.fieldName === 'Просмотры'"
       class="font-bold w-full sm:w-6/12 flex-shrink-0 break-words"
     >
-      <router-link :to="$route.path + 'views/'">{{ getFieldValue }}</router-link>
+      <router-link :to="$route.path + 'views/'">{{ getFieldValue(field) }}</router-link>
     </p>
     <p
       v-else-if="field.fieldName === 'Друзья'"
       class="font-bold w-full sm:w-6/12 flex-shrink-0 break-words"
     >
-      <router-link :to="$route.path + 'friends/'">{{ getFieldValue }}</router-link>
+      <router-link :to="$route.path + 'friends/'">{{ getFieldValue(field) }}</router-link>
     </p>
     <p
       v-else
       class="font-bold w-full sm:w-6/12 flex-shrink-0"
       style="word-wrap: break-word"
-    >{{ getFieldValue }}</p>
+    >{{ getFieldValue(field) }}</p>
   </div>
 </template>
 
 <script>
-import TimeAgo from "javascript-time-ago";
-import { DateTime } from "luxon";
+import { getFieldValue } from "../../scripts/account/profile";
 
 export default {
   props: {
@@ -32,30 +31,6 @@ export default {
       required: true,
     },
   },
-  computed: {
-    getFieldValue() {
-      if (this.field.fieldValue === null) return "Не указано";
-
-      if (typeof this.field.fieldValue === "string") {
-        if (this.field.fieldValue === "") {
-          return "Не указано";
-        } else if (["Был(-а) онлайн", "Был онлайн", "Была онлайн"].includes(this.field.fieldName)) {
-          return new TimeAgo().format(Date.parse(this.field.fieldValue));
-        } else if (this.field.fieldName === "Дата рождения" || this.field.fieldName === "Дата регистрации") {
-          const date = DateTime.fromISO(this.field.fieldValue).setLocale("ru").toFormat("d MMMM y") + " г.";
-
-          if (this.field.fieldName === "Дата регистрации") {
-            return date + ' ' + DateTime.fromISO(this.field.fieldValue).setLocale("ru").toFormat("H:m");
-          } else {
-            return date;
-          }
-        } else {
-          this.field.fieldValue.substr(0, 48);
-        }
-      }
-
-      return this.field.fieldValue;
-    }
-  }
+  methods: { getFieldValue },
 }
 </script>

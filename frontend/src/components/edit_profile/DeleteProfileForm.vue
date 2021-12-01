@@ -10,6 +10,7 @@
           placeholder="Пароль"
           class="border border-main my-1 rounded px-2 py-2 dark:bg-main"
           v-model="password"
+          autocomplete="off"
           required
         >
       </div>

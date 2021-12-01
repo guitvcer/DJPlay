@@ -26,6 +26,7 @@
       class="h-6 w-6"
       v-if="buttonName === 'friendRequestButton' && (friendRequest === 'accepted' || friendRequest === 'sent')"
     />
+    <chat-icon v-else-if="buttonName === 'userChatButton'" class="h-6 w-6" />
     <user-add-icon class="h-6 w-6" v-else-if="buttonName === 'friendRequestButton'" />
     <span class="block relative -top-0.5" v-else-if="buttonName === 'friendRequestButton'">&nbsp; {{ friendsCount }}</span>
     <cog-icon class="h-6 w-6" v-else-if="buttonName === 'userProfileEditChangePassword'" />

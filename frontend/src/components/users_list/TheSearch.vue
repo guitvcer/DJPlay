@@ -6,6 +6,7 @@
         placeholder="Поиск"
         id="usersListSearch"
         name="query"
+        autocomplete="off"
         class="dark:bg-main-dark2 dark:border-main border-2 px-4 py-1.5 w-full md:w-auto border-r-0 rounded-l border-gray-300 text-lg"
         v-model="body.query"
       >

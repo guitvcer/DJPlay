@@ -24,6 +24,7 @@
       :id="field.name"
       :value="field.value"
       @click="check"
+      autocomplete="off"
       class="switch"
       v-else-if="field.type === 'checkbox'"
     >
@@ -35,6 +36,7 @@
       :placeholder="field.placeholder"
       :maxlength="field.max_length"
       :value="field.value"
+      autocomplete="off"
       class="py-1 px-2 w-full sm:w-6/12 border border-main rounded dark:bg-main"
       v-else
     >

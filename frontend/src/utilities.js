@@ -63,5 +63,6 @@ export async function redirectIfNotAuthenticated() {
       level: "danger",
     });
     await router.push('/');
+    console.log(store.getters.status);
   }
 }

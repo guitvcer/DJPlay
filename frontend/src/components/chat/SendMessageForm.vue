@@ -10,6 +10,7 @@
       maxlength="256"
       class="mr-1 rounded border px-4 py-1 w-full dark:bg-main-dark2 dark:border-main"
       v-model="messageText"
+      autocomplete="off"
       required
     >
     <button

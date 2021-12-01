@@ -9,6 +9,7 @@
           :name="input.name"
           :id="input.id"
           :placeholder="input.placeholder"
+          autocomplete="on"
           v-model="body[input.name]"
           class="border border-main my-1 rounded px-2 py-2 dark:bg-main"
           required

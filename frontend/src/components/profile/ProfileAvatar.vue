@@ -26,7 +26,14 @@
         buttonName="userChatButton"
         title="Написать сообщение"
         :url="{ name: 'chat', params: { username: user.username } }"
-        v-if="profileViewAccess && !user['isMe']"
+        v-if="profileViewAccess && !user['isMe'] && currentUsername !== 'Гость'"
+      />
+      <profile-button
+        buttonName="userChatButton"
+        title="Написать сообщение"
+        type="button"
+        @click="updateModalAction('authorization'); updateOpenModal(true)"
+        v-else-if="profileViewAccess && !user['isMe'] && currentUsername === 'Гость'"
       />
       <profile-button
         buttonName="editProfileButton"
@@ -52,6 +59,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import store from "../../store/index";
 import api from "../../api/index";
 import ProfileButton from "./ProfileButton.vue";
 import { isAuthenticated } from "../../utilities";
@@ -68,11 +76,16 @@ export default {
     },
   },
   components: { ProfileButton },
+  computed: {
+    currentUsername() {
+      return store.getters.user.username;
+    }
+  },
   methods: {
     ...mapMutations(["createAlert", "updateOpenModal", "updateModalAction"]),
     async friendRequest() {
       if (await isAuthenticated()) {
-        await api.account.sendFriendRequest("/api" + window.location.pathname + "friend-request")
+        await api.account.sendFriendRequest(window.location.pathname + "friend-request");
         this.$emit("load-profile");
       } else {
         this.updateModalAction("authorization");

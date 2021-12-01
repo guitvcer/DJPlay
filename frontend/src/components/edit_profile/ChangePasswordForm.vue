@@ -11,6 +11,7 @@
           :id="input.name"
           :placeholder="input.placeholder"
           v-model="body[input.name]"
+          autocomplete="off"
           class="border border-main my-1 rounded px-2 py-2 dark:bg-main"
           required
         >
