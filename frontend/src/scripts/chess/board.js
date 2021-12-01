@@ -142,6 +142,12 @@ export function check(copyOfPieces = null) {
   const cellsForPawn = select.pawn(king.coordinate, copyOfPieces);
   const dangerousCells = cellsForQueen.edible.concat(cellsForKnight.edible.concat(cellsForPawn.edible));
 
+  if (copyOfPieces) {
+    console.log(cellsForQueen.edible)
+    console.log(cellsForKnight.edible)
+    console.log(cellsForPawn.edible)
+  }
+
   return dangerousCells.length > 0;
 }
 

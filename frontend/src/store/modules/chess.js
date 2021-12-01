@@ -139,9 +139,10 @@ export default {
       commit("removePiece", kingOldCoordinate);
       commit("removePiece", rookOldCoordinate);
 
+      castling.king.selected = false;
+
       commit("createPiece", castling.king);
       commit("createPiece", castling.rook);
-
 
       const move = {
         color: getters.currentColor,
@@ -157,6 +158,9 @@ export default {
 
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
       dispatch("unselectCheckingCells");
+
+      console.log(getters.pieces['g1'])
+      console.log(getters.field['g1'])
 
       dispatch("swapMoveOf");
       dispatch("swapColor");

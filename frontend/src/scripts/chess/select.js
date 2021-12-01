@@ -42,10 +42,20 @@ function availableCellsForPawn(coordinate, copyOfPieces = null) {
   }
 
   if (isCoordinateValid(leftX + frontY) && isCellHostile(leftX + frontY)) {
-    availableCells.edible.push(leftX + frontY);
+    if (
+      !copyOfPieces ||
+      (copyOfPieces && copyOfPieces[leftX + frontY].name === "pawn")
+    ) {
+      availableCells.edible.push(leftX + frontY);
+    }
   }
   if (isCoordinateValid(rightX + frontY) && isCellHostile(rightX + frontY)) {
-    availableCells.edible.push(rightX + frontY);
+    if (
+      !copyOfPieces ||
+      (copyOfPieces && copyOfPieces[rightX + frontY].name === "pawn")
+    ) {
+      availableCells.edible.push(rightX + frontY);
+    }
   }
 
   return availableCells;
@@ -177,10 +187,6 @@ function castlingCells(copyOfPieces = null) {
 
   const castlingMoves = {};
 
-  if (check() || copyOfPieces) {
-    return castlingMoves;
-  }
-
   for (const move of store.getters.moves) {
     if (
       move.color === store.getters.currentColor &&
@@ -191,6 +197,10 @@ function castlingCells(copyOfPieces = null) {
     ) {
       return castlingMoves;
     }
+  }
+
+  if (check(deepClone(store.getters.pieces)) || copyOfPieces) {
+    return castlingMoves;
   }
 
   let didFirstRookMove = false;
