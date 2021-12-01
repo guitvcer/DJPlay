@@ -22,13 +22,10 @@ export default {
 
         commit("updateUser", user);
         commit("updateUserLoading", false);
-
-        if (createAlert) {
-          dispatch("openGlobalChatSocket", { root: true });
-        }
+        dispatch("openGlobalChatSocket");
       } else {
         if (!getCookie("access") || !getCookie("refresh")) {
-          commit("closeGlobalChatSocket", { root: true });
+          commit("closeGlobalChatSocket");
           commit("updateUser", getters.guest);
           commit("updateUserLoading", false);
         } else {
@@ -37,6 +34,7 @@ export default {
 
             commit("updateUserLoading", false);
             commit("updateUser", user);
+            dispatch("openGlobalChatSocket");
           } else {
             if (createAlert) {
               commit("createAlert", {
@@ -48,6 +46,7 @@ export default {
             dispatch("closeGlobalChatSocket", { root: true });
             commit("updateUser", getters.guest);
             commit("updateUserLoading", false);
+            commit("closeGlobalChatSocket");
           }
         }
       }
@@ -61,6 +60,7 @@ export default {
         title: "Вы успешно вышли из аккаунта.",
         level: "success"
       });
+      commit("closeGlobalChatSocket");
       router.push("/").then();
     },
   },

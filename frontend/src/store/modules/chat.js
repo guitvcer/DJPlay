@@ -35,7 +35,7 @@ export default {
         commit("updateChatSocketOnMessage", chatSocketOnMessage);
       }
     },
-    async openGlobalChatSocket({ commit }) {
+    async openGlobalChatSocket({ commit, getters }) {
       if (await isAuthenticated()) {
         commit("updateGlobalChatSocket", new WebSocket(process.env.VUE_APP_BASE_WS_URL + "/ws"));
         commit("updateGlobalChatSocketOnOpen", globalChatSocketOnOpen);

@@ -16,10 +16,12 @@ export function scrollToEnd() {
 
 export function setEventForEscape() {
   document.addEventListener("keyup", event => {
-    event.preventDefault();
+    if (["userChat", "chat", "chats"].includes(router.currentRoute.value.name)) {
+      event.preventDefault();
 
-    if (event.keyCode === 27) {
-      store.dispatch("unselectChat")();
+      if (event.keyCode === 27) {
+        store.dispatch("unselectChat").then();
+      }
     }
   });
 }
@@ -71,7 +73,7 @@ export function otherDay(index, date) {
 
 export function lastMessage(chat) {
   if (chat["lastMessage"]["text"] !== "") {
-    if (chat["lastMessage"]['sentFrom']['username'] === router.currentRoute.value.params.username) {
+    if (chat["lastMessage"]["sentFrom"]["username"] === router.currentRoute.value.params.username) {
       return chat["lastMessage"]["text"];
     } else {
       return `Вы: ${chat["lastMessage"]["text"]}`;

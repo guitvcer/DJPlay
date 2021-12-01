@@ -17,7 +17,7 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
 import Loading from "../../components/interface/Loading.vue";
 import LeftBlock from "../../components/chat/LeftBlock.vue";
 import RightBlock from "../../components/chat/RightBlock.vue";
-import { redirectIfNotAuthenticated } from "../../utilities";
+import { isAuthenticated } from "../../utilities";
 import { setEventForEscape } from "../../scripts/chat";
 
 export default {
@@ -28,20 +28,28 @@ export default {
   computed: mapGetters(["chat", "chats", "interlocutor", "chatSocket", "show"]),
   methods: {
     ...mapActions(["loadChats", "loadChat", "unselectChat", "submitMessage"]),
-    ...mapMutations(["createAlert", "updateChat"]),
+    ...mapMutations(["createAlert", "updateChat", "updateModalAction", "updateOpenModal"]),
   },
   async mounted() {
-    await redirectIfNotAuthenticated();
+    if (!await isAuthenticated()) {
+      this.createAlert({
+        title: "Вы не авторизованы.",
+        level: "danger",
+      });
+      this.updateModalAction("authorization");
+      this.updateOpenModal(true);
+      await this.$router.push("/");
+    } else {
+      document.title = "Сообщения";
 
-    document.title = "Сообщения";
+      this.updateChat(null);
+      await this.loadChats();
+      this.loading = false;
+      setEventForEscape();
 
-    this.updateChat(null);
-    await this.loadChats();
-    this.loading = false;
-    setEventForEscape();
-
-    if (this.$route.params.username) {
-      await this.loadChat(this.$route.params.username);
+      if (this.$route.params.username) {
+        await this.loadChat(this.$route.params.username);
+      }
     }
   },
 }

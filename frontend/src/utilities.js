@@ -53,16 +53,3 @@ export function parseErrors(data, field) {
 
   return alertTitle;
 }
-
-export async function redirectIfNotAuthenticated() {
-  /* Перенаправить на главную страницу, если пользователь не авторизован */
-
-  if (!await isAuthenticated()) {
-    store.commit("createAlert", {
-      title: "Вы не авторизованы.",
-      level: "danger",
-    });
-    await router.push('/');
-    console.log(store.getters.status);
-  }
-}
