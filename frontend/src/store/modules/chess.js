@@ -159,9 +159,6 @@ export default {
       dispatch("selectLastMoveCell", [kingOldCoordinate, rookOldCoordinate]);
       dispatch("unselectCheckingCells");
 
-      console.log(getters.pieces['g1'])
-      console.log(getters.field['g1'])
-
       dispatch("swapMoveOf");
       dispatch("swapColor");
 

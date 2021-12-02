@@ -2,7 +2,7 @@
   <div
     :class="[
       'max-w-2xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 flex ',
-      currentColor === WHITE ? 'flex-col' : 'flex-col',
+      currentColor === WHITE ? 'flex-col' : 'flex-col-reverse',
     ]"
   >
     <chess-player :index="1" />
@@ -10,7 +10,7 @@
       id="chessBoard"
       :class="[
         'bg-chess-board flex ',
-        currentColor === WHITE ? 'flex-row flex-wrap-reverse' : 'flex-row flex-wrap-reverse'
+        currentColor === WHITE ? 'flex-row flex-wrap-reverse' : 'flex-row-reverse flex-wrap'
       ]"
       @click="onBoardClick"
     >
