@@ -1,3 +1,4 @@
+import router from "../../router";
 import { WHITE, BLACK, NUMBERS, LETTERS, PIECE_Y, GAME_STASUSES } from "./constants";
 import select from "./select";
 import store from "../../store/index";
