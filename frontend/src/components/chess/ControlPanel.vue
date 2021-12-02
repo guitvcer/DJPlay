@@ -79,9 +79,7 @@ export default {
     RefreshIcon,
     ReplyIcon,
   },
-  methods: {
-    ...mapActions(["resetBoard", "returnMove"]),
-  },
-  computed: mapGetters(["players"]),
+  methods: mapActions("chess", ["resetBoard", "returnMove"]),
+  computed: mapGetters("chess", ["players"]),
 }
 </script>

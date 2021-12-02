@@ -46,33 +46,33 @@ export function onBoardClick(event) {
   /* При нажатии на доску */
 
   if (
-    [GAME_STASUSES.OFFLINE, null].includes(store.getters.gameStatus) &&
-    store.getters.moveOf === store.getters.currentColor &&
+    [GAME_STASUSES.OFFLINE, null].includes(store.getters["chess/gameStatus"]) &&
+    store.getters["chess/moveOf"] === store.getters["chess/currentColor"] &&
     event.target.id !== "chessBoard"
   ) {
     const coordinate = event.target.closest(".cell").id;
-    const piece = store.getters.pieces[coordinate];
+    const piece = store.getters["chess/pieces"][coordinate];
 
     if (piece) {
-      if (piece.color === store.getters.currentColor) {
-        if (store.getters.selectedPiece === piece) {
-          store.dispatch("unselectPiece").then();
+      if (piece.color === store.getters["chess/currentColor"]) {
+        if (store.getters["chess/selectedPiece"] === piece) {
+          store.dispatch("chess/unselectPiece").then();
         } else {
-          store.dispatch("selectPiece", piece.coordinate).then();
+          store.dispatch("chess/selectPiece", piece.coordinate).then();
         }
       } else {
-        if (store.getters.field[coordinate].edible) {
-          store.dispatch("movePiece", { coordinate }).then();
+        if (store.getters["chess/field"][coordinate].edible) {
+          store.dispatch("chess/movePiece", { coordinate }).then();
         }
       }
     } else {
-      if (store.getters.selectedPiece) {
-        if (store.getters.field[coordinate].selectable) {
-          store.dispatch("movePiece", { coordinate }).then();
-        } else if (store.getters.field[coordinate].castling) {
-          store.dispatch("castle", coordinate).then();
-        } else if (store.getters.field[coordinate].edible) {
-          store.dispatch("movePiece", { coordinate }).then();
+      if (store.getters["chess/selectedPiece"]) {
+        if (store.getters["chess/field"][coordinate].selectable) {
+          store.dispatch("chess/movePiece", { coordinate }).then();
+        } else if (store.getters["chess/field"][coordinate].castling) {
+          store.dispatch("chess/castle", coordinate).then();
+        } else if (store.getters["chess/field"][coordinate].edible) {
+          store.dispatch("chess/movePiece", { coordinate }).then();
         }
       }
     }
@@ -82,13 +82,13 @@ export function onBoardClick(event) {
 export function isCoordinateValid(coordinate) {
   /* Валидна ли координата? */
 
-  return Object.keys(store.getters.field).includes(coordinate);
+  return Object.keys(store.getters["chess/field"]).includes(coordinate);
 }
 
 export function isCellEmpty(coordinate, copyOfPieces = null) {
   /* Пустая ли клетка? */
 
-  const pieces = copyOfPieces ?? store.getters.pieces;
+  const pieces = copyOfPieces ?? store.getters["chess/pieces"];
 
   return !(Object.keys(pieces).includes(coordinate));
 }
@@ -96,16 +96,16 @@ export function isCellEmpty(coordinate, copyOfPieces = null) {
 export function isCellHostile(coordinate, copyOfPieces = null) {
   /* Враждебная ли клетка? */
 
-  const piece = copyOfPieces ? copyOfPieces[coordinate] : store.getters.pieces[coordinate];
+  const piece = copyOfPieces ? copyOfPieces[coordinate] : store.getters["chess/pieces"][coordinate];
 
-  return !(isCellEmpty(coordinate) || piece.color === store.getters.currentColor);
+  return !(isCellEmpty(coordinate) || piece.color === store.getters["chess/currentColor"]);
 }
 
 export function eatingOnAisle(coordinate, copyOfSelectedPiece = null) {
   /* Взятие на проходе? */
 
-  const lastMove = store.getters.moves[store.getters.moves.length - 1];
-  const selectedPiece = copyOfSelectedPiece ?? store.getters.selectedPiece;
+  const lastMove = store.getters["chess/moves"][store.getters.moves.length - 1];
+  const selectedPiece = copyOfSelectedPiece ?? store.getters["chess/selectedPiece"];
 
   return (
     lastMove !== undefined &&
@@ -130,8 +130,8 @@ export function check(copyOfPieces = null) {
 
   let king;
 
-  for (const piece of Object.values(copyOfPieces ?? store.getters.pieces)) {
-    if (piece.color === store.getters.currentColor && piece.name === "king") {
+  for (const piece of Object.values(copyOfPieces ?? store.getters["chess/pieces"])) {
+    if (piece.color === store.getters["chess/currentColor"] && piece.name === "king") {
       king = piece;
       break;
     }
@@ -180,15 +180,15 @@ export function deepClone(obj) {
 export function willCheckEntail(coordinate) {
   /* Повличет ли ход фигуры на эту координату за собой шах? */
 
-  const copyOfPieces = deepClone(store.getters.pieces);
-  const copyOfPiece = copyOfPieces[store.getters.selectedPiece.coordinate];
+  const copyOfPieces = deepClone(store.getters["chess/pieces"]);
+  const copyOfPiece = copyOfPieces[store.getters["chess/selectedPiece"].coordinate];
 
   copyOfPiece.coordinate = coordinate;
   copyOfPieces[coordinate] = copyOfPiece;
-  delete copyOfPieces[store.getters.selectedPiece.coordinate];
+  delete copyOfPieces[store.getters["chess/selectedPiece"].coordinate];
 
-  if (store.getters.selectedPiece.name === "king") {
-    const y = PIECE_Y[store.getters.selectedPiece.color];
+  if (store.getters["chess/selectedPiece"].name === "king") {
+    const y = PIECE_Y[store.getters["chess/selectedPiece"].color];
 
     if (coordinate === 'c' + y) {
       // Short Castling

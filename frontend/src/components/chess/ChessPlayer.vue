@@ -82,7 +82,7 @@ export default {
   components: { ClockIcon },
   methods: { parseTime },
   computed: {
-    ...mapGetters(["players"]),
+    ...mapGetters("chess", ["players"]),
     url() {
       return this.baseURL + '/media/chess/pieces/' + (this.players[this.index].color === WHITE ? BLACK : WHITE);
     }

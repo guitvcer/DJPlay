@@ -7,9 +7,9 @@ function getDidPieceMove(coordinate, copyOfPieces = null) {
 
   let didPieceMove = false;
 
-  for (const moveIndex in store.getters.moves) {
-    const move = store.getters.moves[moveIndex];
-    const piece = copyOfPieces ? copyOfPieces[coordinate] : store.getters.pieces[coordinate];
+  for (const moveIndex in store.getters["chess/moves"]) {
+    const move = store.getters["chess/moves"][moveIndex];
+    const piece = copyOfPieces ? copyOfPieces[coordinate] : store.getters["chess/pieces"][coordinate];
 
     if (move.piece && move.piece.id === piece.id) {
       didPieceMove = true;
@@ -32,8 +32,8 @@ function availableCellsForPawn(coordinate, copyOfPieces = null) {
     y = +coordinate[1],
     leftX = LETTERS[LETTERS.indexOf(x) - 1],
     rightX = LETTERS[LETTERS.indexOf(x) + 1],
-    frontY = store.getters.currentColor === WHITE ? y + 1 : y - 1,
-    frontY2 = store.getters.currentColor === WHITE ? frontY + 1 : frontY - 1;
+    frontY = store.getters["chess/currentColor"] === WHITE ? y + 1 : y - 1,
+    frontY2 = store.getters["chess/currentColor"] === WHITE ? frontY + 1 : frontY - 1;
 
   availableCells.selectable.push(x + frontY);
 
@@ -187,36 +187,36 @@ function castlingCells(copyOfPieces = null) {
 
   const castlingMoves = {};
 
-  for (const move of store.getters.moves) {
+  for (const move of store.getters["chess/moves"]) {
     if (
-      move.color === store.getters.currentColor &&
+      move.color === store.getters["chess/currentColor"] &&
       (
         (move.longCastling || move.shortCastling) ||
-        (move.piece.name === "king" && move.piece.color === store.getters.currentColor)
+        (move.piece.name === "king" && move.piece.color === store.getters["chess/currentColor"])
       )
     ) {
       return castlingMoves;
     }
   }
 
-  if (check(deepClone(store.getters.pieces)) || copyOfPieces) {
+  if (check(deepClone(store.getters["chess/pieces"])) || copyOfPieces) {
     return castlingMoves;
   }
 
   let didFirstRookMove = false;
   let didSecondRookMove = false;
-  const y = PIECE_Y[store.getters.currentColor];
+  const y = PIECE_Y[store.getters["chess/currentColor"]];
   const rookLeftCoordinate = 'a' + y;
   const rookRightCoordinate = 'h' + y;
-  const pieces = copyOfPieces ?? store.getters.pieces;
+  const pieces = copyOfPieces ?? store.getters["chess/pieces"];
   const king = deepClone(pieces['e' + y]);
 
-  for (const move of store.getters.moves) {
+  for (const move of store.getters["chess/moves"]) {
     if (didFirstRookMove && didSecondRookMove) return castlingMoves;
 
     if (move.longCastling || move.shortCastling) continue;
 
-    if (move.piece.color === store.getters.currentColor) {
+    if (move.piece.color === store.getters["chess/currentColor"]) {
       if (move.from_coordinate === rookLeftCoordinate) {
         didFirstRookMove = true;
       } else if (move.from_coordinate === rookRightCoordinate) {

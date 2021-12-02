@@ -12,6 +12,7 @@ import getPieces from "../../scripts/chess/pieces";
 import select from "../../scripts/chess/select";
 
 export default {
+  namespaced: true,
   actions: {
     async loadChess({ commit }) {
       /* Загрузить информацию о Шахматах */

@@ -33,7 +33,7 @@ export default {
 
     document.title = "Шахматы - DJPlay";
   },
-  methods: mapActions(["loadChess"]),
-  computed: mapGetters(["game", "loading"]),
+  methods: mapActions("chess", ["loadChess"]),
+  computed: mapGetters("chess", ["game", "loading"]),
 }
 </script>

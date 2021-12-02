@@ -48,12 +48,10 @@ export default {
   data() {
     return { WHITE }
   },
-  mounted() {
-    onResizeBoard();
-  },
+  mounted: onResizeBoard,
   components: { ChessPlayer },
   methods: { onBoardClick },
-  computed: mapGetters([
+  computed: mapGetters("chess", [
     "currentColor",
     "field",
     "pieces",

@@ -35,7 +35,7 @@ export default {
       ],
     }
   },
-  computed: mapGetters(["currentColor", "selectedCell"]),
-  methods: mapActions(["movePiece"]),
+  computed: mapGetters("chess", ["currentColor", "selectedCell"]),
+  methods: mapActions("chess", ["movePiece"]),
 }
 </script>
