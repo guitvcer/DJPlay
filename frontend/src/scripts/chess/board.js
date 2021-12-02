@@ -38,8 +38,10 @@ function squareBoard() {
 export function onResizeBoard() {
   /* Сделать доску квадратным при изменении размера окна */
 
-  squareBoard();
-  window.addEventListener("resize", squareBoard);
+  if (router.currentRoute.value.name === "chess") {
+    squareBoard();
+    window.addEventListener("resize", squareBoard);
+  }
 }
 
 export function onBoardClick(event) {
