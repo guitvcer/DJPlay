@@ -19,13 +19,16 @@ import Loading from "../../components/interface/Loading.vue";
 import ControlPanel from "../../components/gomoku/ControlPanel.vue";
 import GomokuBoard from "../../components/gomoku/GomokuBoard.vue";
 import StartPanel from "../../components/gomoku/StartPanel.vue";
-import { GAME_STASUSES } from "../../scripts/chess/constants";
+import { GAME_STASUSES } from "../../scripts/gomoku/constants";
 
 export default {
   components: { ControlPanel, GomokuBoard, StartPanel, Loading },
   async mounted() {
-    this.resetBoard();
-    this.updateGameStatus(GAME_STASUSES.OFFLINE);
+    if (this.gameStatus === GAME_STASUSES.WATCH) {
+      this.resetBoard();
+      this.updateGameStatus(GAME_STASUSES.OFFLINE);
+    }
+
     await this.loadGame();
 
     document.title = "Гомоку - DJPlay";

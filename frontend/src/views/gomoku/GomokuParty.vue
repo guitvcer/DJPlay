@@ -79,12 +79,23 @@ export default {
       "nextMove",
       "lastMove",
     ]),
-    ...mapMutations("gomoku", ["updateGameStatus"]),
+    ...mapMutations("gomoku", [
+      "updateGameStatus",
+      "closeGomokuPartySocket",
+      "closeFindOpponentSocket",
+    ]),
     parseDate,
   },
   async mounted() {
+    if (this.gameStatus === GAME_STASUSES.FINDING) {
+      this.closeFindOpponentSocket();
+    } else if (this.gameStatus === GAME_STASUSES.ONLINE) {
+      this.closeGomokuPartySocket();
+    }
+
     this.resetBoard();
     this.updateGameStatus(GAME_STASUSES.WATCH);
+
     await this.loadParty();
     this.lastMove();
     this.loading = false;
