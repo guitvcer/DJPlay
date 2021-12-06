@@ -174,6 +174,7 @@ export default {
     }
   },
   lastMove({ dispatch, commit, getters }) {
+    dispatch("resetBoard");
     commit("updateColor", WHITE);
     commit("updateMoveOf", WHITE);
 
