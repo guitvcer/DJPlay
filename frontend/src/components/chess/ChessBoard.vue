@@ -9,7 +9,7 @@
     <div
       id="chessBoard"
       :class="[
-        'bg-chess-board flex ',
+        'bg-chess-board flex margin-auto ',
         currentColor === WHITE ? 'flex-row flex-wrap-reverse' : 'flex-row-reverse flex-wrap'
       ]"
       @click="onBoardClick"
@@ -40,8 +40,9 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { onResizeBoard } from "../../utilities";
 import { WHITE } from "../../scripts/chess/constants";
-import { onResizeBoard, onBoardClick } from "../../scripts/chess/board";
+import { onBoardClick } from "../../scripts/chess/board";
 import ChessPlayer from "./ChessPlayer.vue";
 
 export default {

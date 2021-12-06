@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from account.models import User
+from account.serializers import UserInfoSerializer
 from .models import Party, Move
 
 
@@ -9,15 +11,24 @@ class GomokuMoveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Move
-        exclude = ('party', )
+        exclude = ('party',)
 
 
 class GomokuPartySerializer(serializers.ModelSerializer):
-    """Serializer ходов партии Гомоку"""
+    """Serializer партии Гомоку"""
 
-    player_1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
-    player_2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player_1 = UserInfoSerializer()
+    player_2 = UserInfoSerializer()
+    winner = serializers.SerializerMethodField('get_winner')
     moves = serializers.SerializerMethodField('get_moves')
+
+    @staticmethod
+    def get_winner(party: Party) -> (dict, None):
+        if party.winner is not None:
+            winner = User.objects.get(username=party.winner)
+            serializer = UserInfoSerializer(winner)
+
+            return serializer.data
 
     @staticmethod
     def get_moves(party: Party) -> dict:
@@ -30,11 +41,16 @@ class GomokuPartySerializer(serializers.ModelSerializer):
 
 
 class GomokuPartyListSerializer(serializers.ModelSerializer):
-    """Serializer партии Гомоку"""
+    """Serializer списка партии Гомоку"""
 
-    player_1 = serializers.SlugRelatedField(read_only=True, slug_field='username')
-    player_2 = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player_1 = UserInfoSerializer()
+    player_2 = UserInfoSerializer()
+    winner = serializers.SerializerMethodField('get_winner')
     moves_count = serializers.SerializerMethodField('get_moves_count')
+
+    @staticmethod
+    def get_winner(party: Party) -> (dict, None):
+        return GomokuPartySerializer.get_winner(party)
 
     @staticmethod
     def get_moves_count(party: Party) -> int:

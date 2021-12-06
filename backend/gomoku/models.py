@@ -24,7 +24,6 @@ class Party(models.Model):
     """Модель партии Гомоку"""
 
     id = models.AutoField(primary_key=True)
-    game = models.ForeignKey(Game, on_delete=models.PROTECT, verbose_name="Игра", related_name="gomoku_game")
     player_1 = models.ForeignKey(User, on_delete=models.PROTECT,
                                  verbose_name="Игрок 1", related_name="gomoku_first_player")
     player_2 = models.ForeignKey(User, on_delete=models.PROTECT,

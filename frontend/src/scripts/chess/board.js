@@ -1,4 +1,3 @@
-import router from "../../router";
 import { WHITE, BLACK, NUMBERS, LETTERS, PIECE_Y, GAME_STASUSES } from "./constants";
 import select from "./select";
 import store from "../../store/index";
@@ -15,34 +14,6 @@ export function getField() {
   }
 
   return field;
-}
-
-function squareBoard() {
-  /* Сделать доску квадратной */
-
-  const board = document.getElementById("chessBoard");
-
-  if (board.offsetWidth !== board.offsetHeight) {
-    board.style.height = board.offsetWidth + "px";
-    squareBoard();
-  } else {
-    if (board.offsetHeight > window.innerHeight) {
-      board.style.width = window.innerHeight - 200 + "px";
-      board.style.height = window.innerHeight - 200 + "px";
-    } else if (board.offsetHeight + 200 < window.innerHeight) {
-      board.removeAttribute("style");
-      board.style.height = board.offsetWidth + "px";
-    }
-  }
-}
-
-export function onResizeBoard() {
-  /* Сделать доску квадратным при изменении размера окна */
-
-  if (router.currentRoute.value.name === "chess") {
-    squareBoard();
-    window.addEventListener("resize", squareBoard);
-  }
 }
 
 export function onBoardClick(event) {

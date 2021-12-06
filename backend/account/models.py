@@ -150,8 +150,9 @@ class Queue(models.Model):
             else:
                 # если очередь заполнена, создается игра и очищается очередь
 
-                gomoku = Game.objects.get(app_name="gomoku")
-                party = self.game.party_set.create(player_1=self.player_1, player_2=player, game=gomoku)
+                from gomoku.models import Party
+
+                party = Party.objects.create(player_1=self.player_1, player_2=player)
                 self.player_1 = None
                 self.save()
 

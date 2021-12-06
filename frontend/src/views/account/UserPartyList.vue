@@ -18,7 +18,6 @@
     <user-party-list-table
       v-if="!loading && partyListLength > 0"
       :partyList="partyList"
-      :currentUsername="username"
     />
 
     <paginator
@@ -70,6 +69,7 @@ export default {
       this.nextPage = result.data.next;
       this.previousPage = result.data.previous;
       this.partyList = result.data.results;
+      this.title = result.title;
       this.loading = false;
 
       document.title = result.title;

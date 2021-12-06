@@ -15,7 +15,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'avatar', 'is_online', 'last_online', 'gender')
+        fields = ('id', 'username', 'avatar', 'is_online', 'last_online', 'gender')
 
 
 class AuthorizationSerializer(serializers.Serializer):

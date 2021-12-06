@@ -1,4 +1,5 @@
 from account.models import User, Game, Queue
+from .exceptions import NotValidCoordinate
 from .models import Party, Move
 
 
@@ -24,13 +25,13 @@ def get_x(move: Move) -> str:
     return move.coordinate[0]
 
 
-def get_y(move: Move) -> str:
+def get_y(move: Move) -> int:
     """Получить ряд/число хода"""
 
     if len(move.coordinate) == 2:
-        return move.coordinate[1]
+        return int(move.coordinate[1])
     else:
-        return move.coordinate[1] + move.coordinate[2]
+        return int(move.coordinate[1] + move.coordinate[2])
 
 
 def get_letter(letter: str, n: int) -> str:
@@ -62,7 +63,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
 
             # вертикаль
             try:
-                move = Move.objects.get(party=party, player=player, coordinate=f'{x}{int(y) - n + i}')
+                move = Move.objects.get(party=party, player=player, coordinate=f'{x}{y - n + i}')
                 y_moves.append(move.coordinate)
             except Move.DoesNotExist:
                 y_moves = []
@@ -70,7 +71,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
             # диагональ 1
             try:
                 move = Move.objects.get(party=party, player=player,
-                                        coordinate=f'{get_letter(x, n - i)}{int(y) + i - n}')
+                                        coordinate=f'{get_letter(x, n - i)}{y + i - n}')
                 z_moves_1.append(move.coordinate)
             except Move.DoesNotExist:
                 z_moves_1 = []
@@ -78,7 +79,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
             # диагональ 2
             try:
                 move = Move.objects.get(party=party, player=player,
-                                        coordinate=f'{get_letter(x, n - i)}{int(y) - i + n}')
+                                        coordinate=f'{get_letter(x, n - i)}{y - i + n}')
                 z_moves_2.append(move.coordinate)
             except Move.DoesNotExist:
                 z_moves_2 = []
@@ -93,27 +94,41 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
             return z_moves_2
 
 
+def validate_coordinate(coordinate: str) -> None:
+    """Валидировать координату"""
+
+    try:
+        if ord(coordinate[0]) not in range(97, 112):
+            raise NotValidCoordinate
+
+        try:
+            y = int(coordinate[1]) * 10 + int(coordinate[2])
+        except IndexError:
+            y = int(coordinate[1])
+
+        if y not in range(1, 16):
+            raise NotValidCoordinate
+    except IndexError:
+        raise NotValidCoordinate
+
+
 def register_move(coordinate: str, party_id: int, player: User) -> (list, None):
     """Зарегистрировать ход, и вернуть коордианаты, в случае когда ход делает линию из 5 точек"""
 
-    if coordinate == 'nothing':
-        return
+    validate_coordinate(coordinate)
 
     party = Party.objects.get(id=party_id)
 
-    if coordinate == 'give_up':
-        player_gives_up(party_id, player)
-    else:
-        try:
-            move = Move.objects.get(coordinate=coordinate, player=player, party=party)
-        except Move.DoesNotExist:
-            move = Move.objects.create(coordinate=coordinate, player=player, party=party)
+    try:
+        move = Move.objects.get(coordinate=coordinate, player=player, party=party)
+    except Move.DoesNotExist:
+        move = Move.objects.create(coordinate=coordinate, player=player, party=party)
 
-        return check_row(move, party, player)
+    return check_row(move, party, player)
 
 
-def delete_returnable_move(party_id: int, coordinate: str) -> None:
-    """Удалить ходы после возвращаемого хода"""
+def cancel_move(party_id: int, coordinate: str) -> None:
+    """Отменить ход"""
 
     party = Party.objects.get(id=party_id)
     move = Move.objects.get(coordinate=coordinate, party=party)

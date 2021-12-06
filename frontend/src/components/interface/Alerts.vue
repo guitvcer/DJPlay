@@ -12,14 +12,25 @@
         <badge-check-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'success'" />
         <shield-exclamation-icon class="h-6 w-6 mr-2 flex-shrink-0" v-else-if="alert.level === 'warning'" />
 
-        <router-link
-          v-if="alert.url"
-          @click="clearSimilarAlerts(alert.url)"
-          :to="alert.url"
-          class="flex flex-col justify-start items-center text-left mr-2 w-full"
-          v-html="alert.title"
-        />
-        <p v-else class="flex flex-col justify-start items-center text-left mr-2 py-3" v-html="alert.title" />
+        <div class="flex items-center">
+          <router-link
+            v-if="alert.url"
+            @click="clearSimilarAlerts(alert.url)"
+            :to="alert.url"
+            class="flex flex-col justify-start items-center text-left mr-2 w-full"
+            v-html="alert.title"
+          />
+          <p v-else class="flex flex-col justify-start items-center text-left mr-2 py-3" v-html="alert.title" />
+          <button
+            v-if="alert.buttons"
+            v-for="button in alert.buttons"
+            class="rounded p-2 hover:bg-gray-100 border-2 border-gray-500 mx-1"
+            @click="button.onclick"
+          >
+            <check-icon v-if="button.icon === 'check'" class="h-6 w-6" />
+            <x-icon v-else-if="button.icon === 'x'" class="h-6 w-6" />
+          </button>
+        </div>
       </div>
       <button @click="removeAlert(index)" class="pr-4">
         <x-icon class="w-4 h-4 fill-current" />
@@ -40,6 +51,7 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
   BadgeCheckIcon,
+  CheckIcon,
   ExclamationIcon,
   InformationCircleIcon,
   ShieldExclamationIcon,
@@ -49,6 +61,7 @@ import {
 export default {
   components: {
     BadgeCheckIcon,
+    CheckIcon,
     ExclamationIcon,
     InformationCircleIcon,
     ShieldExclamationIcon,

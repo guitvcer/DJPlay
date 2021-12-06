@@ -1,56 +1,50 @@
 <template>
   <div class="w-full fixed left-0 bottom-0 bg-white border-main border-t flex justify-center items-center py-1 dark:bg-main-dark">
     <button
-      v-if="name === 'Gomoku'"
+      v-if="action === 'Gomoku'"
       title="Отменить ход"
       class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
-      @click="returnMove"
+      @click="cancelMove(false)"
     >
       <!-- TODO: добавить ctrl+z на отмену хода -->
       <reply-icon class="h-6 w-6" />
     </button>
     <button
-      v-if="name === 'Gomoku'"
+      v-if="action === 'Gomoku'"
       title="Сбросить доску"
       class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
       @click="resetBoard"
     >
       <refresh-icon class="h-6 w-6" />
     </button>
-
     <button
-      v-if="name === 'GomokuParty'"
-      @click="$emit('firstMove')"
+      v-if="action === 'GomokuParty'"
+      v-for="button in buttons"
+      @click="button.onclick"
       class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
     >
-      <chevron-double-left-icon class="h-6 w-6" />
-    </button>
-    <button
-      v-if="name === 'GomokuParty'"
-      @click="$emit('prevMove')"
-      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
-    >
-      <chevron-left-icon class="h-6 w-6" />
-    </button>
-    <button
-      v-if="name === 'GomokuParty'"
-      @click="$emit('nextMove')"
-      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
-    >
-      <chevron-right-icon class="h-6 w-6" />
-    </button>
-    <button
-      v-if="name === 'GomokuParty'"
-      @click="$emit('lastMove')"
-      class="rounded bg-gray-100 py-0.5 px-1 hover:bg-gray-200 dark:bg-main dark:hover:bg-main-dark2 mx-1"
-    >
-      <chevron-double-right-icon class="h-6 w-6" />
+      <chevron-double-left-icon
+        v-if="button.icon === 'chevron-double-left'"
+        class="h-6 w-6"
+      />
+      <chevron-left-icon
+        v-else-if="button.icon === 'chevron-left'"
+        class="h-6 w-6"
+      />
+      <chevron-right-icon
+        v-else-if="button.icon === 'chevron-right'"
+        class="h-6 w-6"
+      />
+      <chevron-double-right-icon
+        v-else-if="button.icon === 'chevron-double-right'"
+        class="h-6 w-6"
+      />
     </button>
   </div>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapActions } from "vuex";
 import {
   ChevronLeftIcon,
   ChevronDoubleLeftIcon,
@@ -59,11 +53,10 @@ import {
   RefreshIcon,
   ReplyIcon
 } from "@heroicons/vue/outline";
-import { getCookie } from "../../utilities";
 
 export default {
   props: {
-    name: {
+    action: {
       type: String,
       required: true,
     }
@@ -76,59 +69,37 @@ export default {
     RefreshIcon,
     ReplyIcon,
   },
-  methods: {
-    ...mapMutations(["createAlert"]),
-    returnMove() {
-      if (this.$parent.moves.length !== 0) {
-        const lastDot = this.$parent.moves[this.$parent.moves.length - 1]
-
-        if (this.$parent.gameStatus === "playing") {
-          if (
-              (this.$parent.currentColor === "white" && lastDot.classList.contains("bg-main")) ||
-              (this.$parent.currentColor === "blue" && lastDot.classList.contains("bg-white"))
-          ) {
-            this.createAlert({
-              title: "Последний ход не Ваш.",
-              level: "warning",
-            });
-          } else {
-            this.$parent.returnMoveSocket.send(JSON.stringify({
-              access_token: getCookie("access"),
-              command: "return_move",
-              returnable_move: lastDot.id,
-              returner: this.$parent.username,
-            }));
-          }
-        } else {
-          lastDot.className = this.$parent.dotClassName;
-          lastDot.innerHTML = "";
-
-          this.$parent.moves.pop();
-
-          if (this.$parent.currentColor === "white") {
-            this.$parent.currentColor = "blue";
-          } else {
-            this.$parent.currentColor = "white";
-          }
-        }
-      }
-    },
-    resetBoard(showAlert = true) {
-      if (this.$parent.gameStatus === "playing" && showAlert) {
-        this.createAlert({
-          title: "Во время игры нельзя очищать поле.",
-          level: "warning",
-        });
-      } else {
-        for (let dot of document.querySelectorAll(".dot")) {
-          dot.className = this.$parent.dotClassName;
-          dot.innerHTML = "";
-        }
-
-        this.$parent.moves = [];
-        this.$parent.currentColor = "white";
-      }
+  data() {
+    return {
+      buttons: [
+        {
+          icon: "chevron-double-left",
+          onclick: this.firstMove,
+        },
+        {
+          icon: "chevron-left",
+          onclick: this.prevMove,
+        },
+        {
+          icon: "chevron-right",
+          onclick: this.nextMove,
+        },
+        {
+          icon: "chevron-double-right",
+          onclick: this.lastMove,
+        },
+      ],
     }
+  },
+  methods: {
+    ...mapActions("gomoku", [
+      "resetBoard",
+      "cancelMove",
+      "firstMove",
+      "prevMove",
+      "nextMove",
+      "lastMove",
+    ]),
   }
 }
 </script>

@@ -30,52 +30,76 @@
     </div>
     <div v-else-if="name === 'ChessParty'" class="hidden 2xl:flex px-8 justify-center mt-4">
       <button
-        class="px-6 py-4 mx-1 text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
-        @click="$emit('firstMove')"
+        v-for="button in buttons"
+        @click="button.onclick"
+        class="
+          px-6 py-4 mx-1 text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md
+          dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main
+        "
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-        </svg>
-      </button>
-      <button
-          class="px-6 py-4 mx-1 text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
-          @click="$emit('prevMove')"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <button
-          class="px-6 py-4 mx-1 text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
-          @click="$emit('nextMove')"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-      <button
-          class="px-6 py-4 mx-1 text-xl md:text-2xl font-semibold bg-gray-200 hover:bg-gray-300 text-black border rounded-md dark:border-main-dark2 dark:bg-main-dark2 dark:text-gray-200 dark:hover:bg-main"
-          @click="$emit('lastMove')"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-        </svg>
+        <chevron-double-left-icon
+          v-if="button.icon === 'chevron-double-left'"
+          class="h-6 w-6"
+        />
+        <chevron-left-icon
+          v-else-if="button.icon === 'chevron-left'"
+          class="h-6 w-6"
+        />
+        <chevron-right-icon
+          v-else-if="button.icon === 'chevron-right'"
+          class="h-6 w-6"
+        />
+        <chevron-double-right-icon
+          v-else-if="button.icon === 'chevron-double-right'"
+          class="h-6 w-6"
+        />
       </button>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  ChevronDoubleLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronDoubleRightIcon
+} from "@heroicons/vue/outline";
+
 export default {
   props: {
     name: {
       type: String,
       required: true,
     },
-    game: Object,
-    party: Object,
-    player1: Object,
-    player2: Object,
+  },
+  components: {
+    ChevronDoubleLeftIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    ChevronDoubleRightIcon,
+  },
+  data() {
+    return {
+      buttons: [
+        {
+          icon: "chevron-double-left",
+          onclick: this.firstMove,
+        },
+        {
+          icon: "chevron-left",
+          onclick: this.prevMove,
+        },
+        {
+          icon: "chevron-right",
+          onclick: this.nextMove,
+        },
+        {
+          icon: "chevron-double-right",
+          onclick: this.lastMove,
+        },
+      ],
+    }
   },
 }
 </script>

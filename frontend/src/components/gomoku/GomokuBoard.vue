@@ -1,207 +1,65 @@
 <template>
   <div
-    class="max-w-3xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
+    class="max-w-3xl mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 bg-board-background dark:bg-board-background-dark"
     id="gomokuBoard"
-    @keydown.left="focusToLeft"
-    @keydown.down="focusToDown"
-    @keydown.up="focusToUp"
-    @keydown.right="focusToRight"
+    @click="onBoardClick"
+    @keydown.enter="onBoardClick"
+    @keydown.up="focus('up')"
+    @keydown.right="focus('right')"
+    @keydown.down="focus('down')"
+    @keydown.left="focus('left')"
   >
-    <div class="flex flex-col justify-between" id="dotsWrapper">
-      <div v-for="(number, numberIndex) in numbers" :key="numberIndex" class="flex justify-between relative row">
-        <div
-          v-for="(letter, letterIndex) in letters"
-          :key="letterIndex"
-          :id="letter + number"
-          :class="$parent.dotClassName"
-          :tabindex="numberIndex * 15 + letterIndex + 4"
-          @click="registerMove($event.target)"
-          @keydown.enter="registerMove($event.target)"
-        />
+    <div v-for="(number, numberIndex) in NUMBERS" class="flex justify-between relative row">
+      <div
+        v-for="(letter, letterIndex) in LETTERS"
+        :id="letter + number"
+        :class="[
+          'dot rounded-full z-0 h-full flex items-center justify-center text-xs sm:text-base text-center',
+          moves.length > 0 && moves[moves.length - 1].coordinate === letter + number ? ' border-yellow-500' : ' border-main',
+          field[letter + number].row ? ' bg-red-500 hover:bg-red-500 dark:hover:bg-red-500 text-black font-bold' : (
+            field[letter + number].color === WHITE ? ' bg-white hover:bg-white border-2 dark:bg-gray-300 dark:hover:bg-gray-300 text-black' : (
+              field[letter + number].color === BLACK ? ' bg-main hover:bg-main border-2 dark:bg-main-dark2 dark:hover:bg-main-dark2 text-gray-100' : ' hover:bg-main focus:bg-main cursor-pointer'
+            )
+          ),
+        ]"
+        :tabindex="numberIndex * 15 + letterIndex + 4"
+      >
+        {{ field[letter + number] ? field[letter + number].count : "" }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { onResizeBoard } from "../../utilities";
+import { WHITE, BLACK, NUMBERS, LETTERS } from "../../scripts/gomoku/constants";
+import { onBoardClick, focus } from "../../scripts/gomoku/board";
+
 export default {
   props: {
-    name: {
+    action: {
       type: String,
       required: true,
     }
   },
   data() {
-    return {
-      numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      letters: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'],
-      newMoveSound: new Audio(`${this.baseURL}/media/sounds/new_move.mp3`)
-    }
+    return { WHITE, BLACK, NUMBERS, LETTERS }
   },
-  mounted() {
-    setTimeout(this.resizeGomokuBoard, 1);
-    setTimeout(this.resizeGomokuBoard, 2);
-    window.addEventListener("resize", this.resizeGomokuBoard);
-
-    if (this.name === "GomokuParty") this.selectPartyDots();
-  },
-  methods: {
-    registerMove(target, sendToServer = true) {
-      if (this.name === "GomokuParty") return;
-
-      if (this.$parent.gameStatus === "playing") {
-        if (this.$parent.myMove) {
-          if (sendToServer) {
-            this.$parent.gomokuPartySocket.send(JSON.stringify({
-              move: target.id,
-            }));
-          } else {
-            this.selectDot(target);
-          }
-        }
-      } else this.selectDot(target);
-    },
-    resizeGomokuBoard() {
-      try {
-        const gomokuBoard = document.querySelector("#gomokuBoard");
-        gomokuBoard.setAttribute("style",
-          "height: " + gomokuBoard.offsetWidth + "px"
-        );
-      } catch (e) {}
-    },
-    selectDot(target) {
-      // выйти из функции, если нажата уже нажатый ход
-      if (
-        target.classList.contains("bg-white") ||
-        target.classList.contains("bg-main") ||
-        target.classList.contains("bg-red-400")
-      ) return;
-
-      // удалить желтую окантовку последнего хода
-      try {
-        const lastMove = document.querySelector(".border-yellow-500");
-        lastMove.classList.remove("border-yellow-500");
-        lastMove.classList.add("border-main");
-      } catch (e) {}
-
-      // добавить соответствующие классы для "точки"
-      if (
-        (this.$parent.myMove && this.$parent.currentColor === "white") ||
-        (!this.$parent.myMove && this.$parent.currentColor === "blue")
-      ) {
-        target.classList.add("bg-white");
-        target.classList.add("dark:bg-gray-300");
-        target.classList.add("text-black");
-      } else if (
-        (this.$parent.myMove && this.$parent.currentColor === "blue") ||
-        (!this.$parent.myMove && this.$parent.currentColor === "white")
-      ) {
-        target.classList.add("bg-main");
-        target.classList.add("dark:bg-main-dark2");
-        target.classList.add("text-gray-100");
-      }
-
-      // сменить текущий цвет, если оффлайн игра
-      if (this.$parent.gameStatus !== "playing") {
-        if (this.$parent.currentColor === "white") {
-          this.$parent.currentColor = "blue";
-        } else {
-          this.$parent.currentColor = "white";
-        }
-      }
-
-      // добавить желтую окантовку для последней точки
-      target.classList.add("border-yellow-500");
-      target.classList.add("border-2");
-
-      // добавить последний ход в список
-      this.$parent.moves.push(target);
-
-      // добавить порядковый номер внутрь "точки"
-      target.innerHTML = this.$parent.moves.length;
-
-      try {
-        this.newMoveSound.currentTime = 0;
-        this.newMoveSound.play();
-      } catch (e) {}
-    },
-    selectPartyDots() {
-      for (const move of this.$parent.party.moves) {
-        const dot = document.getElementById(move["coordinate"]);
-        this.selectDot(dot);
-      }
-    },
-    focusToLeft() {
-      if (this.$route.name === "gomokuParty") return;
-
-      const tabIndex = +document.activeElement.getAttribute("tabindex") - 1;
-
-      if (tabIndex > 3) {
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
-      }
-    },
-    focusToDown() {
-      if (this.$route.name === "gomokuParty") return;
-
-      const tabIndex = +document.activeElement.getAttribute("tabindex") + 15;
-
-      if (tabIndex < 229) {
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
-      }
-    },
-    focusToUp() {
-      if (this.$route.name === "gomokuParty") return;
-
-      const tabIndex = +document.activeElement.getAttribute("tabindex") - 15;
-
-      if (tabIndex > 3) {
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
-      }
-    },
-    focusToRight() {
-      if (this.$route.name === "gomokuParty") return;
-
-      const tabIndex = +document.activeElement.getAttribute("tabindex") + 1;
-
-      if (tabIndex < 229) {
-        document.querySelector(`[tabindex="${tabIndex}"]`).focus();
-      }
-    }
-  }
+  computed: mapGetters("gomoku", ["field", "moves"]),
+  mounted: onResizeBoard,
+  methods: { onBoardClick, focus },
 }
 </script>
 
 <style scoped>
-#dotsWrapper {
-  height: calc(100% + 33px);
-}
 .row {
-  width: calc(100% + 34px);
-  top: -15px;
-  left: -15px;
+  width: calc(100% + (100% / 14));
+  height: calc(100% / 14);
+  top: calc(-100% / 30);
+  left: calc(-100% / 30);
 }
 .dot {
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  z-index: 0;
-}
-.dot:not(.bg-white, .bg-main .bg-red-400):hover {
-  background: #393e46;
-}
-
-@media screen and (max-width: 640px) {
-  .dot {
-    width: 22px;
-    height: 22px;
-  }
-  #dotsWrapper {
-    height: calc(100% + 22px);
-  }
-  .row {
-    width: calc(100% + 22px);
-    top: -11px;
-    left: -11px;
-  }
+  width: calc(100% / 15);
 }
 </style>

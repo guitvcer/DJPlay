@@ -24,3 +24,17 @@ export function getFieldValue(field) {
 
   return field.fieldValue;
 }
+
+export function parseDate(date) {
+  return DateTime.fromISO(date).setLocale("ru").toFormat("d MMMM y H:m");
+}
+
+export function getPartyResult(winner, user) {
+  if (winner === null) {
+    return "Н/Д";
+  } else if (winner.username === user.username) {
+    return "Выигрыш";
+  } else {
+    return "Проигрыш";
+  }
+}
