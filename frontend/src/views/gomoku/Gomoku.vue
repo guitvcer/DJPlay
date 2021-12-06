@@ -5,7 +5,7 @@
   >
     <loading v-if="loading" class="m-auto" />
     <gomoku-board v-if="!loading" action="Gomoku" />
-    <start-panel v-if="!loading" action="Gomoku" :game="game">
+    <start-panel v-if="!loading" action="Gomoku">
       <h2 class="text-2xl md:text-4xl mb-4">{{ game.name }}</h2>
       <p class="mb-12 md:mb-20">{{ game.rules }}</p>
     </start-panel>
@@ -33,7 +33,7 @@ export default {
 
     document.title = "Гомоку - DJPlay";
   },
-  computed: mapGetters("gomoku", ["game", "loading"]),
+  computed: mapGetters("gomoku", ["game", "loading", "gameStatus"]),
   methods: {
     ...mapActions("gomoku", ["loadGame", "resetBoard"]),
     ...mapMutations("gomoku", ["updateGameStatus"]),
