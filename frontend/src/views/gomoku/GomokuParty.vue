@@ -21,7 +21,7 @@
             ' w-1/3 pt-2 rounded border hover:bg-main-dark dark:hover:bg-main-dark2'
           ]"
         >
-          <img :src="this.baseURL + party['player1'].avatar" :alt="party['player1'].username" class="w-8 m-auto">
+          <img :src="party['player1'].avatar" :alt="party['player1'].username" class="w-8 m-auto">
           <strong class="block text-center">{{ party["player1"].username }}</strong>
         </router-link>
 
@@ -34,7 +34,7 @@
             ' w-1/3 pt-2 rounded border hover:bg-main-dark dark:hover:bg-main-dark2'
           ]"
         >
-          <img :src="this.baseURL + party['player2'].avatar" :alt="party['player2'].username" class="w-8 m-auto">
+          <img :src="party['player2'].avatar" :alt="party['player2'].username" class="w-8 m-auto">
           <strong class="block text-center">{{ party["player2"].username }}</strong>
         </router-link>
       </p>
