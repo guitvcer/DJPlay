@@ -261,7 +261,7 @@ function castlingCells(copyOfPieces = null) {
   return castlingMoves;
 }
 
-function availableCellsForKing(coordinate, copyOfPieces = null) {
+function availableCellsForKing(coordinate, copyOfPieces = null, checkForHostileKing = true) {
   /* Получить объект из координат допустимых клеток для короля */
 
   const
@@ -274,15 +274,36 @@ function availableCellsForKing(coordinate, copyOfPieces = null) {
     y = +coordinate[1],
     indexOfX = LETTERS.indexOf(x);
 
+  let hostileKingsAvailableCells;
+
+  if (checkForHostileKing) {
+    for (const coordinate of Object.keys(store.getters["chess/pieces"])) {
+      const piece = store.getters["chess/pieces"][coordinate];
+
+      if (piece.name === "king" && piece.color !== store.getters["chess/currentColor"]) {
+        hostileKingsAvailableCells = availableCellsForKing(piece.coordinate, null, false);
+        break;
+      }
+    }
+  }
+
   for (let _indexOfX = indexOfX - 1; _indexOfX <= indexOfX + 1; _indexOfX++) {
     for (let _y = y - 1; _y <= y + 1; _y++) {
       const coordinate = LETTERS[_indexOfX] + _y;
 
       if (isCoordinateValid(coordinate)) {
-        if (isCellEmpty(coordinate, copyOfPieces)) {
-          availableCells.selectable.push(coordinate);
-        } else if (isCellHostile(coordinate, copyOfPieces)) {
-          availableCells.edible.push(coordinate);
+        if (
+          !checkForHostileKing ||
+          (
+            !hostileKingsAvailableCells.selectable.includes(coordinate) &&
+            !hostileKingsAvailableCells.edible.includes(coordinate)
+          )
+        ) {
+          if (isCellEmpty(coordinate, copyOfPieces)) {
+            availableCells.selectable.push(coordinate);
+          } else if (isCellHostile(coordinate, copyOfPieces)) {
+            availableCells.edible.push(coordinate);
+          }
         }
       }
     }
