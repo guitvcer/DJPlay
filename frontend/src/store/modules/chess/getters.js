@@ -38,4 +38,7 @@ export default {
   waitingPlayerIndex(state) {
     return state.players[0].color === state.moveOf ? 1 : 0;
   },
+  partyID(state) {
+    return state.partyID;
+  }
 }

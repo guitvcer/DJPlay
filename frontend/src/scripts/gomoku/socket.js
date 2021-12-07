@@ -42,7 +42,7 @@ export const GOMOKU_PARTY_SOCKET_URL = process.env.VUE_APP_BASE_WS_URL + "/gomok
 export function gomokuPartySocketOnOpen() {
   store.commit("gomoku/sendGomokuPartySocket", {
     access: getCookie("access"),
-    action: "authorize"
+    action: "authorize",
   });
   store.dispatch("gomoku/resetBoard").then();
   store.commit("gomoku/updateGameStatus", GAME_STASUSES.ONLINE);

@@ -20,7 +20,7 @@ export function onBoardClick(event) {
   /* При нажатии на доску */
 
   if (
-    [GAME_STASUSES.OFFLINE, null].includes(store.getters["chess/gameStatus"]) &&
+    [GAME_STASUSES.OFFLINE, GAME_STASUSES.FINDING, null].includes(store.getters["chess/gameStatus"]) &&
     store.getters["chess/moveOf"] === store.getters["chess/currentColor"] &&
     event.target.id !== "chessBoard"
   ) {

@@ -8,8 +8,8 @@ from django.db.models import QuerySet, ProtectedError
 from django.test import TestCase
 from easy_thumbnails.fields import ThumbnailerImageField
 
-from account.models import User, FriendRequest, Game, UserView, Queue
-from gomoku.models import Party as GomokuParty
+from account.models import User, FriendRequest, Game, UserView
+from gomoku.models import Party as GomokuParty, Queue
 from gomoku.services import add_gomoku_into_database
 from chat.models import Chat
 

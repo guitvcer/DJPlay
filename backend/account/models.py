@@ -122,45 +122,8 @@ class Game(models.Model):
     def __str__(self): return self.name
 
     class Meta:
-        verbose_name = 'Игра'
-        verbose_name_plural = 'Игры'
-
-
-class Queue(models.Model):
-    """Модель очереди для игры"""
-
-    id = models.AutoField(primary_key=True)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, verbose_name="Очередь для")
-    player_1 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Игрок 1")
-
-    def __str__(self): return f'Очередь для {self.game.name}'
-
-    def update_queue(self, player: User = None, clear: bool = False):
-        if clear:
-            self.player_1 = None
-            self.save()
-            return
-
-        if player is not None:
-            if self.player_1 is None:
-                self.player_1 = player
-                self.save()
-            elif self.player_1 == player:
-                pass
-            else:
-                # если очередь заполнена, создается игра и очищается очередь
-
-                from gomoku.models import Party
-
-                party = Party.objects.create(player_1=self.player_1, player_2=player)
-                self.player_1 = None
-                self.save()
-
-                return party
-
-    class Meta:
-        verbose_name = 'Очередь для игры'
-        verbose_name_plural = 'Очереди для игр'
+        verbose_name = "Игра"
+        verbose_name_plural = "Игры"
 
 
 class FriendRequest(models.Model):

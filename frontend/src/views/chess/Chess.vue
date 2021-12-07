@@ -4,12 +4,8 @@
     style="max-width: 1800px;"
   >
     <loading v-if="loading" class="m-auto" />
-    <chess-board v-if="!loading" name="Chess" />
-    <start-panel
-      v-if="!loading"
-      name="Chess"
-      :game="game"
-    >
+    <chess-board v-if="!loading" />
+    <start-panel v-if="!loading" action="Chess">
       <h2 class="text-2xl md:text-4xl mb-4">{{ game.name }}</h2>
       <p class="mb-12 md:mb-20" v-html="game.rules"></p>
     </start-panel>

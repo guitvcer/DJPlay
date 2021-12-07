@@ -1,6 +1,16 @@
 import getPieces from "../../../scripts/chess/pieces";
 import { getField } from "../../../scripts/chess/board";
 import { GAME_STASUSES } from "../../../scripts/chess/constants";
+import {
+  FIND_OPPONENT_SOCKET_URL,
+  findOpponentSocketOnOpen,
+  findOpponentSocketOnMessage,
+  findOpponentSocketOnClose,
+  CHESS_PARTY_SOCKET_URL,
+  chessPartySocketOnOpen,
+  chessPartySocketOnMessage,
+  chessPartySocketOnClose,
+} from "../../../scripts/chess/socket";
 
 export default {
   updateGame(state, game) {
@@ -87,5 +97,37 @@ export default {
     state.players[playerIndex].eatenPieces.rook += rook;
     state.players[playerIndex].eatenPieces.bishop += bishop;
     state.players[playerIndex].eatenPieces.pawn += pawn;
+  },
+  updatePlayer(state, { index, user }) {
+    state.players[index].user = user;
+  },
+  updatePartyID(state, id) {
+    state.partyID = id;
+  },
+
+  openFindOpponentSocket(state) {
+    state.findOpponentSocket = new WebSocket(FIND_OPPONENT_SOCKET_URL);
+    state.findOpponentSocket.onopen = findOpponentSocketOnOpen;
+    state.findOpponentSocket.onmessage = findOpponentSocketOnMessage;
+    state.findOpponentSocket.onclose = findOpponentSocketOnClose;
+  },
+  sendFindOpponentSocket(state, object) {
+    state.findOpponentSocket.send(JSON.stringify(object));
+  },
+  closeFindOpponentSocket(state) {
+    state.findOpponentSocket.close();
+  },
+
+  openChessPartySocket(state) {
+    state.chessPartySocket = new WebSocket(CHESS_PARTY_SOCKET_URL + state.partyID);
+    state.chessPartySocket.onopen = chessPartySocketOnOpen;
+    state.chessPartySocket.onmessage = chessPartySocketOnMessage;
+    state.chessPartySocket.onclose = chessPartySocketOnClose;
+  },
+  sendChessPartySocket(state, object) {
+    state.chessPartySocket.send(JSON.stringify(object));
+  },
+  closeChesspartySocket(state) {
+    state.chessPartySocket.close();
   }
 }

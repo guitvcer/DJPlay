@@ -1,4 +1,5 @@
 import api from "../../../api";
+import { isAuthenticated } from "../../../utilities";
 import { BLACK, GAME_STASUSES, PIECE_Y, WHITE } from "../../../scripts/chess/constants";
 import {
   check,
@@ -26,7 +27,7 @@ export default {
     commit("updateColor", getters.currentColor === WHITE ? BLACK : WHITE);
   },
 
-  resetBoard({ commit, getters }) {
+  resetBoard({ dispatch, commit, getters }) {
     /* Сбросить доску */
 
     commit("resetCells");
@@ -36,6 +37,15 @@ export default {
     commit("updateColor", WHITE);
     commit("updateMoveOf", WHITE);
     commit("updateGameStatus", null);
+
+    const avatarURL = "/media/avatars/user.png";
+
+    dispatch("updateWhitePlayer", {
+      username: "БЕЛЫЙ", avatar: avatarURL,
+    });
+    dispatch("updateBlackPlayer", {
+      username: "ЧЕРНЫЙ", avatar: avatarURL,
+    });
 
     for (const playerIndex in getters.players) {
       commit("resetSecondsRemaining", playerIndex);
@@ -408,4 +418,35 @@ export default {
       }
     }
   },
+
+  async findOpponent({ commit }) {
+    if (await isAuthenticated()) {
+      commit("updateGameStatus", GAME_STASUSES.FINDING);
+      commit("openFindOpponentSocket");
+    } else {
+      commit("updateModalAction", "authorization", { root: true });
+      commit("updateOpenModal", true, { root: true });
+    }
+  },
+  cancelFinding({ commit }) {
+    commit("updateGameStatus", GAME_STASUSES.OFFLINE);
+    commit("closeFindOpponentSocket");
+  },
+  giveUp({ commit }) {
+    commit("updateGameStatus", GAME_STASUSES.FINISHED);
+    commit("closeChessPartySocket");
+  },
+  offerDraw() {
+
+  },
+  updateWhitePlayer({ commit }, user) {
+    commit("updatePlayer", {
+      index: 0, user,
+    });
+  },
+  updateBlackPlayer({ commit }, user) {
+    commit("updatePlayer", {
+      index: 1, user,
+    });
+  }
 }

@@ -3,11 +3,11 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 
-from account.models import User, Game, Queue
+from account.models import User, Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
 from .exceptions import NotValidCoordinate
-from .models import Party
+from .models import Party, Queue
 from .services import register_move, cancel_move, player_gives_up
 
 

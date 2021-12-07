@@ -1,6 +1,6 @@
-from account.models import User, Game, Queue
+from account.models import User, Game
 from .exceptions import NotValidCoordinate
-from .models import Party, Move
+from .models import Party, Move, Queue
 
 
 def player_gives_up(party_id: id, loser: User) -> None:

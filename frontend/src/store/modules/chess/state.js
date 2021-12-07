@@ -39,4 +39,8 @@ export default {
       },
     }
   ],
+
+  findOpponentSocket: null,
+  chessPartySocket: null,
+  partyID: null,
 }
