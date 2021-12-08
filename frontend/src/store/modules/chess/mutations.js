@@ -125,9 +125,11 @@ export default {
     state.chessPartySocket.onclose = chessPartySocketOnClose;
   },
   sendChessPartySocket(state, object) {
-    state.chessPartySocket.send(JSON.stringify(object));
+    if (state.gameStatus === GAME_STASUSES.ONLINE) {
+      state.chessPartySocket.send(JSON.stringify(object));
+    }
   },
-  closeChesspartySocket(state) {
+  closeChessPartySocket(state) {
     state.chessPartySocket.close();
   }
 }

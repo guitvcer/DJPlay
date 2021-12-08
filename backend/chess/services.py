@@ -1,5 +1,7 @@
+from rest_framework.generics import get_object_or_404
+
 from account.models import Game
-from .models import Queue
+from .models import Queue, Party
 
 
 def add_chess_into_database() -> None:
@@ -18,3 +20,11 @@ def add_chess_into_database() -> None:
         is_released=False,
     )
     Queue.objects.get_or_create(game=chess)
+
+
+def draw_party(party_id: int) -> None:
+    """Сделать партию ничейной"""
+
+    party = get_object_or_404(Party.objects.all(), id=party_id)
+    party.result = 'D'
+    party.save()

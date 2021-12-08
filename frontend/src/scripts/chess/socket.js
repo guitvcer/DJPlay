@@ -40,6 +40,7 @@ export function findOpponentSocketOnClose(e) {
 export const CHESS_PARTY_SOCKET_URL = process.env.VUE_APP_BASE_WS_URL + "/chess/ws/play/";
 
 export function chessPartySocketOnOpen() {
+  store.commit("chess/updateGameStatus", GAME_STASUSES.ONLINE);
   store.commit("chess/sendChessPartySocket", {
     access: getCookie("access"),
     action: "authorize",
@@ -53,13 +54,47 @@ export function chessPartySocketOnOpen() {
     title: `Вы играете против ${opponent.user.username}.`,
     level: "simple",
   });
-  store.commit("chess/updateGameStatus", GAME_STASUSES.ONLINE);
 }
 
-export function chessPartySocketOnMessage() {
+export function chessPartySocketOnMessage(e) {
+  const data = JSON.parse(e.data);
 
+  if (data["action"] === "offer_draw") {
+    if (data["request"]) {
+      if (data["player"].id === store.getters.user.id) {
+        store.commit("createAlert", {
+          title: "Вы отправили запрос на ничью.",
+          level: "simple",
+        });
+      } else {
+        store.commit("createAlert", {
+          title: "Соперник предлагает ничью.",
+          level: "simple",
+          buttons: [
+            {
+              icon: "check",
+              onclick: () => store.dispatch("chess/acceptDraw"),
+            },
+            {
+              icon: "x",
+              onclick: () => store.dispatch("chess/declineDraw"),
+            },
+          ],
+        });
+      }
+    } else {
+      if (data["accept"]) {
+        store.commit("removeAlert", store.getters.alerts.length - 1);
+        store.commit("createAlert", {
+          title: "Партия завершилась ничьей.",
+          level: "simple",
+        });
+        store.commit("chess/closeChessPartySocket");
+      }
+    }
+  }
 }
 
 export function chessPartySocketOnClose() {
-
+  store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
 }

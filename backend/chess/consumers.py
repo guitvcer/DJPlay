@@ -1,10 +1,11 @@
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ParseError
 
 from account.models import Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
+from .services import draw_party
 
 
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
@@ -103,11 +104,16 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content, **kwargs):
         try:
             await self.authorize(content)
+            await self.offer_draw(content)
         except AuthenticationFailed:
             await self.send_json({
                 "status": 401,
             })
             await self.disconnect(4401)
+        except (KeyError, ParseError):
+            await self.send_json({
+                "status": 400,
+            })
 
     async def authorize(self, content):
         """Авторизоваться"""
@@ -115,3 +121,32 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         if self.player is None and content["action"] == "authorize":
             access = content["access"]
             self.player = await sync_to_async(get_user_by_token)(access)
+
+    async def offer_draw(self, content: dict):
+        """Предложить ничью"""
+
+        if content["action"] == "offer_draw":
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+
+            event = {
+                "type": "send_data",
+                "player": serializer.data,
+                "action": "offer_draw",
+            }
+
+            if await sync_to_async(content.get)("request"):
+                event["request"] = True
+            elif await sync_to_async(content.get)("accept"):
+                await sync_to_async(draw_party)(self.party_id)
+                event["accept"] = True
+            elif await sync_to_async(content.get)("decline"):
+                event["decline"] = True
+            else:
+                raise ParseError
+
+            await self.channel_layer.group_send(
+                self.room_group_name, event
+            )
+
+    async def send_data(self, event: dict) -> None:
+        await self.send_json(event)

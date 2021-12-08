@@ -89,7 +89,7 @@ export default {
       if (getters.gameStatus !== GAME_STASUSES.ONLINE || cancel_if_online) {
         dispatch("unRowDots");
 
-        dispatch("unselectDot");
+        dispatch("unselectLastDot");
         commit("removeLastMove");
         dispatch("swapMoveOf");
         dispatch("swapColor");

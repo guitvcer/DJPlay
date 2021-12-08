@@ -30,36 +30,43 @@ export default {
   resetBoard({ dispatch, commit, getters }) {
     /* Сбросить доску */
 
-    commit("resetCells");
-    commit("resetPieces");
-    commit("updateSelectedPiece", null);
-    commit("clearMoves");
-    commit("updateColor", WHITE);
-    commit("updateMoveOf", WHITE);
-    commit("updateGameStatus", null);
+    if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+      commit("createAlert", {
+        title: "Во время игры нельзя сбросить доску.",
+        level: "warning",
+      }, { root: true });
+    } else {
+      commit("resetCells");
+      commit("resetPieces");
+      commit("updateSelectedPiece", null);
+      commit("clearMoves");
+      commit("updateColor", WHITE);
+      commit("updateMoveOf", WHITE);
+      commit("updateGameStatus", null);
 
-    const avatarURL = "/media/avatars/user.png";
+      const avatarURL = "/media/avatars/user.png";
 
-    dispatch("updateWhitePlayer", {
-      username: "БЕЛЫЙ", avatar: avatarURL,
-    });
-    dispatch("updateBlackPlayer", {
-      username: "ЧЕРНЫЙ", avatar: avatarURL,
-    });
-
-    for (const playerIndex in getters.players) {
-      commit("resetSecondsRemaining", playerIndex);
-      commit("updateIntervalHandle", { playerIndex });
-
-      const eatenPieces = getters.players[playerIndex].eatenPieces;
-      commit("updatePlayerEatenPieces", {
-        playerIndex,
-        queen: -1 * eatenPieces.queen,
-        knight: -1 * eatenPieces.knight,
-        rook: -1 * eatenPieces.rook,
-        bishop: -1 * eatenPieces.bishop,
-        pawn: -1 * eatenPieces.pawn,
+      dispatch("updateWhitePlayer", {
+        username: "БЕЛЫЙ", avatar: avatarURL,
       });
+      dispatch("updateBlackPlayer", {
+        username: "ЧЕРНЫЙ", avatar: avatarURL,
+      });
+
+      for (const playerIndex in getters.players) {
+        commit("resetSecondsRemaining", playerIndex);
+        commit("updateIntervalHandle", { playerIndex });
+
+        const eatenPieces = getters.players[playerIndex].eatenPieces;
+        commit("updatePlayerEatenPieces", {
+          playerIndex,
+          queen: -1 * eatenPieces.queen,
+          knight: -1 * eatenPieces.knight,
+          rook: -1 * eatenPieces.rook,
+          bishop: -1 * eatenPieces.bishop,
+          pawn: -1 * eatenPieces.pawn,
+        });
+      }
     }
   },
   returnMove({ dispatch, commit, getters }) {
@@ -432,12 +439,29 @@ export default {
     commit("updateGameStatus", GAME_STASUSES.OFFLINE);
     commit("closeFindOpponentSocket");
   },
-  giveUp({ commit }) {
-    commit("updateGameStatus", GAME_STASUSES.FINISHED);
-    commit("closeChessPartySocket");
+  giveUp({ commit, getters }) {
+    if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+      commit("updateGameStatus", GAME_STASUSES.FINISHED);
+      commit("closeChessPartySocket");
+    }
   },
-  offerDraw() {
-
+  offerDraw({ commit }) {
+    commit("sendChessPartySocket", {
+      action: "offer_draw",
+      request: true,
+    });
+  },
+  acceptDraw({ commit }) {
+    commit("sendChessPartySocket", {
+      action: "offer_draw",
+      accept: true,
+    });
+  },
+  declineDraw({ commit }) {
+    commit("sendChessPartySocket", {
+      action: "offer_draw",
+      decline: true,
+    });
   },
   updateWhitePlayer({ commit }, user) {
     commit("updatePlayer", {
