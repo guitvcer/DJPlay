@@ -1,7 +1,8 @@
+import datetime
 from rest_framework.generics import get_object_or_404
 
 from account.models import Game, User
-from .models import Queue, Party
+from .models import Queue, Party, Move
 
 
 def add_chess_into_database() -> None:
@@ -38,3 +39,29 @@ def player_gives_up(party_id: int, player: User):
     if party.result is None:
         party.result = 'W' if party.black == player else 'B'
         party.save()
+
+
+def make_move(party_id: int, notation: str, seconds: int, player: User) -> None:
+    """Сделать ход"""
+
+    party = get_object_or_404(Party.objects.all(), id=party_id)
+    time = parse_time(seconds)
+    Move.objects.create(party=party, notation=notation, player=player, time=time)
+
+
+def parse_time(total_seconds: int) -> datetime.time:
+    """Перевести секунды для models.TimeField()"""
+
+    hours = 0
+    minutes = 0
+    seconds = total_seconds
+
+    if total_seconds > 59:
+        seconds = total_seconds % 60
+        minutes = total_minutes = int((total_seconds - seconds) / 60)
+
+        if total_minutes > 59:
+            minutes = total_minutes % 60
+            hours = int((total_minutes - minutes) / 60)
+
+    return datetime.time(hours, minutes, seconds)

@@ -59,7 +59,7 @@ export default {
   },
 
   addMove(state, move) {
-    if (state.moves.length === 0) {
+    if (state.moves.length === 0 && state.gameStatus == null) {
       state.gameStatus = GAME_STASUSES.OFFLINE;
     }
 
@@ -131,5 +131,16 @@ export default {
   },
   closeChessPartySocket(state) {
     state.chessPartySocket.close();
+  },
+
+  updateTime(state, seconds) {
+    state.time += seconds;
+  },
+  updateStopwatchHandler(state, handler = null) {
+    if (handler) {
+      state.stopWatchHandler = handler;
+    } else {
+      clearInterval(state.stopWatchHandler);
+    }
   }
 }

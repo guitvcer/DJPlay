@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed, ParseError
 from account.models import Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
-from .services import draw_party, player_gives_up
+from .services import draw_party, player_gives_up, make_move
 
 
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
@@ -118,6 +118,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content, **kwargs):
         try:
             await self.authorize(content)
+            await self.make_move(content)
             await self.offer_draw(content)
         except AuthenticationFailed:
             await self.send_json({
@@ -129,14 +130,33 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
                 "status": 400,
             })
 
-    async def authorize(self, content):
+    async def authorize(self, content: dict) -> None:
         """Авторизоваться"""
 
         if self.player is None and content["action"] == "authorize":
             access = content["access"]
             self.player = await sync_to_async(get_user_by_token)(access)
 
-    async def offer_draw(self, content: dict):
+    async def make_move(self, content: dict) -> None:
+        """Сделать ход"""
+
+        if content["action"] == "make_move":
+            await sync_to_async(make_move)(
+                self.party_id, content["notation"], content["time"], self.player
+            )
+
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "send_data",
+                    "player": serializer.data,
+                    "action": "make_move",
+                    "notation": content["notation"],
+                }
+            )
+
+    async def offer_draw(self, content: dict) -> None:
         """Предложить ничью"""
 
         if content["action"] == "offer_draw":

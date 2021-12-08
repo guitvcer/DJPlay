@@ -37,10 +37,13 @@ export default {
       eatenPieces: {
         queen: 0, knight: 0, rook: 0, bishop: 0, pawn: 0,
       },
-    }
+    },
   ],
 
   findOpponentSocket: null,
   chessPartySocket: null,
   partyID: null,
+
+  time: 0,
+  stopWatchHandler: null,
 }

@@ -20,7 +20,7 @@ export function onBoardClick(event) {
   /* При нажатии на доску */
 
   if (
-    [GAME_STASUSES.OFFLINE, GAME_STASUSES.FINDING, null].includes(store.getters["chess/gameStatus"]) &&
+    store.getters["chess/gameStatus"] !== GAME_STASUSES.FINISHED &&
     store.getters["chess/moveOf"] === store.getters["chess/currentColor"] &&
     event.target.id !== "chessBoard"
   ) {
@@ -36,17 +36,55 @@ export function onBoardClick(event) {
         }
       } else {
         if (store.getters["chess/field"][coordinate].edible) {
-          store.dispatch("chess/movePiece", { coordinate }).then();
+          if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
+            store.commit("chess/sendChessPartySocket", {
+              action: "make_move",
+              time: store.getters["chess/time"],
+              notation: parseNotation(coordinate),
+            });
+          } else {
+            store.dispatch("chess/movePiece", { coordinate }).then();
+          }
         }
       }
     } else {
       if (store.getters["chess/selectedPiece"]) {
         if (store.getters["chess/field"][coordinate].selectable) {
-          store.dispatch("chess/movePiece", { coordinate }).then();
+          if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
+            store.commit("chess/sendChessPartySocket", {
+              action: "make_move",
+              time: store.getters["chess/time"],
+              notation: parseNotation(coordinate),
+            });
+          } else {
+            store.dispatch("chess/movePiece", { coordinate }).then();
+          }
         } else if (store.getters["chess/field"][coordinate].castling) {
-          store.dispatch("chess/castle", coordinate).then();
+          if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
+            let notation = "O-O";
+
+            if (coordinate[0] === 'c') {
+              notation = "O-O-O";
+            }
+
+            store.commit("chess/sendChessPartySocket", {
+              action: "make_move",
+              time: store.getters["chess/time"],
+              notation,
+            });
+          } else {
+            store.dispatch("chess/castle", coordinate).then();
+          }
         } else if (store.getters["chess/field"][coordinate].edible) {
-          store.dispatch("chess/movePiece", { coordinate }).then();
+          if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
+            store.commit("chess/sendChessPartySocket", {
+              action: "make_move",
+              time: store.getters["chess/time"],
+              notation: parseNotation(coordinate),
+            });
+          } else {
+            store.dispatch("chess/movePiece", { coordinate }).then();
+          }
         }
       }
     }
@@ -180,4 +218,8 @@ export function willCheckEntail(coordinate) {
   }
 
   return check(copyOfPieces);
+}
+
+function parseNotation(coordinate) {
+  return store.getters["chess/selectedPiece"].coordinate + '-' + coordinate;
 }

@@ -6,7 +6,7 @@ import {
   eatingOnAisle,
   isCellEmpty,
   isCellHostile,
-  willCheckEntail
+  willCheckEntail,
 } from "../../../scripts/chess/board";
 import select from "../../../scripts/chess/select";
 
@@ -24,7 +24,9 @@ export default {
     dispatch("pauseCountdown", getters.waitingPlayerIndex);
   },
   swapColor({ commit, getters }) {
-    commit("updateColor", getters.currentColor === WHITE ? BLACK : WHITE);
+    if (getters.gameStatus !== GAME_STASUSES.ONLINE) {
+      commit("updateColor", getters.currentColor === WHITE ? BLACK : WHITE);
+    }
   },
 
   resetBoard({ dispatch, commit, getters }) {
@@ -43,6 +45,7 @@ export default {
       commit("updateColor", WHITE);
       commit("updateMoveOf", WHITE);
       commit("updateGameStatus", null);
+      dispatch("stopStopwatch");
 
       const avatarURL = "/media/avatars/user.png";
 
@@ -144,9 +147,11 @@ export default {
   castle({ dispatch, commit, getters }, coordinate) {
     /* Сделать рокировку */
 
+    dispatch("stopStopwatch");
+
     const castling = getters.field[coordinate].castling;
-    const kingOldCoordinate = 'e' + PIECE_Y[getters.currentColor];
-    const rookOldCoordinate = (castling.longCastling ? 'a' : 'h') + PIECE_Y[getters.currentColor];
+    const kingOldCoordinate = 'e' + PIECE_Y[getters.moveOf];
+    const rookOldCoordinate = (castling.longCastling ? 'a' : 'h') + PIECE_Y[getters.moveOf];
 
     dispatch("unselectPiece");
 
@@ -159,7 +164,7 @@ export default {
     commit("createPiece", castling.rook);
 
     const move = {
-      color: getters.currentColor,
+      color: getters.moveOf,
     }
 
     if (castling.longCastling) {
@@ -176,7 +181,9 @@ export default {
     dispatch("swapMoveOf");
     dispatch("swapColor");
 
-    check();
+    // check();
+
+    dispatch("startStopwatch");
   },
 
   startCountdown({ dispatch, commit, getters }, playerIndex) {
@@ -191,6 +198,11 @@ export default {
           title: `Игрок "${winnerUsername}" выиграл. У игрока "${loserUsername}" закончилось время.`,
           level: "simple",
         }, { root: true });
+        commit("updateIntervalHandle", { playerIndex });
+      }
+
+      if (getters.gameStatus === GAME_STASUSES.FINISHED) {
+        commit("updateIntervalHandle", { playerIndex });
       }
 
       commit("updateSecondsRemaining", playerIndex);
@@ -237,19 +249,21 @@ export default {
   movePiece({ dispatch, commit, getters }, { coordinate, pawnTo = null }) {
     /* Двинуть фигуру */
 
+    dispatch("stopStopwatch");
+
     if (
       pawnTo == null && getters.selectedPiece.name === "pawn" &&
-      +coordinate[1] === PIECE_Y[getters.currentColor === BLACK ? WHITE : BLACK]
+      +coordinate[1] === PIECE_Y[getters.moveOf === BLACK ? WHITE : BLACK]
     ) {
       commit("updateSelectedCell", coordinate);
-      commit("updateModalAction", "transformPawn", { root: true});
+      commit("updateModalAction", "transformPawn", { root: true });
       commit("updateOpenModal", true, { root: true });
 
       return;
     }
 
     const newMove = {
-      color: getters.currentColor,
+      color: getters.moveOf,
       piece: getters.selectedPiece,
       from_coordinate: getters.selectedPiece.coordinate,
       to_coordinate: coordinate,
@@ -272,7 +286,7 @@ export default {
     if (pawnTo) {
       newMove.transformed = true;
       piece.name = pawnTo;
-      piece.image = '/media/chess/pieces/' + piece.color + '/' + pawnTo + '.svg';
+      piece.image = "/media/chess/pieces/" + piece.color + '/' + pawnTo + ".svg";
       commit("updateOpenModal", false, { root: true });
     }
 
@@ -287,6 +301,8 @@ export default {
     dispatch("swapColor");
 
     check();
+
+    dispatch("startStopwatch");
   },
   checkPiece({ commit }, coordinate) {
     const properties = { check: true };
@@ -373,14 +389,14 @@ export default {
       }
     }
   },
-  castlingCell({ commit, getters }, { coordinate, castling }) {
+  castlingCell({ commit, getters }, { coordinate, castling, checkForCheck = true }) {
     /* Сделать клетку доступным для рокировки */
 
-    if (!willCheckEntail(coordinate)) {
-      const properties = { castling };
+    if (checkForCheck && willCheckEntail(coordinate)) return;
 
-      commit("updateCell", { coordinate, properties })
-    }
+    const properties = { castling };
+
+    commit("updateCell", { coordinate, properties })
   },
   castlingCells({ dispatch }, castling) {
     /* Сделать клетки доступными для рокировки */
@@ -476,5 +492,20 @@ export default {
     commit("updatePlayer", {
       index: 1, user,
     });
+  },
+
+  startStopwatch({ commit, getters }) {
+    if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+      const handler = setInterval(() => {
+        commit("updateTime", 1);
+      }, 1000);
+      commit("updateStopwatchHandler", handler);
+    }
+  },
+  stopStopwatch({ commit, getters }) {
+    if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+      commit("updateStopwatchHandler");
+      commit("updateTime", -1 * getters.time);
+    }
   }
 }

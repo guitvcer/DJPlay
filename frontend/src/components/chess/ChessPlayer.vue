@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class=w-full>
     <div class="flex justify-between my-1">
       <div class="flex">
         <router-link

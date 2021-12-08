@@ -1,6 +1,7 @@
 import store from "../../store/index";
 import { getCookie } from "../../utilities";
-import { GAME_STASUSES, BLACK } from "./constants";
+import { GAME_STASUSES, BLACK, PIECE_Y } from "./constants";
+import { deepClone } from "./board";
 
 export const FIND_OPPONENT_SOCKET_URL = process.env.VUE_APP_BASE_WS_URL + "/chess/ws/find";
 
@@ -22,8 +23,8 @@ export function findOpponentSocketOnMessage(e) {
     store.commit("chess/updateColor", BLACK);
   }
 
-  store.commit("chess/closeFindOpponentSocket");
   store.commit("chess/openChessPartySocket");
+  store.dispatch("chess/cancelFinding").then();
 }
 
 export function findOpponentSocketOnClose(e) {
@@ -33,8 +34,6 @@ export function findOpponentSocketOnClose(e) {
       level: "danger",
     });
   }
-
-  store.commit("chess/updateGameStatus", GAME_STASUSES.OFFLINE);
 }
 
 export const CHESS_PARTY_SOCKET_URL = process.env.VUE_APP_BASE_WS_URL + "/chess/ws/play/";
@@ -59,7 +58,40 @@ export function chessPartySocketOnOpen() {
 export function chessPartySocketOnMessage(e) {
   const data = JSON.parse(e.data);
 
-  if (data["action"] === "offer_draw") {
+  if (data["action"] === "make_move") {
+    if (["O-O", "O-O-O"].includes(data["notation"])) {
+      const y = PIECE_Y[store.getters["chess/moveOf"]];
+      const kingCoordinate = 'e' + y;
+      const coordinate = (data["notation"] === "O-O" ? 'g' : 'c') + y;
+      const rookOldCoordinate = (data["notation"] === "O-O" ? 'h' : 'a') + y;
+      const rookCoordinate = (data["notation"] === "O-O" ? 'f' : 'd') + y;
+
+      store.commit("chess/updateSelectedPiece", store.getters["chess/pieces"][kingCoordinate]);
+
+      let castling = {
+        shortCastling: true,
+      }
+
+      if (data["notation"] === "O-O-O") {
+        castling = {
+          longCastling: true,
+        }
+      }
+
+      castling.king = deepClone(store.getters["chess/pieces"][kingCoordinate]);
+      castling.rook = deepClone(store.getters["chess/pieces"][rookOldCoordinate]);
+      castling.king.coordinate = coordinate
+      castling.rook.coordinate = rookCoordinate;
+
+      store.dispatch("chess/castlingCell", { coordinate, castling, checkForCheck: false }).then();
+      store.dispatch("chess/castle", coordinate).then();
+    } else {
+      const selectedPiece = store.getters["chess/pieces"][data["notation"][0] + data["notation"][1]];
+      store.commit("chess/updateSelectedPiece", selectedPiece);
+      const coordinate = data["notation"][3] + data["notation"][4];
+      store.dispatch("chess/movePiece", { coordinate }).then();
+    }
+  } else if (data["action"] === "offer_draw") {
     if (data["request"]) {
       if (data["player"].id === store.getters.user.id) {
         store.commit("createAlert", {

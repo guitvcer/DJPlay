@@ -40,5 +40,8 @@ export default {
   },
   partyID(state) {
     return state.partyID;
-  }
+  },
+  time(state) {
+    return state.time;
+  },
 }
