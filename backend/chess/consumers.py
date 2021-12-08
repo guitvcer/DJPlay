@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed, ParseError
 from account.models import Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
-from .services import draw_party
+from .services import draw_party, player_gives_up
 
 
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
@@ -96,6 +96,20 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+        await sync_to_async(player_gives_up)(self.party_id, self.player)
+
+        if self.player is not None:
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+            event = {
+                "type": "send_data",
+                "player": serializer.data,
+                "action": "exit",
+            }
+
+            await self.channel_layer.group_send(
+                self.room_group_name, event
+            )
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name,

@@ -92,9 +92,30 @@ export function chessPartySocketOnMessage(e) {
         store.commit("chess/closeChessPartySocket");
       }
     }
+  } else if (data["action"] === "exit") {
+    if (data["player"].id === store.getters.user.id) {
+      store.commit("createAlert", {
+        title: "Вы проиграли",
+        level: "danger",
+      });
+      store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+    } else {
+      store.commit("createAlert", {
+        title: "Вы выиграли.",
+        level: "success",
+      });
+      store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+    }
   }
 }
 
-export function chessPartySocketOnClose() {
+export function chessPartySocketOnClose(e) {
   store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+
+  if ([1006, 1011].includes(e.code)) {
+    store.commit("createAlert", {
+      title: "Соединение потеряно.",
+      level: "danger",
+    });
+  }
 }

@@ -443,6 +443,10 @@ export default {
     if (getters.gameStatus === GAME_STASUSES.ONLINE) {
       commit("updateGameStatus", GAME_STASUSES.FINISHED);
       commit("closeChessPartySocket");
+      commit("createAlert", {
+        title: "Вы проиграли.",
+        level: "danger",
+      }, { root: true });
     }
   },
   offerDraw({ commit }) {

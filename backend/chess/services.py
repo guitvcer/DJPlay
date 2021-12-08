@@ -1,6 +1,6 @@
 from rest_framework.generics import get_object_or_404
 
-from account.models import Game
+from account.models import Game, User
 from .models import Queue, Party
 
 
@@ -28,3 +28,13 @@ def draw_party(party_id: int) -> None:
     party = get_object_or_404(Party.objects.all(), id=party_id)
     party.result = 'D'
     party.save()
+
+
+def player_gives_up(party_id: int, player: User):
+    """Игрок сдается, если он вышел посреди игры"""
+
+    party = get_object_or_404(Party.objects.all(), id=party_id)
+
+    if party.result is None:
+        party.result = 'W' if party.black == player else 'B'
+        party.save()
