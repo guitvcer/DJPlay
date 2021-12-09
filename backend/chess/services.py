@@ -73,3 +73,16 @@ def checkmate(party_id: int, loser: User):
     party = get_object_or_404(Party.objects.all(), id=party_id)
     party.result = 'W' if party.black == loser else 'B'
     party.save()
+
+
+def cancel_move(party_id: int, notation: str) -> bool:
+    """Отменить последний ход"""
+
+    party = get_object_or_404(Party.objects.all(), id=party_id)
+
+    if str(party.move_set.last()) == notation:
+        Move.objects.filter(party=party).last().delete()
+        return True
+    else:
+        return False
+

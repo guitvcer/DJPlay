@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed, ParseError
 from account.models import Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
-from .services import draw_party, player_gives_up, make_move, checkmate
+from .services import draw_party, player_gives_up, make_move, checkmate, cancel_move
 
 
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
@@ -121,6 +121,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
             await self.make_move(content)
             await self.offer_draw(content)
             await self.checkmate_or_stalemate(content)
+            await self.cancel_move(content)
         except AuthenticationFailed:
             await self.send_json({
                 "status": 401,
@@ -200,6 +201,32 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
                     "action": content["action"],
                     "player": serializer.data,
                 }
+            )
+
+    async def cancel_move(self, content: dict) -> None:
+        """Отменить ход"""
+
+        if content["action"] == "cancel_move":
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+            event = {
+                "type": "send_data",
+                "action": "cancel_move",
+                "player": serializer.data,
+            }
+
+            if await sync_to_async(content.get)("request"):
+                event["request"] = True
+                event["notation"] = content["notation"]
+            elif await sync_to_async(content.get)("accept"):
+                if await sync_to_async(cancel_move)(self.party_id, content["notation"]):
+                    event["accept"] = True
+                else:
+                    return
+            elif await sync_to_async(content.get)("decline"):
+                event["decline"] = True
+
+            await self.channel_layer.group_send(
+                self.room_group_name, event
             )
 
     async def send_data(self, event: dict) -> None:

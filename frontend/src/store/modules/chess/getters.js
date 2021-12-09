@@ -44,4 +44,7 @@ export default {
   time(state) {
     return state.time;
   },
+  cancelingMove(state) {
+    return state.cancelingMove;
+  }
 }

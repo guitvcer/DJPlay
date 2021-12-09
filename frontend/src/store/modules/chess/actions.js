@@ -73,74 +73,106 @@ export default {
       }
     }
   },
-  returnMove({ dispatch, commit, getters }) {
+  returnMove({ dispatch, commit, getters }, { cancelIfOnline = false }) {
     /* Отменить предыдущий ход */
 
-    if (getters.moves.length > 0 && getters.gameStatus === GAME_STASUSES.OFFLINE) {
-      const lastMove = getters.moves[getters.moves.length - 1];
+    if (getters.moves.length > 0) {
+      if (
+        [GAME_STASUSES.OFFLINE, GAME_STASUSES.FINDING].includes(getters.gameStatus) ||
+        (getters.gameStatus === GAME_STASUSES.ONLINE && cancelIfOnline)
+      ) {
+        const lastMove = getters.moves[getters.moves.length - 1];
 
-      for (let piece of Object.values(getters.pieces)) {
-        if (lastMove.shortCastling || lastMove.longCastling || piece.id === lastMove.piece.id) {
-          dispatch("unselectPiece");
-          dispatch("unselectLastMoveCells");
-          dispatch("unselectCheckingCells");
-          commit("deleteLastMove");
+        for (let piece of Object.values(getters.pieces)) {
+          if (lastMove.shortCastling || lastMove.longCastling || piece.id === lastMove.piece.id) {
+            dispatch("unselectPiece");
+            dispatch("unselectLastMoveCells");
+            dispatch("unselectCheckingCells");
+            commit("deleteLastMove");
 
-          if (lastMove.shortCastling || lastMove.longCastling) {
-            let castledKingCoordinate;
+            if (lastMove.shortCastling || lastMove.longCastling) {
+              let castledKingCoordinate;
+              if (lastMove.shortCastling) {
+                castledKingCoordinate = 'g' + PIECE_Y[lastMove.color]
+                const castledRookCoordinate = 'f' + PIECE_Y[lastMove.color];
+                const castledRook = getters.pieces[castledRookCoordinate];
+
+                castledRook.coordinate = 'h' + PIECE_Y[lastMove.color];
+                commit("createPiece", castledRook);
+                commit("removePiece", castledRookCoordinate);
+              } else {
+                castledKingCoordinate = 'c' + PIECE_Y[lastMove.color]
+                const castledRookCoordinate = 'd' + PIECE_Y[lastMove.color];
+                const castledRook = getters.pieces[castledRookCoordinate];
+
+                castledRook.coordinate = 'a' + PIECE_Y[lastMove.color];
+                commit("createPiece", castledRook);
+                commit("removePiece", castledRookCoordinate);
+              }
+
+              const king = getters.pieces[castledKingCoordinate];
+              king.coordinate = 'e' + PIECE_Y[lastMove.color];
+              commit("createPiece", king);
+              commit("removePiece", castledKingCoordinate);
+            } else if (piece.id === lastMove.piece.id) {
+              commit("removePiece", lastMove.to_coordinate);
+
+              piece.coordinate = lastMove.from_coordinate;
+
+              if (lastMove.transformed) {
+                piece.name = "pawn";
+                piece.image = "/media/chess/pieces/" + piece.color + "/pawn.svg";
+              }
+
+              commit("createPiece", piece);
+
+              if (lastMove.eatenPiece) {
+                commit("createPiece", lastMove.eatenPiece);
+                commit("updatePlayerEatenPieces", {
+                  playerIndex: getters.waitingPlayerIndex,
+                  [lastMove.eatenPiece.name]: -1,
+                });
+              }
+            }
+
+            if (getters.moves.length > 0) {
+              dispatch("selectLastMoveCell");
+            }
+
+            dispatch("swapMoveOf");
+            dispatch("swapColor");
+
+            check();
+
+            break;
+          }
+        }
+      } else if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+        const lastMove = getters.moves[getters.moves.length - 1];
+
+        if (lastMove.color === getters.currentColor) {
+          let notation;
+
+          if (lastMove.castling) {
             if (lastMove.shortCastling) {
-              castledKingCoordinate = 'g' + PIECE_Y[lastMove.color]
-              const castledRookCoordinate = 'f' + PIECE_Y[lastMove.color];
-              const castledRook = getters.pieces[castledRookCoordinate];
-
-              castledRook.coordinate = 'h' + PIECE_Y[lastMove.color];
-              commit("createPiece", castledRook);
-              commit("removePiece", castledRookCoordinate);
-            } else {
-              castledKingCoordinate = 'c' + PIECE_Y[lastMove.color]
-              const castledRookCoordinate = 'd' + PIECE_Y[lastMove.color];
-              const castledRook = getters.pieces[castledRookCoordinate];
-
-              castledRook.coordinate = 'a' + PIECE_Y[lastMove.color];
-              commit("createPiece", castledRook);
-              commit("removePiece", castledRookCoordinate);
+              notation = "O-O";
+            } else if (lastMove.longCastling) {
+              notation = "O-O-O";
             }
-
-            const king = getters.pieces[castledKingCoordinate];
-            king.coordinate = 'e' + PIECE_Y[lastMove.color];
-            commit("createPiece", king);
-            commit("removePiece", castledKingCoordinate);
-          } else if (piece.id === lastMove.piece.id) {
-            commit("removePiece", lastMove.to_coordinate);
-
-            piece.coordinate = lastMove.from_coordinate;
-
-            if (lastMove.transformed) {
-              piece.name = "pawn";
-              piece.image = "/media/chess/pieces/" + piece.color + "/pawn.svg";
-            }
-
-            commit("createPiece", piece);
-
-            if (lastMove.eatenPiece) {
-              commit("createPiece", lastMove.eatenPiece);
-              commit("updatePlayerEatenPieces", {
-                playerIndex: getters.waitingPlayerIndex,
-                [lastMove.eatenPiece.name]: -1,
-              });
-            }
+          } else {
+            notation = lastMove.from_coordinate + '-' + lastMove.to_coordinate;
           }
 
-          if (getters.moves.length > 0) {
-            dispatch("selectLastMoveCell");
-          }
-
-          dispatch("swapMoveOf");
-          dispatch("swapColor");
-
-          check();
-
-          break;
+          commit("sendChessPartySocket", {
+            action: "cancel_move",
+            request: true,
+            notation,
+          });
+        } else {
+          commit("createAlert", {
+            title: "Последний ход не Ваш.",
+            level: "warning",
+          }, { root: true });
         }
       }
     }
@@ -183,6 +215,7 @@ export default {
     dispatch("swapColor");
 
     // check();
+    checkmateOrStalemate();
 
     dispatch("startStopwatch");
   },
@@ -509,5 +542,39 @@ export default {
       commit("updateStopwatchHandler");
       commit("updateTime", -1 * getters.time);
     }
+  },
+
+  cancelMoveAccept({ commit, getters }) {
+    const lastMove = getters.moves[getters.moves.length - 1];
+    let lastMoveNotation;
+
+    if (lastMove.castling) {
+      if (lastMove.castling.shortCastling) {
+        lastMoveNotation = "O-O";
+      } else {
+        lastMoveNotation = "O-O-O";
+      }
+    } else {
+      lastMoveNotation = lastMove.from_coordinate + '-' + lastMove.to_coordinate;
+    }
+
+    if (getters.cancelingMove === lastMoveNotation) {
+      commit("sendChessPartySocket", {
+        action: "cancel_move",
+        accept: true,
+        notation: getters.cancelingMove,
+      });
+    } else {
+      commit("createAlert", {
+        title: "Запрошенный ход на отмену уже не последний.",
+        level: "warning",
+      }, { root: true });
+    }
+  },
+  cancelMoveDecline({ commit }) {
+    commit("sendChessPartySocket", {
+      action: "cancel_move",
+      decline: true,
+    });
   }
 }

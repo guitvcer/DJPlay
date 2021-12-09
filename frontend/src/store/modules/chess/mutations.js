@@ -142,5 +142,9 @@ export default {
     } else {
       clearInterval(state.stopWatchHandler);
     }
+  },
+
+  updateCancelingMove(state, notation) {
+    state.cancelingMove = notation;
   }
 }

@@ -46,4 +46,5 @@ export default {
 
   time: 0,
   stopWatchHandler: null,
+  cancelingMove: null,
 }

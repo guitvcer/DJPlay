@@ -151,12 +151,59 @@ export function chessPartySocketOnMessage(e) {
       });
     }
     store.commit("chess/closeChessPartySocket");
-  } else {
+  } else if (data["action"] === "stalemate") {
     store.commit("createAlert", {
       title: "Пат. Партия завершилась ничьей.",
       level: "simple",
     });
     store.commit("chess/closeChessPartySocket");
+  } else if (data["action"] === "cancel_move") {
+    if (data["request"]) {
+      if (data["player"].id === store.getters.user.id) {
+        store.commit("createAlert", {
+          title: "Вы отправили запрос на отмену хода.",
+          level: "simple",
+        });
+      } else {
+        store.commit("createAlert", {
+          title: "Соперника запрашивает отмену хода.",
+          level: "simple",
+          buttons: [
+            {
+              icon: "check",
+              onclick: () => store.dispatch("chess/cancelMoveAccept"),
+            },
+            {
+              icon: "x",
+              onclick: () => store.dispatch("chess/cancelMoveDecline"),
+            },
+          ],
+        });
+      }
+
+      store.commit("chess/updateCancelingMove", data["notation"]);
+    } else if (data["accept"]) {
+      if (data["player"].id === store.getters.user.id) {
+        store.commit("createAlert", {
+          title: "Соперник отменили ход.",
+          level: "simple",
+        });
+      } else {
+        store.commit("createAlert", {
+          title: "Вы отменили ход.",
+          level: "success",
+        });
+      }
+
+      store.dispatch("chess/returnMove", { cancelIfOnline: true }).then();
+    } else if (data["decline"]) {
+      if (data["player"].id === store.getters["gomoku/opponent"].id) {
+        store.commit("createAlert", {
+          title: "Вы не отменили ход.",
+          level: "danger",
+        });
+      }
+    }
   }
 }
 
