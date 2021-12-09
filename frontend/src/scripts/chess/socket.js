@@ -138,6 +138,25 @@ export function chessPartySocketOnMessage(e) {
       });
       store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
     }
+  } else if (data["action"] === "checkmate") {
+    if (data["player"].id === store.getters.user.id) {
+      store.commit("createAlert", {
+        title: "Мат. Вы проиграли.",
+        level: "danger",
+      });
+    } else {
+      store.commit("createAlert", {
+        title: "Мат. Вы выиграли.",
+        level: "success",
+      });
+    }
+    store.commit("chess/closeChessPartySocket");
+  } else {
+    store.commit("createAlert", {
+      title: "Пат. Партия завершилась ничьей.",
+      level: "simple",
+    });
+    store.commit("chess/closeChessPartySocket");
   }
 }
 

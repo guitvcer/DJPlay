@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed, ParseError
 from account.models import Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
-from .services import draw_party, player_gives_up, make_move
+from .services import draw_party, player_gives_up, make_move, checkmate
 
 
 class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
@@ -120,6 +120,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
             await self.authorize(content)
             await self.make_move(content)
             await self.offer_draw(content)
+            await self.checkmate_or_stalemate(content)
         except AuthenticationFailed:
             await self.send_json({
                 "status": 401,
@@ -180,6 +181,25 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
 
             await self.channel_layer.group_send(
                 self.room_group_name, event
+            )
+
+    async def checkmate_or_stalemate(self, content: dict) -> None:
+        """Закончить партию, если мат либо пат"""
+
+        if content["action"] in ["checkmate", "stalemate"]:
+            if content["action"] == "checkmate":
+                await sync_to_async(checkmate)(self.party_id, self.player)
+            elif content["action"] == "stalemate":
+                await sync_to_async(draw_party)(self.party_id)
+
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "send_data",
+                    "action": content["action"],
+                    "player": serializer.data,
+                }
             )
 
     async def send_data(self, event: dict) -> None:

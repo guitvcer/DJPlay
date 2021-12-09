@@ -65,3 +65,11 @@ def parse_time(total_seconds: int) -> datetime.time:
             hours = int((total_minutes - minutes) / 60)
 
     return datetime.time(hours, minutes, seconds)
+
+
+def checkmate(party_id: int, loser: User):
+    """Указать соперника проигравшего как победителя"""
+
+    party = get_object_or_404(Party.objects.all(), id=party_id)
+    party.result = 'W' if party.black == loser else 'B'
+    party.save()

@@ -7,6 +7,7 @@ import {
   isCellEmpty,
   isCellHostile,
   willCheckEntail,
+  checkmateOrStalemate,
 } from "../../../scripts/chess/board";
 import select from "../../../scripts/chess/select";
 
@@ -301,6 +302,7 @@ export default {
     dispatch("swapColor");
 
     check();
+    checkmateOrStalemate();
 
     dispatch("startStopwatch");
   },

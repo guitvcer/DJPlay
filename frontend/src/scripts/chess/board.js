@@ -189,18 +189,18 @@ export function deepClone(obj) {
   return clObj;
 }
 
-export function willCheckEntail(coordinate) {
+export function willCheckEntail(coordinate, selectedPiece = store.getters["chess/selectedPiece"]) {
   /* Повличет ли ход фигуры на эту координату за собой шах? */
 
   const copyOfPieces = deepClone(store.getters["chess/pieces"]);
-  const copyOfPiece = copyOfPieces[store.getters["chess/selectedPiece"].coordinate];
+  const copyOfPiece = copyOfPieces[selectedPiece.coordinate];
 
   copyOfPiece.coordinate = coordinate;
   copyOfPieces[coordinate] = copyOfPiece;
-  delete copyOfPieces[store.getters["chess/selectedPiece"].coordinate];
+  delete copyOfPieces[selectedPiece.coordinate];
 
-  if (store.getters["chess/selectedPiece"].name === "king") {
-    const y = PIECE_Y[store.getters["chess/selectedPiece"].color];
+  if (selectedPiece.name === "king") {
+    const y = PIECE_Y[selectedPiece.color];
 
     if (coordinate === 'c' + y) {
       // Short Castling
@@ -222,4 +222,64 @@ export function willCheckEntail(coordinate) {
 
 function parseNotation(coordinate) {
   return store.getters["chess/selectedPiece"].coordinate + '-' + coordinate;
+}
+
+export function checkmateOrStalemate() {
+  /* Проверка на мат или пат */
+
+  if (store.getters["chess/currentColor"] === store.getters["chess/moveOf"]) {
+    let availableCellsCount = 0;
+
+    for (const piece of Object.values(store.getters["chess/pieces"])) {
+      if (piece.color === store.getters["chess/currentColor"]) {
+        const availableCells = select[piece.name](piece.coordinate);
+
+        for (const coordinate of availableCells.selectable) {
+          try {
+            if (!willCheckEntail(coordinate, piece) && store.getters["chess/pieces"][coordinate] === undefined) {
+              availableCellsCount++;
+            }
+          } catch (e) {}
+        }
+        for (const coordinate of availableCells.edible) {
+          try {
+            if (!willCheckEntail(coordinate, piece)) {
+              availableCellsCount++;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+
+    if (availableCellsCount === 0) {
+      const opponent = store.getters["chess/players"][store.getters["chess/waitingPlayerIndex"]];
+      const currentUser = store.getters["chess/players"][store.getters["chess/movingPlayerIndex"]];
+
+      if (check(deepClone(store.getters["chess/pieces"]))) {
+        if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
+          store.commit("chess/sendChessPartySocket", {
+            action: "checkmate",
+          });
+        } else {
+          store.commit("createAlert", {
+            title: `Игрок "${opponent.user.username}" поставил мат игроку "${currentUser.user.username}".`,
+            level: "simple",
+          });
+          store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+        }
+      } else {
+        if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
+          store.commit("chess/sendChessPartySocket", {
+            action: "stalemate",
+          });
+        } else {
+          store.commit("createAlert", {
+            title: `Игрок "${opponent.user.username}" поставил пат игроку "${currentUser.user.username}".`,
+            level: "simple",
+          });
+          store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+        }
+      }
+    }
+  }
 }
