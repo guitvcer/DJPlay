@@ -125,6 +125,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
             await self.checkmate_or_stalemate(content)
             await self.cancel_move(content)
             await self.give_up(content)
+            await self.timed_out(content)
         except AuthenticationFailed:
             await self.send_json({
                 "status": 401,
@@ -238,10 +239,26 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         if content["action"] == "give_up":
             await sync_to_async(player_gives_up)(self.party_id, self.player)
             serializer = await sync_to_async(UserInfoSerializer)(self.player)
+
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "send_data",
                     "action": "give_up",
+                    "player": serializer.data,
+                }
+            )
+
+    async def timed_out(self, content: dict) -> None:
+        """Когда заканчивается время ход"""
+
+        if content["action"] == "timed_out":
+            await sync_to_async(player_gives_up)(self.party_id, self.player)
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "send_data",
+                    "action": "timed_out",
                     "player": serializer.data,
                 }
             )

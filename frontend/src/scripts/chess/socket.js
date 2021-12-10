@@ -218,6 +218,21 @@ export function chessPartySocketOnMessage(e) {
     }
     store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
     store.commit("chess/closeChessPartySocket");
+  } else if (data["action"] === "timed_out") {
+    if (data["player"].id === store.getters.user.id) {
+      store.commit("createAlert", {
+        title: "Вы проиграли. Закончилось время.",
+        level: "danger",
+      });
+    } else {
+      store.commit("createAlert", {
+        title: "Вы выиграли. Закончилось время.",
+        level: "success",
+      });
+    }
+
+    store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+    store.commit("chess/closeChessPartySocket");
   }
 }
 

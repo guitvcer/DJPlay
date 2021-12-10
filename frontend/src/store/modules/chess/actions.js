@@ -223,14 +223,22 @@ export default {
 
     const intervalHandle = setInterval(() => {
       if (getters.players[playerIndex].secondsRemaining === 0) {
-        const winnerUsername = getters.players[playerIndex === 0 ? 1 : 0].user.username;
-        const loserUsername = getters.players[playerIndex].user.username;
+        if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+          if (getters.players[playerIndex].color === getters.currentColor) {
+            commit("sendChessPartySocket", {
+              action: "timed_out",
+            });
+          }
+        } else {
+          const winnerUsername = getters.players[playerIndex === 0 ? 1 : 0].user.username;
+          const loserUsername = getters.players[playerIndex].user.username;
 
-        commit("createAlert", {
-          title: `Игрок "${winnerUsername}" выиграл. У игрока "${loserUsername}" закончилось время.`,
-          level: "simple",
-        }, { root: true });
-        commit("updateIntervalHandle", { playerIndex });
+          commit("createAlert", {
+            title: `Игрок "${winnerUsername}" выиграл. У игрока "${loserUsername}" закончилось время.`,
+            level: "simple",
+          }, { root: true });
+          commit("updateIntervalHandle", { playerIndex });
+        }
       }
 
       if (getters.gameStatus === GAME_STASUSES.FINISHED) {
