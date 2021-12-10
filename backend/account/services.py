@@ -27,7 +27,7 @@ def get_user_by_token(access_token: str) -> User:
 
     try:
         access = AccessToken(access_token)
-        user = User.objects.get(id=access['user_id'])
+        user = User.objects.get(id=access["user_id"])
 
         return user
     except TokenError:
@@ -37,7 +37,7 @@ def get_user_by_token(access_token: str) -> User:
 def generate_tokens(user: User) -> dict:
     refresh = RefreshToken.for_user(user)
 
-    return {'access': str(refresh.access_token), 'refresh': str(refresh)}
+    return {"access": str(refresh.access_token), "refresh": str(refresh)}
 
 
 def get_active_users_by_filter(
@@ -48,7 +48,7 @@ def get_active_users_by_filter(
 ) -> QuerySet:
     """Отфильтровать пользователей"""
 
-    query = post_data.get('query')
+    query = post_data.get("query")
 
     if path_info is None:
         active_users = User.active.all()
@@ -60,11 +60,11 @@ def get_active_users_by_filter(
             Q(last_name__icontains=query) | Q(email__icontains=query)
         active_users = active_users.filter(r)
 
-    if post_data.get('is_online'):
+    if post_data.get("is_online"):
         active_users = active_users.filter(is_online=True)
 
     if user.is_authenticated:
-        if post_data.get('is_friend'):
+        if post_data.get("is_friend"):
             friends = user.get_friends()
             ids_filtered_users = []
 
@@ -123,39 +123,39 @@ def get_user_profile_info(user: User, current_user: User, serializer: Serializer
 
     if user.has_access_to_view_data_of_another_user(current_user):
         data = {
-            'views': user.get_viewers().count()
+            "views": user.get_viewers().count()
         }
         data.update(serializer(user).data)
 
         if current_user == user:
-            data['is_me'] = True
+            data["is_me"] = True
     else:
         data = {
-            'username': user.username,
-            'is_private': user.is_private,
-            'avatar': user.avatar.url
+            "username": user.username,
+            "is_private": user.is_private,
+            "avatar": user.avatar.url
         }
 
-    if data.get('is_me') is None and current_user.is_authenticated:
+    if data.get("is_me") is None and current_user.is_authenticated:
         try:
             friend_request = FriendRequest.objects.get(request_from=user, request_to=current_user)
 
             if friend_request.is_active:
-                data['friend_request'] = 'accepted'
+                data["friend_request"] = "accepted"
             else:
-                data['friend_request'] = 'got'
+                data["friend_request"] = "got"
         except FriendRequest.DoesNotExist:
             try:
                 friend_request = FriendRequest.objects.get(request_from=current_user, request_to=user)
 
                 if friend_request.is_active:
-                    data['friend_request'] = 'accepted'
+                    data["friend_request"] = "accepted"
                 else:
-                    data['friend_request'] = 'sent'
+                    data["friend_request"] = "sent"
             except FriendRequest.DoesNotExist:
-                data['friend_request'] = False
+                data["friend_request"] = False
 
-    data['friends'] = user.get_friends().count()
+    data["friends"] = user.get_friends().count()
 
     return data
 
@@ -163,9 +163,9 @@ def get_user_profile_info(user: User, current_user: User, serializer: Serializer
 def get_users_friends_or_views(url_name: str, user: User) -> (QuerySet, None):
     """Получить друзей/просмотры пользователя по адресу"""
 
-    if url_name in ('users_friends', 'friends'):
+    if url_name in ("users_friends", "friends"):
         return user.get_friends()
-    elif url_name in ('users_views', 'views'):
+    elif url_name in ("users_views", "views"):
         return user.get_viewers()
 
 
@@ -174,7 +174,7 @@ def get_users_list_or_403(path_info: str, username: str, user: User) -> QuerySet
 
     url_name = resolve(path_info).url_name
 
-    if url_name in ('users_friends', 'users_views', 'friends', 'views'):
+    if url_name in ("users_friends", "users_views", "friends", "views"):
         if username is None:
             user = user
         else:
@@ -247,10 +247,10 @@ def download_file_by_url(url: str, file_name: str) -> None:
     """Скачать файл по url"""
 
     file = requests.get(url)
-    downloaded_file_absolute_url = f'{settings.BASE_DIR}/media/{file_name}'
+    downloaded_file_absolute_url = f"{settings.BASE_DIR}/media/{file_name}"
 
     if not os.path.exists(downloaded_file_absolute_url):
-        downloaded_file = open(downloaded_file_absolute_url, 'wb')
+        downloaded_file = open(downloaded_file_absolute_url, "wb")
         downloaded_file.write(file.content)
         downloaded_file.close()
 
@@ -261,40 +261,40 @@ def google_authorization(code: str, google_client_id: str) -> dict:
     if code is None or google_client_id is None:
         raise ParseError
 
-    google_tokens = requests.post('https://www.googleapis.com/oauth2/v4/token', headers={
-        'Content-Type': 'application/x-www-form-urlencoded',
+    google_tokens = requests.post("https://www.googleapis.com/oauth2/v4/token", headers={
+        "Content-Type": "application/x-www-form-urlencoded",
     }, data={
-        'code': code,
-        'redirect_uri': f'{settings.CORS_ALLOWED_ORIGINS[0]}/account/google-oauth2/',
-        'client_id': google_client_id,
-        'client_secret': settings.SOCIAL_AUTH_GOOGLE_OAUTH_SECRET,
-        'scope': '',
-        'grant_type': 'authorization_code',
+        "code": code,
+        "redirect_uri": f"{settings.CORS_ALLOWED_ORIGINS[0]}/account/google-oauth2/",
+        "client_id": google_client_id,
+        "client_secret": settings.SOCIAL_AUTH_GOOGLE_OAUTH_SECRET,
+        "scope": "",
+        "grant_type": "authorization_code",
     })
 
     if google_tokens.status_code == 400:
         raise ParseError
 
     google_user_data = requests.get(
-        'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + google_tokens.json()['access_token']
+        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + google_tokens.json()["access_token"]
     ).json()
 
     try:
-        user = User.objects.get(username=google_user_data['name'])
+        user = User.objects.get(username=google_user_data["name"])
 
         if not user.is_active:
             raise NotFound
     except User.DoesNotExist:
         avatar_url = f"avatars/{google_user_data['name']}.png"
-        download_file_by_url(google_user_data['picture'], avatar_url)
+        download_file_by_url(google_user_data["picture"], avatar_url)
 
         user = User.objects.create(
-            username=google_user_data['name'],
-            first_name=google_user_data['given_name'],
-            last_name=google_user_data['family_name'],
-            email=google_user_data['email'],
+            username=google_user_data["name"],
+            first_name=google_user_data["given_name"],
+            last_name=google_user_data["family_name"],
+            email=google_user_data["email"],
             avatar=avatar_url,
-            provider='Google'
+            provider="Google"
         )
         get_or_create_chat(user, user)
 
@@ -307,38 +307,38 @@ def vk_authorization(code: str, vk_client_id: str) -> dict:
     if code is None or vk_client_id is None:
         raise ParseError
 
-    vk_tokens_response = requests.get(f'https://oauth.vk.com/access_token?client_id={vk_client_id}&'
-                                      f'client_secret={settings.SOCIAL_AUTH_VK_OAUTH_SECRET}&'
-                                      f'redirect_uri={settings.CORS_ALLOWED_ORIGINS[0]}/account/vk-oauth2/&code={code}')
+    vk_tokens_response = requests.get(f"https://oauth.vk.com/access_token?client_id={vk_client_id}&"
+                                      f"client_secret={settings.SOCIAL_AUTH_VK_OAUTH_SECRET}&"
+                                      f"redirect_uri={settings.CORS_ALLOWED_ORIGINS[0]}/account/vk-oauth2/&code={code}")
 
     if vk_tokens_response.status_code == 401:
         raise ParseError
 
     vk_user_data_response = requests.get(
-        f'https://api.vk.com/method/users.get?v=5.131&fields=screen_name,photo_max_orig,has_photo'
-        f'&access_token={vk_tokens_response.json()["access_token"]}')
+        f"https://api.vk.com/method/users.get?v=5.131&fields=screen_name,photo_max_orig,has_photo"
+        f"&access_token={vk_tokens_response.json()['access_token']}")
 
-    vk_user_data = vk_user_data_response.json()['response'][0]
+    vk_user_data = vk_user_data_response.json()["response"][0]
 
     try:
-        user = User.objects.get(username=vk_user_data['screen_name'])
+        user = User.objects.get(username=vk_user_data["screen_name"])
 
         if not user.is_active:
             raise NotFound
     except User.DoesNotExist:
-        if vk_user_data['has_photo']:
+        if vk_user_data["has_photo"]:
             avatar_url = f"avatars/{vk_user_data['screen_name']}.png"
-            download_file_by_url(vk_user_data['photo_max_orig'], avatar_url)
+            download_file_by_url(vk_user_data["photo_max_orig"], avatar_url)
         else:
-            avatar_url = '/media/avatars/user.png'
+            avatar_url = "/media/avatars/user.png"
 
         user = User.objects.create(
-            username=vk_user_data['screen_name'],
-            first_name=vk_user_data['first_name'],
-            last_name=vk_user_data['last_name'],
-            email=vk_user_data.get('email'),
+            username=vk_user_data["screen_name"],
+            first_name=vk_user_data["first_name"],
+            last_name=vk_user_data["last_name"],
+            email=vk_user_data.get("email"),
             avatar=avatar_url,
-            provider='VK'
+            provider="VK"
         )
         get_or_create_chat(user, user)
 

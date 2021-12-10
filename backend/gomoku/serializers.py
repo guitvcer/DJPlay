@@ -7,11 +7,11 @@ from .models import Party, Move
 class GomokuMoveSerializer(serializers.ModelSerializer):
     """Serializer ходов Гомоку"""
 
-    player = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    player = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     class Meta:
         model = Move
-        exclude = ('party',)
+        exclude = ("party", )
 
 
 class GomokuPartySerializer(serializers.ModelSerializer):
@@ -19,8 +19,8 @@ class GomokuPartySerializer(serializers.ModelSerializer):
 
     player_1 = UserInfoSerializer()
     player_2 = UserInfoSerializer()
-    winner = serializers.SerializerMethodField('get_winner')
-    moves = serializers.SerializerMethodField('get_moves')
+    winner = serializers.SerializerMethodField("get_winner")
+    moves = serializers.SerializerMethodField("get_moves")
 
     @staticmethod
     def get_winner(party: Party) -> (dict, None):
@@ -37,7 +37,7 @@ class GomokuPartySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Party
-        fields = '__all__'
+        fields = "__all__"
 
 
 class GomokuPartyListSerializer(serializers.ModelSerializer):
@@ -45,8 +45,8 @@ class GomokuPartyListSerializer(serializers.ModelSerializer):
 
     player_1 = UserInfoSerializer()
     player_2 = UserInfoSerializer()
-    winner = serializers.SerializerMethodField('get_winner')
-    moves_count = serializers.SerializerMethodField('get_moves_count')
+    winner = serializers.SerializerMethodField("get_winner")
+    moves_count = serializers.SerializerMethodField("get_moves_count")
 
     @staticmethod
     def get_winner(party: Party) -> (dict, None):
@@ -58,4 +58,4 @@ class GomokuPartyListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Party
-        fields = '__all__'
+        fields = "__all__"

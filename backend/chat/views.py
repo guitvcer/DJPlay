@@ -23,7 +23,7 @@ class ChatAPIView(RetrieveAPIView):
     serializer_class = ChatSerializer
 
     def get_object(self):
-        username = self.kwargs.get('username')
+        username = self.kwargs.get("username")
         interlocutor = get_object_or_404(User, username=username)
         chat = get_or_create_chat(self.request.user, interlocutor)
 

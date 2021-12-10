@@ -16,8 +16,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.room_name = 'chat'
-        self.room_group_name = 'chat'
+        self.room_name = "chat"
+        self.room_group_name = "chat"
         self.chat = None
         self.user = None
 
@@ -49,7 +49,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.create_message_and_notify_users(content)
         except (RequestAborted, AuthenticationFailed):
             await self.send_json({
-                'status': 400
+                "status": 400
             })
 
     async def get_user_and_add_to_group(self, content):
@@ -57,12 +57,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         if self.user is None:
             try:
-                access_token = content['access']
+                access_token = content["access"]
 
                 await self.disconnect(None)
 
                 self.user = await sync_to_async(get_user_by_token)(access_token)
-                self.room_group_name = 'chat_%s' % self.user.username.replace(' ', '')
+                self.room_group_name = "chat_%s" % self.user.username.replace("" "", "")
 
                 await self.channel_layer.group_add(
                     self.room_group_name,
@@ -78,13 +78,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """Присоеденить/отсоединить в новую группу участников чата"""
 
         try:
-            chat = await sync_to_async(Chat.objects.get)(id=content['chatId'])
+            chat = await sync_to_async(Chat.objects.get)(id=content["chatId"])
 
             if self.chat is None or self.chat != chat:
                 await self.disconnect(None)
 
                 self.chat = chat
-                self.room_group_name = 'chat_%s' % self.chat.id
+                self.room_group_name = "chat_%s" % self.chat.id
 
                 await self.channel_layer.group_add(
                     self.room_group_name,
@@ -99,7 +99,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.disconnect(None)
 
             self.chat = None
-            self.room_group_name = 'chat_%s' % self.user.username
+            self.room_group_name = "chat_%s" % self.user.username
 
             await self.channel_layer.group_add(
                 self.room_group_name,
@@ -112,7 +112,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """Создать сообщение"""
 
         try:
-            message_text = content['messageText']
+            message_text = content["messageText"]
             message = await sync_to_async(Message.objects.create)(
                 chat=self.chat, sent_from=self.user, text=message_text
             )
@@ -123,23 +123,23 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
-                    'type': 'notify_room',
-                    'message': serializer.data
+                    "type": "notify_room",
+                    "message": serializer.data
                 }
             )
 
             # уведомить лично собеседника
             await self.channel_layer.group_send(
-                'chat_%s' % interlocutor.username.replace(" ", ""),
+                "chat_%s" % interlocutor.username.replace(" ", ""),
                 {
-                    'type': 'notify_room',
-                    'message': serializer.data
+                    "type": "notify_room",
+                    "message": serializer.data
                 }
             )
         except KeyError:
             raise RequestAborted
 
     async def notify_room(self, event):
-        event['message'] = humps.camelize(event['message'])
-        event['status'] = 200
+        event["message"] = humps.camelize(event["message"])
+        event["status"] = 200
         await self.send_json(event)

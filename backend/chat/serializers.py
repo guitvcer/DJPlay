@@ -10,7 +10,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ChatListSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class ChatListSerializer(serializers.ModelSerializer):
 
     user_1 = UserInfoSerializer()
     user_2 = UserInfoSerializer()
-    last_message = serializers.SerializerMethodField('get_last_message')
+    last_message = serializers.SerializerMethodField("get_last_message")
 
     @staticmethod
     def get_last_message(chat: Chat) -> dict:
@@ -29,7 +29,7 @@ class ChatListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ChatSerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
     user_1 = UserInfoSerializer()
     user_2 = UserInfoSerializer()
-    messages = serializers.SerializerMethodField('get_messages')
+    messages = serializers.SerializerMethodField("get_messages")
 
     @staticmethod
     def get_messages(chat: Chat) -> list:
@@ -48,4 +48,4 @@ class ChatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
-        fields = '__all__'
+        fields = "__all__"

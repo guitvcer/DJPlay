@@ -11,7 +11,7 @@ class GomokuAPIView(RetrieveAPIView):
     serializer_class = GameSerializer
 
     def get_object(self):
-        return Game.objects.get(app_name='gomoku')
+        return Game.objects.get(app_name="gomoku")
 
 
 class GomokuPartyAPIView(RetrieveAPIView):

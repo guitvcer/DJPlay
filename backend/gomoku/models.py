@@ -31,7 +31,7 @@ class Party(models.Model):
     winner = models.CharField(max_length=64, null=True, verbose_name="Победитель")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата")
 
-    def __str__(self): return f'id={self.id}, {self.player_1}, {self.player_2}, {self.date.date()}'
+    def __str__(self): return f"id={self.id}, {self.player_1}, {self.player_2}, {self.date.date()}"
 
     def get_moves(self) -> QuerySet:
         """Получить ходы партии"""

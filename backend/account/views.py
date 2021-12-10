@@ -52,7 +52,7 @@ class UserProfileAPIView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        username = kwargs.get('username')
+        username = kwargs.get("username")
         user_data, user = get_specific_or_current_user_info(request.user, username, serializers.UserProfileSerializer)
         add_user_view(request.user, user)
         return Response(user_data, status=status.HTTP_200_OK)
@@ -108,9 +108,9 @@ class UserFriendRequestAPIView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        request_to = get_object_or_404(User.active.all(), username=kwargs.get('username'))
+        request_to = get_object_or_404(User.active.all(), username=kwargs.get("username"))
         return Response({
-            'title': create_or_delete_or_accept_friend_request(request.user, request_to)
+            "title": create_or_delete_or_accept_friend_request(request.user, request_to)
         }, status=status.HTTP_200_OK)
 
 
@@ -121,8 +121,8 @@ class UserPartyListAPIView(ListAPIView):
     pagination_class = PartyListPagination
 
     def get_queryset(self):
-        game = get_object_or_404(get_games(), app_name=self.kwargs.get('game_name'))
-        return get_specific_or_current_users_party_list(self.request.user, self.kwargs.get('username'), game)
+        game = get_object_or_404(get_games(), app_name=self.kwargs.get("game_name"))
+        return get_specific_or_current_users_party_list(self.request.user, self.kwargs.get("username"), game)
 
 
 class AuthorizationAPIView(APIView):
@@ -131,7 +131,7 @@ class AuthorizationAPIView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         serializer = serializers.AuthorizationSerializer(data=request.data, context={
-            'request': request
+            "request": request
         })
 
         if serializer.is_valid(raise_exception=True):
@@ -144,7 +144,7 @@ class RegistrationAPIView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         serializer = serializers.RegistrationSerializer(data=request.data, context={
-            'request': request
+            "request": request
         })
 
         if serializer.is_valid(raise_exception=True):
@@ -156,12 +156,12 @@ class SocialAuthorizationAPIView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        provider = request.data.get('provider')
+        provider = request.data.get("provider")
 
-        if provider == 'Google':
-            credentials = google_authorization(request.data.get('code'), request.data.get('google_client_id'))
-        elif provider == 'VK':
-            credentials = vk_authorization(request.data.get('code'), request.data.get('vk_client_id'))
+        if provider == "Google":
+            credentials = google_authorization(request.data.get("code"), request.data.get("google_client_id"))
+        elif provider == "VK":
+            credentials = vk_authorization(request.data.get("code"), request.data.get("vk_client_id"))
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

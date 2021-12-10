@@ -3,7 +3,7 @@ import sys
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.local")
 
     try:
         from django.core.management import execute_from_command_line
@@ -19,9 +19,9 @@ def main():
 
     load_dotenv()
 
-    Command.default_addr = os.getenv('HOST')
+    Command.default_addr = os.getenv("HOST")
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

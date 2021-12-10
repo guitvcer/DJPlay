@@ -3,5 +3,5 @@ from .views import ChessAPIView
 
 
 urlpatterns = [
-    path('', ChessAPIView.as_view(), name='chess')
+    path('', ChessAPIView.as_view(), name="chess"),
 ]

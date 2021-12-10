@@ -56,14 +56,14 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
         for i in range(5):
             # горизонталь
             try:
-                move = Move.objects.get(party=party, player=player, coordinate=f'{get_letter(x, n - i)}{y}')
+                move = Move.objects.get(party=party, player=player, coordinate=f"{get_letter(x, n - i)}{y}")
                 x_moves.append(move.coordinate)
             except Move.DoesNotExist:
                 x_moves = []
 
             # вертикаль
             try:
-                move = Move.objects.get(party=party, player=player, coordinate=f'{x}{y - n + i}')
+                move = Move.objects.get(party=party, player=player, coordinate=f"{x}{y - n + i}")
                 y_moves.append(move.coordinate)
             except Move.DoesNotExist:
                 y_moves = []
@@ -71,7 +71,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
             # диагональ 1
             try:
                 move = Move.objects.get(party=party, player=player,
-                                        coordinate=f'{get_letter(x, n - i)}{y + i - n}')
+                                        coordinate=f"{get_letter(x, n - i)}{y + i - n}")
                 z_moves_1.append(move.coordinate)
             except Move.DoesNotExist:
                 z_moves_1 = []
@@ -79,7 +79,7 @@ def check_row(move: Move, party: Party, player: User) -> (list, None):
             # диагональ 2
             try:
                 move = Move.objects.get(party=party, player=player,
-                                        coordinate=f'{get_letter(x, n - i)}{y - i + n}')
+                                        coordinate=f"{get_letter(x, n - i)}{y - i + n}")
                 z_moves_2.append(move.coordinate)
             except Move.DoesNotExist:
                 z_moves_2 = []

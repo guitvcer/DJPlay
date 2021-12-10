@@ -9,4 +9,4 @@ class ChessAPIView(RetrieveAPIView):
     serializer_class = GameSerializer
 
     def get_object(self):
-        return Game.objects.get(app_name='chess')
+        return Game.objects.get(app_name="chess")

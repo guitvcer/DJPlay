@@ -15,22 +15,22 @@ class User(AbstractUser):
     """Модель пользователя"""
 
     GENDERS = (
-        ('M', 'Мужской'),
-        ('F', 'Женский')
+        ("M", "Мужской"),
+        ("F", "Женский")
     )
     PROVIDERS = (
-        ('DJPlay', 'DJPlay'),
-        ('VK', 'VK'),
-        ('Google', 'Google')
+        ("DJPlay", "DJPlay"),
+        ("VK", "VK"),
+        ("Google", "Google")
     )
 
     id = models.AutoField(primary_key=True)
-    avatar = ThumbnailerImageField(default="/avatars/user.png", verbose_name="Фото профиля", upload_to='avatars',
+    avatar = ThumbnailerImageField(default="/avatars/user.png", verbose_name="Фото профиля", upload_to="avatars",
                                    resize_source={
-                                       'quality': 95,
-                                       'size': (256, 256),
-                                       'sharpen': True,
-                                       'crop': 'square'
+                                       "quality": 95,
+                                       "size": (256, 256),
+                                       "sharpen": True,
+                                       "crop": "square"
                                    })
     birthday = models.DateField(null=True, blank=True, verbose_name="Дата рождения")
     gender = models.CharField(null=True, blank=True, max_length=1, choices=GENDERS, verbose_name="Пол")
@@ -83,11 +83,11 @@ class User(AbstractUser):
     def get_party_list(self, game) -> QuerySet:
         """Получить QuerySet из сыгранных партии определенной игры"""
 
-        if game.app_name == 'gomoku':
+        if game.app_name == "gomoku":
             from gomoku.models import Party
 
             return Party.objects.filter(player_1=self).exclude(player_2=self).union(
-                Party.objects.filter(player_2=self).exclude(player_1=self)).order_by('-date')
+                Party.objects.filter(player_2=self).exclude(player_1=self)).order_by("-date")
 
     def get_viewers(self) -> QuerySet:
         """Получить пользователей, которое просматривали страницу этого пользователя"""
@@ -104,9 +104,9 @@ class User(AbstractUser):
         return (self == user) or (user in self.get_friends()) or (not self.is_private)
 
     class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
-        ordering = ('username', )
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+        ordering = ("username", )
 
 
 class Game(models.Model):
@@ -136,14 +136,14 @@ class FriendRequest(models.Model):
                                    related_name="friend_request_to")
     is_active = models.BooleanField(default=False, verbose_name="Принят ли запрос?")
 
-    def __str__(self): return f'От {self.request_from} к {self.request_to}'
+    def __str__(self): return f"От {self.request_from} к {self.request_to}"
 
     def get_friend(self, user: User) -> User:
         return self.request_from if user == self.request_to else self.request_to
 
     class Meta:
-        verbose_name = 'Запрос в друзья'
-        verbose_name_plural = 'Запросы в друзья'
+        verbose_name = "Запрос в друзья"
+        verbose_name_plural = "Запросы в друзья"
 
 
 class UserView(models.Model):
@@ -154,8 +154,8 @@ class UserView(models.Model):
                                   related_name="user_view_from")
     view_to = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Просмотр к", related_name="user_view_to")
 
-    def __str__(self): return f'От {self.view_from} к {self.view_to}'
+    def __str__(self): return f"От {self.view_from} к {self.view_to}"
 
     class Meta:
-        verbose_name = 'Просмотр пользователя'
-        verbose_name_plural = 'Просмотры пользователей'
+        verbose_name = "Просмотр пользователя"
+        verbose_name_plural = "Просмотры пользователей"

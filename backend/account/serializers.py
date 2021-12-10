@@ -15,7 +15,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'avatar', 'is_online', 'last_online', 'gender')
+        fields = ("id", "username", "avatar", "is_online", "last_online", "gender")
 
 
 class AuthorizationSerializer(serializers.Serializer):
@@ -23,22 +23,22 @@ class AuthorizationSerializer(serializers.Serializer):
 
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
-    recaptcha = ReCaptchaV3Field(action='authorization')
+    recaptcha = ReCaptchaV3Field(action="authorization")
 
     def validate(self, attrs):
         super().validate(attrs)
 
-        error_text = 'Неверные имя пользователя и/или пароль.'
+        error_text = "Неверные имя пользователя и/или пароль."
 
         try:
-            self.user = User.objects.get(username=attrs['username'])
+            self.user = User.objects.get(username=attrs["username"])
 
             if not self.user.is_active:
                 raise serializers.ValidationError(error_text)
         except User.DoesNotExist:
             raise serializers.ValidationError(error_text)
 
-        if not self.user.check_password(attrs['password']):
+        if not self.user.check_password(attrs["password"]):
             raise serializers.ValidationError(error_text)
 
         return attrs
@@ -52,38 +52,39 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     password_1 = serializers.CharField(required=True)
     password_2 = serializers.CharField(required=True)
-    recaptcha = ReCaptchaV3Field(action='registration')
+    recaptcha = ReCaptchaV3Field(action="registration")
 
     def validate(self, attrs):
         super().validate(attrs)
 
         try:
-            User.objects.get(username=attrs['username'])
-            raise serializers.ValidationError('Пользователь с таким именем уже существует.')
+            User.objects.get(username=attrs["username"])
+            raise serializers.ValidationError("Пользователь с таким именем уже существует.")
         except User.DoesNotExist:
-            if attrs['username'] in ('authorization', 'registration', 'games', 'users', 'edit', 'change-password',
-                                     'delete', 'friends', 'views', 'party-list', 'google-oauth2', 'vk-oauth2', 'Гость'):
-                raise serializers.ValidationError('Имя пользователя совпадает с ключевой фразой.')
+            if attrs["username"].lower() in (
+                    "authorization", "registration", "games", "users", "edit", "change-password", "delete", "friends",
+                    "views", "party-list", "google-oauth2", "vk-oauth2", "гость", "черный", "белый"):
+                raise serializers.ValidationError("Имя пользователя совпадает с ключевой фразой.")
 
-            validate_password(attrs['password_1'])
+            validate_password(attrs["password_1"])
 
-            if attrs['password_1'] != attrs['password_2']:
-                raise serializers.ValidationError('Пароли не совпадают.')
+            if attrs["password_1"] != attrs["password_2"]:
+                raise serializers.ValidationError("Пароли не совпадают.")
 
-            validate_email(attrs['email'])
+            validate_email(attrs["email"])
 
             try:
-                User.objects.get(email=attrs['email'])
-                raise serializers.ValidationError('Пользователь с такой эл. почтой уже существует.')
+                User.objects.get(email=attrs["email"])
+                raise serializers.ValidationError("Пользователь с такой эл. почтой уже существует.")
             except User.DoesNotExist:
                 return attrs
 
     def save(self):
         user = User.objects.create(
-            username=self.validated_data['username'],
-            email=self.validated_data['email']
+            username=self.validated_data["username"],
+            email=self.validated_data["email"]
         )
-        user.set_password(self.validated_data['password_1'])
+        user.set_password(self.validated_data["password_1"])
         user.save()
 
         get_or_create_chat(user, user)
@@ -92,7 +93,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password_1', 'password_2', 'recaptcha')
+        fields = ("username", "email", "password_1", "password_2", "recaptcha")
 
 
 class GameSerializer(serializers.ModelSerializer):
@@ -100,12 +101,13 @@ class GameSerializer(serializers.ModelSerializer):
 
     image = serializers.SerializerMethodField()
 
-    def get_image(self, obj):
+    @staticmethod
+    def get_image(obj):
         return obj.image.url
 
     class Meta:
         model = Game
-        fields = ('name', 'app_name', 'rules', 'image', 'is_released')
+        fields = ("name", "app_name", "rules", "image", "is_released")
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -113,7 +115,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', 'groups', 'user_permissions', 'is_staff')
+        exclude = ("password", "groups", "user_permissions", "is_staff")
 
 
 class UserProfileEditSerializer(serializers.ModelSerializer):
@@ -124,12 +126,12 @@ class UserProfileEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'birthday', 'gender', 'is_private', 'avatar',
-                  'clear_avatar')
+        fields = ("username", "email", "first_name", "last_name", "birthday", "gender", "is_private", "avatar",
+                  "clear_avatar")
 
     def validate(self, attrs):
-        if attrs.get('clear_avatar'):
-            self.instance.avatar = '/avatars/user.png'
+        if attrs.get("clear_avatar"):
+            self.instance.avatar = "/avatars/user.png"
 
         return super().validate(attrs)
 
@@ -142,25 +144,25 @@ class UserChangePasswordSerializer(serializers.Serializer):
     password_2 = serializers.CharField(required=True)
 
     def validate(self, attrs):
-        old_password = attrs['old_password']
-        password_1 = attrs['password_1']
-        password_2 = attrs['password_2']
+        old_password = attrs["old_password"]
+        password_1 = attrs["password_1"]
+        password_2 = attrs["password_2"]
 
         if not self.instance.check_password(old_password):
-            raise serializers.ValidationError('Введен неверный старый пароль.')
+            raise serializers.ValidationError("Введен неверный старый пароль.")
 
         if old_password == password_1:
-            raise serializers.ValidationError('Вы ввели старый пароль.')
+            raise serializers.ValidationError("Вы ввели старый пароль.")
 
         validate_password(password_1)
 
         if password_1 != password_2:
-            raise serializers.ValidationError('Пароли не совпадают.')
+            raise serializers.ValidationError("Пароли не совпадают.")
 
         return attrs
 
     def save(self):
-        self.instance.set_password(self.validated_data['password_1'])
+        self.instance.set_password(self.validated_data["password_1"])
         self.instance.save()
 
 
@@ -170,10 +172,10 @@ class UserDeleteSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
     def validate(self, attrs):
-        if self.instance.check_password(attrs['password']):
+        if self.instance.check_password(attrs["password"]):
             return attrs
 
-        raise serializers.ValidationError('Введен неверный пароль.')
+        raise serializers.ValidationError("Введен неверный пароль.")
 
     def delete(self):
         self.instance.is_active = False
@@ -187,14 +189,14 @@ class RefreshTokenSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         try:
-            refresh = RefreshToken(attrs['refresh'])
+            refresh = RefreshToken(attrs["refresh"])
             self.access = str(refresh.access_token)
         except TokenError:
-            raise serializers.ValidationError('Данные авторизации устарели.')
+            raise serializers.ValidationError("Данные авторизации устарели.")
 
         return attrs
 
     def save(self):
         return {
-            'access': self.access
+            "access": self.access
         }

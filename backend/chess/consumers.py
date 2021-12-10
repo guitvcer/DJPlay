@@ -53,7 +53,7 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        "type": 'notify_room',
+                        "type": "notify_room",
                         "party_id": new_party.id,
                         "white": white_serializer.data,
                         "black": black_serializer.data,
@@ -62,11 +62,11 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
                 await self.disconnect(1000)
         except KeyError:
             await self.send_json({
-                'status': 400,
+                "status": 400,
             })
         except AuthenticationFailed:
             await self.send_json({
-                'status': 401,
+                "status": 401,
             })
             await self.disconnect(4401)
 
@@ -83,6 +83,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         self.party_id = None
         self.room_group_name = None
         self.player = None
+        self.serializer = None
 
     async def connect(self):
         self.room = "chess"
@@ -101,10 +102,9 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
 
         if self.player is not None and not party.result:
             await sync_to_async(player_gives_up)(self.party_id, self.player)
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
             event = {
                 "type": "send_data",
-                "player": serializer.data,
+                "player": self.serializer.data,
                 "action": "exit",
             }
 
@@ -142,6 +142,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         if self.player is None and content["action"] == "authorize":
             access = content["access"]
             self.player = await sync_to_async(get_user_by_token)(access)
+            self.serializer = await sync_to_async(UserInfoSerializer)(self.player)
 
     async def make_move(self, content: dict) -> None:
         """Сделать ход"""
@@ -151,12 +152,10 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
                 self.party_id, content["notation"], content["time"], self.player
             )
 
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
-
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "send_data",
-                    "player": serializer.data,
+                    "player": self.serializer.data,
                     "action": "make_move",
                     "notation": content["notation"],
                 }
@@ -166,11 +165,9 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         """Предложить ничью"""
 
         if content["action"] == "offer_draw":
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
-
             event = {
                 "type": "send_data",
-                "player": serializer.data,
+                "player": self.serializer.data,
                 "action": "offer_draw",
             }
 
@@ -197,13 +194,11 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
             elif content["action"] == "stalemate":
                 await sync_to_async(draw_party)(self.party_id)
 
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
-
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "send_data",
                     "action": content["action"],
-                    "player": serializer.data,
+                    "player": self.serializer.data,
                 }
             )
 
@@ -211,11 +206,10 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         """Отменить ход"""
 
         if content["action"] == "cancel_move":
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
             event = {
                 "type": "send_data",
                 "action": "cancel_move",
-                "player": serializer.data,
+                "player": self.serializer.data,
             }
 
             if await sync_to_async(content.get)("request"):
@@ -238,13 +232,12 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
 
         if content["action"] == "give_up":
             await sync_to_async(player_gives_up)(self.party_id, self.player)
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
 
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "send_data",
                     "action": "give_up",
-                    "player": serializer.data,
+                    "player": self.serializer.data,
                 }
             )
 
@@ -253,13 +246,12 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
 
         if content["action"] == "timed_out":
             await sync_to_async(player_gives_up)(self.party_id, self.player)
-            serializer = await sync_to_async(UserInfoSerializer)(self.player)
 
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "send_data",
                     "action": "timed_out",
-                    "player": serializer.data,
+                    "player": self.serializer.data,
                 }
             )
 

@@ -21,10 +21,10 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
         self.queue = None
 
     async def connect(self):
-        self.room_name = 'party'
-        self.room_group_name = 'find_%s' % self.room_name
+        self.room_name = "party"
+        self.room_group_name = "find_%s" % self.room_name
 
-        gomoku = await sync_to_async(Game.objects.get)(name='Гомоку')
+        gomoku = await sync_to_async(Game.objects.get)(name="Гомоку")
         self.queue = await sync_to_async(Queue.objects.get)(game=gomoku)
 
         await self.channel_layer.group_add(
@@ -55,19 +55,19 @@ class FindOpponentConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        'type': 'notify_room',
-                        'party_id': new_party.id,
-                        'player_1': player_1_serializer.data,
-                        'player_2': player_2_serializer.data,
+                        "type": "notify_room",
+                        "party_id": new_party.id,
+                        "player_1": player_1_serializer.data,
+                        "player_2": player_2_serializer.data,
                     }
                 )
         except KeyError:
             await self.send_json({
-                'status': 400,
+                "status": 400,
             })
         except AuthenticationFailed:
             await self.send_json({
-                'status': 401,
+                "status": 401,
             })
 
     async def notify_room(self, event):
@@ -85,9 +85,9 @@ class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
         self.player = None
 
     async def connect(self):
-        self.room = 'party'
-        self.party_id = self.scope['url_route']['kwargs']['id']
-        self.room_group_name = 'gomoku_%s' % self.party_id
+        self.room = "party"
+        self.party_id = self.scope["url_route"]["kwargs"]["id"]
+        self.room_group_name = "gomoku_%s" % self.party_id
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -102,9 +102,9 @@ class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
         if self.player is not None:
             serializer = await sync_to_async(UserInfoSerializer)(self.player)
             event = {
-                'type': 'send_data',
-                'player': serializer.data,
-                'action': 'exit',
+                "type": "send_data",
+                "player": serializer.data,
+                "action": "exit",
             }
 
             await self.channel_layer.group_send(
@@ -123,11 +123,11 @@ class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
             await self.cancel_move(content)
         except AuthenticationFailed:
             await self.send_json({
-                'status': 401
+                "status": 401
             })
         except (KeyError, ParseError, NotValidCoordinate):
             await self.send_json({
-                'status': 400,
+                "status": 400,
             })
 
     async def authorize(self, content: dict) -> None:
@@ -146,11 +146,11 @@ class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
             serializer = await sync_to_async(UserInfoSerializer)(self.player)
 
             event = {
-                'type': 'send_data',
-                'player': serializer.data,
-                'coordinate': coordinate,
-                'action': 'make_move',
-                'row_moves': json.dumps if row else None
+                "type": "send_data",
+                "player": serializer.data,
+                "coordinate": coordinate,
+                "action": "make_move",
+                "row_moves": json.dumps if row else None
             }
 
             await self.channel_layer.group_send(
@@ -164,19 +164,19 @@ class GomokuPartyConsumer(AsyncJsonWebsocketConsumer):
             serializer = await sync_to_async(UserInfoSerializer)(self.player)
 
             event = {
-                'type': 'send_data',
-                'player': serializer.data,
-                'action': 'cancel_move',
+                "type": "send_data",
+                "player": serializer.data,
+                "action": "cancel_move",
             }
 
-            if await sync_to_async(content.get)('request'):
-                event['request'] = True
-            elif await sync_to_async(content.get)('accept'):
+            if await sync_to_async(content.get)("request"):
+                event["request"] = True
+            elif await sync_to_async(content.get)("accept"):
                 coordinate = await sync_to_async(self.get_and_cancel_opponents_move)()
-                event['coordinate'] = coordinate
-                event['accept'] = True
-            elif await sync_to_async(content.get)('decline'):
-                event['decline'] = True
+                event["coordinate"] = coordinate
+                event["accept"] = True
+            elif await sync_to_async(content.get)("decline"):
+                event["decline"] = True
             else:
                 raise ParseError
 
