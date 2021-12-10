@@ -11,6 +11,7 @@
       :key="index"
       :party="party"
       :user="user"
+      :game="game"
       :class="[index === partyList.length - 1 ? 'rounded-b' : '']"
     />
   </div>
@@ -27,6 +28,10 @@ export default {
       type: Array,
       required: true,
     },
+    game: {
+      type: String,
+      required: true,
+    }
   },
   data() {
     return {

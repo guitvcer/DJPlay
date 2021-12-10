@@ -1,5 +1,7 @@
 from django.urls import path
 
+from chess.views import ChessPartyListAPIView
+from gomoku.views import GomokuPartyListAPIView
 from . import views
 
 
@@ -18,12 +20,15 @@ urlpatterns = [
     path("edit/", views.UserProfileEditAPIView.as_view(), name="edit_profile"),
     path("friends/", views.UsersListAPIView.as_view(), name="friends"),
     path("views/", views.UsersListAPIView.as_view(), name="views"),
-    path("party-list/<str:game_name>/", views.UserPartyListAPIView.as_view(), name="party_list"),
+    path("party-list/gomoku/", GomokuPartyListAPIView.as_view(), name="gomoku_party_list"),
+    path("party-list/chess/", ChessPartyListAPIView.as_view(), name="chess_party_list"),
+
+    path("<str:username>/party-list/gomoku/", GomokuPartyListAPIView.as_view(), name="users_gomoku_party_list"),
+    path("<str:username>/party-list/chess/", ChessPartyListAPIView.as_view(), name="users_chess_party_list"),
 
     path("<str:username>/friend-request", views.UserFriendRequestAPIView.as_view(), name="friend_request"),
     path("<str:username>/friends/", views.UsersListAPIView.as_view(), name="users_friends"),
     path("<str:username>/views/", views.UsersListAPIView.as_view(), name="users_views"),
-    path("<str:username>/party-list/<str:game_name>/", views.UserPartyListAPIView.as_view(), name="users_party_list"),
     path("<str:username>/", views.UserProfileAPIView.as_view(), name="profile"),
 
     path("", views.UserProfileAPIView.as_view(), name="me")

@@ -80,14 +80,21 @@ class User(AbstractUser):
 
         return User.objects.filter(id__in=ids_friends)
 
-    def get_party_list(self, game) -> QuerySet:
-        """Получить QuerySet из сыгранных партии определенной игры"""
+    def get_gomoku_parties(self) -> QuerySet:
+        """Получить QuerySet из сыгранных партии Гомоку"""
 
-        if game.app_name == "gomoku":
-            from gomoku.models import Party
+        from gomoku.models import Party
 
-            return Party.objects.filter(player_1=self).exclude(player_2=self).union(
-                Party.objects.filter(player_2=self).exclude(player_1=self)).order_by("-date")
+        return Party.objects.filter(player_1=self).exclude(player_2=self).union(
+            Party.objects.filter(player_2=self).exclude(player_1=self)).order_by("-date")
+
+    def get_chess_parties(self) -> QuerySet:
+        """Получить QuerySet из сыгранных партии Шахмат"""
+
+        from chess.models import Party
+
+        return Party.objects.filter(white=self).exclude(black=self).union(
+            Party.objects.filter(black=self).exclude(white=self)).order_by("-date")
 
     def get_viewers(self) -> QuerySet:
         """Получить пользователей, которое просматривали страницу этого пользователя"""

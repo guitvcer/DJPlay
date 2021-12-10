@@ -26,9 +26,9 @@ class Party(models.Model):
     """Модель шахматной партии"""
 
     RESULT_CHOICES = (
-        ('W', "White"),
-        ('B', "Black"),
-        ('D', "Draw"),
+        ('W', "white"),
+        ('B', "black"),
+        ('D', "draw"),
     )
 
     id = models.AutoField(primary_key=True)
@@ -43,6 +43,11 @@ class Party(models.Model):
 
     def __str__(self):
         return f"№{self.id} партия"
+
+    def get_moves(self) -> models.QuerySet:
+        """Получить ходы этой партии"""
+
+        return Move.objects.filter(party=self)
 
     class Meta:
         verbose_name = "Шахматная партия"

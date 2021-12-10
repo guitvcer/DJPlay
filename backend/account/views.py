@@ -114,17 +114,6 @@ class UserFriendRequestAPIView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class UserPartyListAPIView(ListAPIView):
-    """Список сыгранных партии пользователя"""
-
-    serializer_class = GomokuPartyListSerializer
-    pagination_class = PartyListPagination
-
-    def get_queryset(self):
-        game = get_object_or_404(get_games(), app_name=self.kwargs.get("game_name"))
-        return get_specific_or_current_users_party_list(self.request.user, self.kwargs.get("username"), game)
-
-
 class AuthorizationAPIView(APIView):
     """Авторизация пользователя"""
 

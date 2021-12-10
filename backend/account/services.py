@@ -215,7 +215,7 @@ def get_specific_or_current_user_info(
 def get_specific_or_current_users_party_list(
         current_user: (User, AnonymousUser),
         username: str,
-        game: Game
+        game_name: str
 ) -> QuerySet:
     """Получить список сыгранных партии текущего или определенного пользователя"""
 
@@ -227,11 +227,17 @@ def get_specific_or_current_users_party_list(
                 (not user.has_access_to_view_data_of_another_user(current_user)):
             raise PermissionDenied
 
-        return user.get_party_list(game)
+        if game_name == "gomoku":
+            return user.get_gomoku_parties()
+        elif game_name == "chess":
+            return user.get_chess_parties()
 
     # получить QuerySet из партии текущего пользователя
     if current_user.is_authenticated:
-        return current_user.get_party_list(game)
+        if game_name == "gomoku":
+            return current_user.get_gomoku_parties()
+        elif game_name == "chess":
+            return current_user.get_chess_parties()
 
     raise NotAuthenticated
 

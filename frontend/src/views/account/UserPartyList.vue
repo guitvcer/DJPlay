@@ -12,12 +12,14 @@
       <h2 class="text-3xl font-semibold">{{ title }} ({{ partyListLength }})</h2>
       <select class="bg-white dark:bg-main border-2 border-main rounded" v-model="game">
         <option value="gomoku">Гомоку</option>
+        <option value="chess">Шахматы</option>
       </select>
     </div>
 
     <user-party-list-table
       v-if="!loading && partyListLength > 0"
       :partyList="partyList"
+      :game="game"
     />
 
     <paginator

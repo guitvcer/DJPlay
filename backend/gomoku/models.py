@@ -1,6 +1,5 @@
 from account.models import User, Game
 from django.db import models
-from django.db.models import QuerySet
 
 
 class Move(models.Model):
@@ -33,7 +32,7 @@ class Party(models.Model):
 
     def __str__(self): return f"id={self.id}, {self.player_1}, {self.player_2}, {self.date.date()}"
 
-    def get_moves(self) -> QuerySet:
+    def get_moves(self) -> models.QuerySet:
         """Получить ходы партии"""
 
         return Move.objects.filter(party=self)
