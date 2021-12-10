@@ -153,12 +153,10 @@ export default {
         if (lastMove.color === getters.currentColor) {
           let notation;
 
-          if (lastMove.castling) {
-            if (lastMove.shortCastling) {
-              notation = "O-O";
-            } else if (lastMove.longCastling) {
-              notation = "O-O-O";
-            }
+          if (lastMove.shortCastling) {
+            notation = "O-O";
+          } else if (lastMove.longCastling) {
+            notation = "O-O-O";
           } else {
             notation = lastMove.from_coordinate + '-' + lastMove.to_coordinate;
           }
@@ -548,15 +546,14 @@ export default {
     const lastMove = getters.moves[getters.moves.length - 1];
     let lastMoveNotation;
 
-    if (lastMove.castling) {
-      if (lastMove.castling.shortCastling) {
-        lastMoveNotation = "O-O";
-      } else {
-        lastMoveNotation = "O-O-O";
-      }
+    if (lastMove.shortCastling) {
+      lastMoveNotation = "O-O";
+    } else if (lastMove.longCastling) {
+      lastMoveNotation = "O-O-O";
     } else {
       lastMoveNotation = lastMove.from_coordinate + '-' + lastMove.to_coordinate;
     }
+
 
     if (getters.cancelingMove === lastMoveNotation) {
       commit("sendChessPartySocket", {

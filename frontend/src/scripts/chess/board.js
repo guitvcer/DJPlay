@@ -232,6 +232,8 @@ export function checkmateOrStalemate() {
 
     for (const piece of Object.values(store.getters["chess/pieces"])) {
       if (piece.color === store.getters["chess/currentColor"]) {
+        store.commit("chess/updateSelectedPiece", piece);
+
         const availableCells = select[piece.name](piece.coordinate);
 
         for (const coordinate of availableCells.selectable) {

@@ -166,7 +166,7 @@ export function chessPartySocketOnMessage(e) {
         });
       } else {
         store.commit("createAlert", {
-          title: "Соперника запрашивает отмену хода.",
+          title: "Соперник запрашивает отмену хода.",
           level: "simple",
           buttons: [
             {
