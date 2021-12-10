@@ -490,12 +490,9 @@ export default {
   },
   giveUp({ commit, getters }) {
     if (getters.gameStatus === GAME_STASUSES.ONLINE) {
-      commit("updateGameStatus", GAME_STASUSES.FINISHED);
-      commit("closeChessPartySocket");
-      commit("createAlert", {
-        title: "Вы проиграли.",
-        level: "danger",
-      }, { root: true });
+      commit("sendChessPartySocket", {
+        action: "give_up",
+      });
     }
   },
   offerDraw({ commit }) {

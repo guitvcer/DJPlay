@@ -5,6 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed, ParseError
 from account.models import Game
 from account.serializers import UserInfoSerializer
 from account.services import get_user_by_token
+from .models import Party
 from .services import draw_party, player_gives_up, make_move, checkmate, cancel_move
 
 
@@ -96,9 +97,10 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        await sync_to_async(player_gives_up)(self.party_id, self.player)
+        party = await sync_to_async(Party.objects.get)(id=self.party_id)
 
-        if self.player is not None:
+        if self.player is not None and not party.result:
+            await sync_to_async(player_gives_up)(self.party_id, self.player)
             serializer = await sync_to_async(UserInfoSerializer)(self.player)
             event = {
                 "type": "send_data",
@@ -122,6 +124,7 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
             await self.offer_draw(content)
             await self.checkmate_or_stalemate(content)
             await self.cancel_move(content)
+            await self.give_up(content)
         except AuthenticationFailed:
             await self.send_json({
                 "status": 401,
@@ -227,6 +230,20 @@ class ChessPartyConsumer(AsyncJsonWebsocketConsumer):
 
             await self.channel_layer.group_send(
                 self.room_group_name, event
+            )
+
+    async def give_up(self, content: dict) -> None:
+        """Сдаться"""
+
+        if content["action"] == "give_up":
+            await sync_to_async(player_gives_up)(self.party_id, self.player)
+            serializer = await sync_to_async(UserInfoSerializer)(self.player)
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "send_data",
+                    "action": "give_up",
+                    "player": serializer.data,
+                }
             )
 
     async def send_data(self, event: dict) -> None:

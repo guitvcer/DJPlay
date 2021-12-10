@@ -127,17 +127,17 @@ export function chessPartySocketOnMessage(e) {
   } else if (data["action"] === "exit") {
     if (data["player"].id === store.getters.user.id) {
       store.commit("createAlert", {
-        title: "Вы проиграли",
+        title: "Вы проиграли.",
         level: "danger",
       });
-      store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
     } else {
       store.commit("createAlert", {
-        title: "Вы выиграли.",
+        title: "Вы выиграли. Соперник вышел из игры.",
         level: "success",
       });
-      store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
     }
+
+    store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
   } else if (data["action"] === "checkmate") {
     if (data["player"].id === store.getters.user.id) {
       store.commit("createAlert", {
@@ -204,6 +204,20 @@ export function chessPartySocketOnMessage(e) {
         });
       }
     }
+  } else if (data["action"] === "give_up") {
+    if (data["player"].id === store.getters.user.id) {
+      store.commit("createAlert", {
+        title: "Вы проиграли. Вы сдались.",
+        level: "danger",
+      });
+    } else {
+      store.commit("createAlert", {
+        title: "Вы выиграли. Соперник сдался.",
+        level: "success",
+      });
+    }
+    store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+    store.commit("chess/closeChessPartySocket");
   }
 }
 
