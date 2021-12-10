@@ -137,7 +137,7 @@ export function chessPartySocketOnMessage(e) {
       });
     }
 
-    store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+    store.commit("chess/closeChessPartySocket");
   } else if (data["action"] === "checkmate") {
     if (data["player"].id === store.getters.user.id) {
       store.commit("createAlert", {
@@ -216,7 +216,7 @@ export function chessPartySocketOnMessage(e) {
         level: "success",
       });
     }
-    store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+
     store.commit("chess/closeChessPartySocket");
   } else if (data["action"] === "timed_out") {
     if (data["player"].id === store.getters.user.id) {
@@ -231,7 +231,6 @@ export function chessPartySocketOnMessage(e) {
       });
     }
 
-    store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
     store.commit("chess/closeChessPartySocket");
   }
 }

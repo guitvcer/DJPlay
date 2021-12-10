@@ -2,7 +2,19 @@
   <div class=w-full>
     <div class="flex justify-between my-1">
       <div class="flex">
+        <div
+          v-if="['БЕЛЫЙ', 'ЧЕРНЫЙ'].includes(players[index].user.username)"
+          class="flex rounded hover:bg-gray-200 dark:hover:bg-main p-1"
+        >
+          <img
+            :src="this.baseURL + players[index].user.avatar"
+            alt="Фото пользователя"
+            class="w-10 h-10 rounded mx-2"
+          >
+          <div class="flex items-center mx-2">{{ players[index].user.username }}</div>
+        </div>
         <router-link
+          v-else
           :to="{ name: 'profile', params: { username: players[index].user.username } }"
           class="flex rounded hover:bg-gray-200 dark:hover:bg-main p-1"
         >
