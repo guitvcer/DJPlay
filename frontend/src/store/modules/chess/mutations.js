@@ -72,12 +72,12 @@ export default {
     state.moves = [];
   },
 
-  updateSecondsRemaining(state, playerIndex) {
-    if (state.players[playerIndex].secondsRemaining === 0) {
+  updateSecondsRemaining(state, { index, seconds }) {
+    if (state.players[index].secondsRemaining === 0) {
       state.gameStatus = GAME_STASUSES.FINISHED;
-      clearInterval(state.players[playerIndex].intervalHandle);
+      clearInterval(state.players[index].intervalHandle);
     } else {
-      state.players[playerIndex].secondsRemaining--;
+      state.players[index].secondsRemaining += seconds;
     }
   },
   resetSecondsRemaining(state, playerIndex) {
@@ -146,5 +146,15 @@ export default {
 
   updateCancelingMove(state, notation) {
     state.cancelingMove = notation;
-  }
+  },
+
+  updateParty(state, party) {
+    state.party = party;
+  },
+  updateField(state, field) {
+    state.field = field;
+  },
+  updatePieces(state, pieces) {
+    state.pieces = pieces;
+  },
 }

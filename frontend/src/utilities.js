@@ -58,8 +58,9 @@ function squareBoard() {
 
   const routeName = router.currentRoute.value.name;
 
-  if (["chess", "gomoku", "gomokuParty"].includes(routeName)) {
+  if (["chess", "chessParty", "gomoku", "gomokuParty"].includes(routeName)) {
     let boardID;
+
     if (["gomoku", "gomokuParty"].includes(routeName)) {
       boardID = "gomokuBoard";
     } else if (["chess", "chessParty"].includes(routeName)) {
@@ -70,16 +71,18 @@ function squareBoard() {
     const main = document.getElementsByTagName("main")[0];
     let size;
 
-    if (main.clientWidth > main.clientHeight) {
-      size = main.clientHeight;
-      size -= size / 5;
-    } else {
-      size = main.clientWidth;
-      size -= size / 10;
-    }
+    if (board) {
+      if (main.clientWidth > main.clientHeight) {
+        size = main.clientHeight;
+        size -= size / 5;
+      } else {
+        size = main.clientWidth;
+        size -= size / 10;
+      }
 
-    board.style.height = size + "px";
-    board.style.width = size + "px";
+      board.style.height = size + "px";
+      board.style.width = size + "px";
+    }
   }
 }
 

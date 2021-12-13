@@ -23,6 +23,11 @@ const routes = [
     name: "chess",
   },
   {
+    path: "/chess/:id/",
+    component: () => import("./views/chess/ChessParty.vue"),
+    name: "chessParty",
+  },
+  {
     path: "/account/",
     component: () => import("./views/account/Profile.vue"),
     name: "userProfile",

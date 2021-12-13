@@ -102,6 +102,6 @@ export default {
 
     document.title = `${this.party["player1"].username} VS. ${this.party["player2"].username}`;
   },
-  computed: mapGetters("gomoku", ["party"]),
+  computed: mapGetters("gomoku", ["party", "gameStatus"]),
 }
 </script>

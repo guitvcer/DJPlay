@@ -4,7 +4,8 @@ from account.models import Game
 from account.paginations import PartyListPagination
 from account.serializers import GameSerializer
 from account.services import get_specific_or_current_users_party_list
-from .serializers import ChessPartyListSerializer
+from .models import Party
+from .serializers import ChessPartyListSerializer, ChessPartySerializer
 
 
 class ChessAPIView(RetrieveAPIView):
@@ -25,3 +26,10 @@ class ChessPartyListAPIView(ListAPIView):
     def get_queryset(self):
         return get_specific_or_current_users_party_list(self.request.user,
                                                         self.kwargs.get("username"), "chess")
+
+
+class ChessPartyAPIView(RetrieveAPIView):
+    """Информация об определенной партии Шахмат"""
+
+    serializer_class = ChessPartySerializer
+    queryset = Party.objects.all()

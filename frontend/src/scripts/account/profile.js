@@ -39,11 +39,11 @@ export function getPartyResult(party, game, user) {
       return "Проигрыш";
     }
   } else if (game === "chess") {
-    if (party["result"] === null) {
+    if (party["result"] === "") {
       return "Н/Д";
     } else if (party["result"] === "draw") {
       return "Ничья";
-    } else if (party[party["result"]] === user.id) {
+    } else if (party[party["result"]].id === user.id) {
       return "Выигрыш.";
     } else {
       return "Проигрыш.";

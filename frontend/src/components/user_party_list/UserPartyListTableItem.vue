@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'gomokuParty', params: { id: party['id'] } }"
+    :to="{ name: (game === 'gomoku' ? 'gomokuParty' : 'chessParty'), params: { id: party['id'] } }"
     class="flex p-2 text-center bg-white hover:bg-gray-100 dark:bg-main-dark2 dark:hover:bg-main"
   >
     <div class="w-1/4">{{ getPartyPlayers(party, game) }}</div>

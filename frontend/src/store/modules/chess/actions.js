@@ -1,4 +1,5 @@
 import api from "../../../api";
+import router from "../../../router";
 import { isAuthenticated } from "../../../utilities";
 import { BLACK, GAME_STASUSES, PIECE_Y, WHITE } from "../../../scripts/chess/constants";
 import {
@@ -8,8 +9,11 @@ import {
   isCellHostile,
   willCheckEntail,
   checkmateOrStalemate,
+  getField, deepClone,
 } from "../../../scripts/chess/board";
 import select from "../../../scripts/chess/select";
+import getPieces from "../../../scripts/chess/pieces";
+import store from "../../index";
 
 export default {
   async loadChess({ commit }) {
@@ -78,7 +82,7 @@ export default {
 
     if (getters.moves.length > 0) {
       if (
-        [GAME_STASUSES.OFFLINE, GAME_STASUSES.FINDING].includes(getters.gameStatus) ||
+        [GAME_STASUSES.OFFLINE, GAME_STASUSES.FINDING, GAME_STASUSES.WATCH].includes(getters.gameStatus) ||
         (getters.gameStatus === GAME_STASUSES.ONLINE && cancelIfOnline)
       ) {
         const lastMove = getters.moves[getters.moves.length - 1];
@@ -221,34 +225,36 @@ export default {
   startCountdown({ dispatch, commit, getters }, playerIndex) {
     /* Начать/продолжить отсчет */
 
-    const intervalHandle = setInterval(() => {
-      if (getters.players[playerIndex].secondsRemaining === 0) {
-        if (getters.gameStatus === GAME_STASUSES.ONLINE) {
-          if (getters.players[playerIndex].color === getters.currentColor) {
-            commit("sendChessPartySocket", {
-              action: "timed_out",
-            });
-          }
-        } else {
-          const winnerUsername = getters.players[playerIndex === 0 ? 1 : 0].user.username;
-          const loserUsername = getters.players[playerIndex].user.username;
+    if (getters.gameStatus !== GAME_STASUSES.WATCH) {
+      const intervalHandle = setInterval(() => {
+        if (getters.players[playerIndex].secondsRemaining === 0) {
+          if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+            if (getters.players[playerIndex].color === getters.currentColor) {
+              commit("sendChessPartySocket", {
+                action: "timed_out",
+              });
+            }
+          } else {
+            const winnerUsername = getters.players[playerIndex === 0 ? 1 : 0].user.username;
+            const loserUsername = getters.players[playerIndex].user.username;
 
-          commit("createAlert", {
-            title: `Игрок "${winnerUsername}" выиграл. У игрока "${loserUsername}" закончилось время.`,
-            level: "simple",
-          }, { root: true });
+            commit("createAlert", {
+              title: `Игрок "${winnerUsername}" выиграл. У игрока "${loserUsername}" закончилось время.`,
+              level: "simple",
+            }, { root: true });
+            commit("updateIntervalHandle", { playerIndex });
+          }
+        }
+
+        if (getters.gameStatus === GAME_STASUSES.FINISHED) {
           commit("updateIntervalHandle", { playerIndex });
         }
-      }
 
-      if (getters.gameStatus === GAME_STASUSES.FINISHED) {
-        commit("updateIntervalHandle", { playerIndex });
-      }
+        commit("updateSecondsRemaining", { index: playerIndex, seconds: -1 });
+      }, 1000);
 
-      commit("updateSecondsRemaining", playerIndex);
-    }, 1000);
-
-    commit("updateIntervalHandle", { playerIndex, intervalHandle });
+      commit("updateIntervalHandle", { playerIndex, intervalHandle });
+    }
   },
   pauseCountdown({ commit }, playerIndex) {
     /* Остановить отсчет */
@@ -309,9 +315,16 @@ export default {
       to_coordinate: coordinate,
     };
 
-    if (getters.field[coordinate].edible) {
+    if (
+      getters.field[coordinate].edible ||
+      (
+        getters.gameStatus === GAME_STASUSES.WATCH &&
+        getters.pieces[coordinate] !== undefined &&
+        getters.pieces[coordinate].color !== getters.moveOf
+      )
+    ) {
       commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.pieces[coordinate].name]: 1 });
-      newMove.eatenPiece = getters.field[coordinate].edible;
+      newMove.eatenPiece = getters.pieces[coordinate];
       commit("removePiece", newMove.eatenPiece.coordinate);
     }
 
@@ -578,5 +591,86 @@ export default {
       action: "cancel_move",
       decline: true,
     });
+  },
+
+  setPartyPlayers({ commit, getters }) {
+    commit("updatePlayer", { index: 0, user: getters.party.white });
+    commit("updatePlayer", { index: 1, user: getters.party.black });
+  },
+  firstMove({ commit, getters }) {
+    commit("updateField", getField());
+    commit("updatePieces", getPieces())
+    commit("clearMoves");
+    commit("updateColor", WHITE);
+    commit("updateMoveOf", WHITE);
+
+    for (const playerIndex in getters.players) {
+      commit("resetSecondsRemaining", playerIndex);
+      commit("updateIntervalHandle", { playerIndex });
+
+      const eatenPieces = getters.players[playerIndex].eatenPieces;
+      commit("updatePlayerEatenPieces", {
+        playerIndex,
+        queen: -1 * eatenPieces.queen,
+        knight: -1 * eatenPieces.knight,
+        rook: -1 * eatenPieces.rook,
+        bishop: -1 * eatenPieces.bishop,
+        pawn: -1 * eatenPieces.pawn,
+      });
+    }
+  },
+  prevMove({ dispatch, getters }) {
+    if (getters.moves.length > 0) {
+      dispatch("returnMove", { cancelIfOnline: false });
+    }
+  },
+  nextMove({ dispatch, commit, getters }, { move = null }) {
+    if (getters.moves.length < getters.party.moves.length) {
+      const partyMove = move ?? getters.party.moves[getters.moves.length];
+      const playerIndex = getters.players[0].color === getters.moveOf ? 0 : 1;
+
+      commit("updateSecondsRemaining", { index: playerIndex, seconds: -1 * partyMove.time });
+
+      if (["O-O", "O-O-O"].includes(partyMove.notation)) {
+        const y = PIECE_Y[getters.moveOf];
+        const kingCoordinate = 'e' + y;
+        const coordinate = (partyMove.notation === "O-O" ? 'g' : 'c') + y;
+        const rookOldCoordinate = (partyMove.notation === "O-O" ? 'h' : 'a') + y;
+        const rookCoordinate = (partyMove.notation === "O-O" ? 'f' : 'd') + y;
+
+        commit("updateSelectedPiece", getters.pieces[kingCoordinate]);
+
+        let castling = {
+          shortCastling: true,
+        }
+
+        if (partyMove.notation === "O-O-O") {
+          castling = {
+            longCastling: true,
+          }
+        }
+
+        castling.king = deepClone(getters.pieces[kingCoordinate]);
+        castling.rook = deepClone(getters.pieces[rookOldCoordinate]);
+        castling.king.coordinate = coordinate
+        castling.rook.coordinate = rookCoordinate;
+
+        dispatch("castlingCell", { coordinate, castling, checkForCheck: false }).then();
+        dispatch("castle", coordinate).then();
+      } else {
+        const fromCoordinate = partyMove.notation[0] + partyMove.notation[1];
+        const toCoordinate = partyMove.notation[3] + partyMove.notation[4];
+        commit("updateSelectedPiece", getters.pieces[fromCoordinate]);
+        dispatch("movePiece", { coordinate: toCoordinate });
+      }
+    }
+  },
+  lastMove({ dispatch, getters }) {
+    for (let i = getters.moves.length; i < getters.party.moves.length; i++) {
+      dispatch("nextMove", { move: getters.party.moves[i] });
+    }
+  },
+  async loadParty({ commit }) {
+    commit("updateParty", await api.chess.getParty(router.currentRoute.value.params.id));
   }
 }

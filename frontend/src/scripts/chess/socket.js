@@ -16,6 +16,10 @@ export function findOpponentSocketOnMessage(e) {
 
   store.dispatch("chess/resetBoard").then();
   store.commit("chess/updatePartyID", data["party_id"]);
+
+  data["white"].avatar = process.env.VUE_APP_BASE_URL + data["white"].avatar;
+  data["black"].avatar = process.env.VUE_APP_BASE_URL + data["black"].avatar;
+
   store.dispatch("chess/updateWhitePlayer", data["white"]).then();
   store.dispatch("chess/updateBlackPlayer", data["black"]).then();
 

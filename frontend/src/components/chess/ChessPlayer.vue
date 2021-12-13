@@ -19,7 +19,7 @@
           class="flex rounded hover:bg-gray-200 dark:hover:bg-main p-1"
         >
           <img
-            :src="this.baseURL + players[index].user.avatar"
+            :src="players[index].user.avatar"
             alt="Фото пользователя"
             class="w-10 h-10 rounded mx-2"
           >

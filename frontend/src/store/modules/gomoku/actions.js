@@ -156,6 +156,8 @@ export default {
 
     const firstMoveCoordinate = getters.party.moves[0]["coordinate"];
     dispatch("selectDot", firstMoveCoordinate);
+    dispatch("swapColor");
+    dispatch("swapMoveOf");
   },
   prevMove({ dispatch, commit, getters }) {
     if (getters.moves.length > 1) {
@@ -168,9 +170,9 @@ export default {
   nextMove({ dispatch, getters }) {
     if (getters.moves.length < getters.party.moves.length) {
       const nextMoveCoordinate = getters.party.moves[getters.moves.length]["coordinate"]
+      dispatch("selectDot", nextMoveCoordinate);
       dispatch("swapMoveOf");
       dispatch("swapColor");
-      dispatch("selectDot", nextMoveCoordinate);
     }
   },
   lastMove({ dispatch, commit, getters }) {

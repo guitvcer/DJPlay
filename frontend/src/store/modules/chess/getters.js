@@ -46,5 +46,8 @@ export default {
   },
   cancelingMove(state) {
     return state.cancelingMove;
-  }
+  },
+  party(state) {
+    return state.party;
+  },
 }

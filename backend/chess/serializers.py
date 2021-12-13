@@ -8,6 +8,12 @@ class ChessMoveSerializer(serializers.ModelSerializer):
     """Serializer хода партии Шахмат"""
 
     player = UserInfoSerializer()
+    time = serializers.SerializerMethodField("get_time_in_seconds")
+
+    @staticmethod
+    def get_time_in_seconds(move: Move):
+        hours, minutes, seconds = str(move.time).split(":")
+        return int(hours) * 3600 + int(minutes) * 60 + int(seconds)
 
     class Meta:
         model = Move
@@ -24,7 +30,12 @@ class ChessPartyListSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_moves_count(party: Party) -> int:
-        return party.get_moves().count()
+        moves_count = party.get_moves().count()
+
+        if moves_count % 2 == 1:
+            moves_count -= 1
+
+        return moves_count / 2
 
     class Meta:
         model = Party
@@ -42,7 +53,7 @@ class ChessPartySerializer(serializers.ModelSerializer):
     @staticmethod
     def get_moves(party: Party) -> dict:
         serializer = ChessMoveSerializer(party.get_moves(), many=True)
-        return serializers.data
+        return serializer.data
 
     class Meta:
         model = Party

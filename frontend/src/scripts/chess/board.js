@@ -20,7 +20,7 @@ export function onBoardClick(event) {
   /* При нажатии на доску */
 
   if (
-    store.getters["chess/gameStatus"] !== GAME_STASUSES.FINISHED &&
+    ![GAME_STASUSES.FINISHED, GAME_STASUSES.WATCH].includes(store.getters["chess/gameStatus"]) &&
     store.getters["chess/moveOf"] === store.getters["chess/currentColor"] &&
     event.target.id !== "chessBoard"
   ) {
@@ -267,7 +267,10 @@ export function checkmateOrStalemate() {
             title: `Игрок "${opponent.user.username}" поставил мат игроку "${currentUser.user.username}".`,
             level: "simple",
           });
-          store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+
+          if (store.getters["chess/gameStatus"] !== GAME_STASUSES.WATCH) {
+            store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+          }
         }
       } else {
         if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
@@ -279,7 +282,10 @@ export function checkmateOrStalemate() {
             title: `Игрок "${opponent.user.username}" поставил пат игроку "${currentUser.user.username}".`,
             level: "simple",
           });
-          store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+
+          if (store.getters["chess/gameStatus"] !== GAME_STASUSES.WATCH) {
+            store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+          }
         }
       }
     }

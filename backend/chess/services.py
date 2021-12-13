@@ -32,13 +32,11 @@ def draw_party(party_id: int) -> None:
 
 
 def player_gives_up(party_id: int, player: User):
-    """Игрок сдается, если он вышел посреди игры"""
+    """Указанный игрок проигрывает"""
 
     party = get_object_or_404(Party.objects.all(), id=party_id)
-
-    if party.result is None:
-        party.result = 'W' if party.black == player else 'B'
-        party.save()
+    party.result = 'W' if party.black == player else 'B'
+    party.save()
 
 
 def make_move(party_id: int, notation: str, seconds: int, player: User) -> None:
@@ -85,4 +83,3 @@ def cancel_move(party_id: int, notation: str) -> bool:
         return True
     else:
         return False
-

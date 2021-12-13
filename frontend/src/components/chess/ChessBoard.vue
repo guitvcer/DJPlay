@@ -10,7 +10,8 @@
       id="chessBoard"
       :class="[
         'bg-chess-board flex ',
-        currentColor === WHITE ? 'flex-row flex-wrap-reverse' : 'flex-row-reverse flex-wrap'
+        currentColor === BLACK && gameStatus === GAME_STASUSES.ONLINE ?
+        'flex-row-reverse flex-wrap' : 'flex-row flex-wrap-reverse'
       ]"
       @click="onBoardClick"
     >
@@ -41,13 +42,13 @@
 <script>
 import { mapGetters } from "vuex";
 import { onResizeBoard } from "../../utilities";
-import { WHITE } from "../../scripts/chess/constants";
+import { BLACK, GAME_STASUSES } from "../../scripts/chess/constants";
 import { onBoardClick } from "../../scripts/chess/board";
 import ChessPlayer from "./ChessPlayer.vue";
 
 export default {
   data() {
-    return { WHITE }
+    return { BLACK, GAME_STASUSES }
   },
   mounted: onResizeBoard,
   components: { ChessPlayer },
@@ -58,6 +59,7 @@ export default {
     "pieces",
     "players",
     "selectedPiece",
+    "gameStatus",
   ]),
 }
 </script>
