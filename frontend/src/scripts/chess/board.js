@@ -116,7 +116,7 @@ export function isCellHostile(coordinate, copyOfPieces = null) {
 export function eatingOnAisle(coordinate, copyOfSelectedPiece = null) {
   /* Взятие на проходе? */
 
-  const lastMove = store.getters["chess/moves"][store.getters.moves.length - 1];
+  const lastMove = store.getters["chess/moves"][store.getters["chess/moves"].length - 1];
   const selectedPiece = copyOfSelectedPiece ?? store.getters["chess/selectedPiece"];
 
   return (

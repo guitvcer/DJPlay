@@ -1,7 +1,7 @@
 import api from "../../../api";
 import router from "../../../router";
 import { isAuthenticated } from "../../../utilities";
-import { BLACK, GAME_STASUSES, PIECE_Y, WHITE } from "../../../scripts/chess/constants";
+import { LETTERS, BLACK, GAME_STASUSES, PIECE_Y, WHITE } from "../../../scripts/chess/constants";
 import {
   check,
   eatingOnAisle,
@@ -13,7 +13,6 @@ import {
 } from "../../../scripts/chess/board";
 import select from "../../../scripts/chess/select";
 import getPieces from "../../../scripts/chess/pieces";
-import store from "../../index";
 
 export default {
   async loadChess({ commit }) {
@@ -277,6 +276,31 @@ export default {
     dispatch("selectCells", availableCellsIds.selectable);
     dispatch("ediblePieces", availableCellsIds.edible);
     dispatch("castlingCells", availableCellsIds.castling);
+
+    if (piece.name === "pawn") {
+      const y = +piece.coordinate[1];
+      const leftX = LETTERS[LETTERS.indexOf(piece.coordinate[0]) - 1];
+      const rightX = LETTERS[LETTERS.indexOf(piece.coordinate[0]) + 1];
+      const frontY = getters.moveOf === WHITE ? y + 1 : y - 1;
+
+      if (eatingOnAisle(leftX + frontY)) {
+        commit("updateCell", {
+          coordinate: leftX + frontY,
+          properties: {
+            edible: getters.pieces[leftX + y],
+          }
+        });
+      }
+
+      if (eatingOnAisle(rightX + frontY)) {
+        commit("updateCell", {
+          coordinate: rightX + frontY,
+          properties: {
+            edible: getters.pieces[rightX + y],
+          }
+        });
+      }
+    }
   },
   unselectPiece({ dispatch, commit, getters }) {
     /* Убрать выделение фигуры и доступные для него клетки */
@@ -323,8 +347,8 @@ export default {
         getters.pieces[coordinate].color !== getters.moveOf
       )
     ) {
-      commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.pieces[coordinate].name]: 1 });
-      newMove.eatenPiece = getters.pieces[coordinate];
+      commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.field[coordinate].edible.name]: 1 });
+      newMove.eatenPiece = getters.field[coordinate].edible;
       commit("removePiece", newMove.eatenPiece.coordinate);
     }
 

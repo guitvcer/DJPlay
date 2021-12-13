@@ -91,8 +91,22 @@ export function chessPartySocketOnMessage(e) {
       store.dispatch("chess/castle", coordinate).then();
     } else {
       const selectedPiece = store.getters["chess/pieces"][data["notation"][0] + data["notation"][1]];
-      store.commit("chess/updateSelectedPiece", selectedPiece);
       const coordinate = data["notation"][3] + data["notation"][4];
+
+      if (
+        selectedPiece.name === "pawn" &&
+        selectedPiece.coordinate[0] !== coordinate[0] &&
+        !store.getters["chess/pieces"][coordinate]
+      ) {
+        store.commit("chess/updateCell", {
+          coordinate,
+          properties: {
+            edible: store.getters["chess/pieces"][coordinate[0] + selectedPiece.coordinate[1]],
+          }
+        });
+      }
+
+      store.commit("chess/updateSelectedPiece", selectedPiece);
       store.dispatch("chess/movePiece", { coordinate }).then();
     }
   } else if (data["action"] === "offer_draw") {
