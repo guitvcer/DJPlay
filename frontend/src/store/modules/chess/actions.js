@@ -162,6 +162,10 @@ export default {
             notation = "O-O-O";
           } else {
             notation = lastMove.from_coordinate + '-' + lastMove.to_coordinate;
+
+            if (lastMove.transformed) {
+              notation += "=" + lastMove.piece.name;
+            }
           }
 
           commit("sendChessPartySocket", {
@@ -322,6 +326,7 @@ export default {
     dispatch("stopStopwatch");
 
     if (
+      ![GAME_STASUSES.ONLINE, GAME_STASUSES.WATCH].includes(getters.gameStatus) &&
       pawnTo == null && getters.selectedPiece.name === "pawn" &&
       +coordinate[1] === PIECE_Y[getters.moveOf === BLACK ? WHITE : BLACK]
     ) {
@@ -594,8 +599,11 @@ export default {
       lastMoveNotation = "O-O-O";
     } else {
       lastMoveNotation = lastMove.from_coordinate + '-' + lastMove.to_coordinate;
-    }
 
+      if (lastMove.transformed) {
+        lastMoveNotation += "=" + lastMove.piece.name;
+      }
+    }
 
     if (getters.cancelingMove === lastMoveNotation) {
       commit("sendChessPartySocket", {

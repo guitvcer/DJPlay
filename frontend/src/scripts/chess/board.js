@@ -37,11 +37,20 @@ export function onBoardClick(event) {
       } else {
         if (store.getters["chess/field"][coordinate].edible) {
           if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
-            store.commit("chess/sendChessPartySocket", {
-              action: "make_move",
-              time: store.getters["chess/time"],
-              notation: parseNotation(coordinate),
-            });
+            if (
+              store.getters["chess/selectedPiece"].name === "pawn" &&
+              ['1', '8'].includes(coordinate[1])
+            ) {
+              store.commit("chess/updateSelectedCell", coordinate);
+              store.commit("updateModalAction", "transformPawn", { root: true });
+              store.commit("updateOpenModal", true, { root: true });
+            } else {
+              store.commit("chess/sendChessPartySocket", {
+                action: "make_move",
+                time: store.getters["chess/time"],
+                notation: parseNotation(coordinate),
+              });
+            }
           } else {
             store.dispatch("chess/movePiece", { coordinate }).then();
           }
@@ -51,11 +60,20 @@ export function onBoardClick(event) {
       if (store.getters["chess/selectedPiece"]) {
         if (store.getters["chess/field"][coordinate].selectable) {
           if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
-            store.commit("chess/sendChessPartySocket", {
-              action: "make_move",
-              time: store.getters["chess/time"],
-              notation: parseNotation(coordinate),
-            });
+            if (
+              store.getters["chess/selectedPiece"].name === "pawn" &&
+              ['1', '8'].includes(coordinate[1])
+            ) {
+              store.commit("chess/updateSelectedCell", coordinate);
+              store.commit("updateModalAction", "transformPawn", { root: true });
+              store.commit("updateOpenModal", true, { root: true });
+            } else {
+              store.commit("chess/sendChessPartySocket", {
+                action: "make_move",
+                time: store.getters["chess/time"],
+                notation: parseNotation(coordinate),
+              });
+            }
           } else {
             store.dispatch("chess/movePiece", { coordinate }).then();
           }
@@ -77,11 +95,20 @@ export function onBoardClick(event) {
           }
         } else if (store.getters["chess/field"][coordinate].edible) {
           if (store.getters["chess/gameStatus"] === GAME_STASUSES.ONLINE) {
-            store.commit("chess/sendChessPartySocket", {
-              action: "make_move",
-              time: store.getters["chess/time"],
-              notation: parseNotation(coordinate),
-            });
+            if (
+              store.getters["chess/selectedPiece"].name === "pawn" &&
+              ['1', '8'].includes(coordinate[1])
+            ) {
+              store.commit("chess/updateSelectedCell", coordinate);
+              store.commit("updateModalAction", "transformPawn", { root: true });
+              store.commit("updateOpenModal", true, { root: true });
+            } else {
+              store.commit("chess/sendChessPartySocket", {
+                action: "make_move",
+                time: store.getters["chess/time"],
+                notation: parseNotation(coordinate),
+              });
+            }
           } else {
             store.dispatch("chess/movePiece", { coordinate }).then();
           }
@@ -220,7 +247,7 @@ export function willCheckEntail(coordinate, selectedPiece = store.getters["chess
   return check(copyOfPieces);
 }
 
-function parseNotation(coordinate) {
+export function parseNotation(coordinate) {
   return store.getters["chess/selectedPiece"].coordinate + '-' + coordinate;
 }
 

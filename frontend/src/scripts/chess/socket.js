@@ -107,7 +107,12 @@ export function chessPartySocketOnMessage(e) {
       }
 
       store.commit("chess/updateSelectedPiece", selectedPiece);
-      store.dispatch("chess/movePiece", { coordinate }).then();
+
+      if (data["notation"].length >= 7) {
+        store.dispatch("chess/movePiece", { coordinate, pawnTo: data["notation"].split("=")[1]})
+      } else {
+        store.dispatch("chess/movePiece", { coordinate }).then();
+      }
     }
   } else if (data["action"] === "offer_draw") {
     if (data["request"]) {
