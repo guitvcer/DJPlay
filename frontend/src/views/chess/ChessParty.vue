@@ -54,6 +54,7 @@ export default {
   computed: mapGetters("chess", ["party", "gameStatus"]),
   methods: {
     ...mapActions("chess", [
+      "resetBoard",
       "loadParty",
       "setPartyPlayers",
       "firstMove",
@@ -70,6 +71,8 @@ export default {
     parseDate,
   },
   async mounted() {
+    this.resetBoard();
+
     if (this.gameStatus === GAME_STASUSES.FINDING) {
       this.closeFindOpponentSocket();
     } else if (this.gameStatus === GAME_STASUSES.ONLINE) {

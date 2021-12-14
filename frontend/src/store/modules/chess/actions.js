@@ -697,8 +697,14 @@ export default {
       } else {
         const fromCoordinate = partyMove.notation[0] + partyMove.notation[1];
         const toCoordinate = partyMove.notation[3] + partyMove.notation[4];
+
         commit("updateSelectedPiece", getters.pieces[fromCoordinate]);
-        dispatch("movePiece", { coordinate: toCoordinate });
+
+        if (partyMove.notation.length >= 7) {
+          dispatch("movePiece", { coordinate: toCoordinate, pawnTo: partyMove.notation.split("=")[1]});
+        } else {
+          dispatch("movePiece", { coordinate: toCoordinate });
+        }
       }
     }
   },
