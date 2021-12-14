@@ -2,7 +2,7 @@
   <div
     :class="[
       'max-w-2xl w-full mx-0 mx-auto 2xl:mx-4 mt-12 mb-20 md:mt-20 md:mb-10 2xl:mt-0 flex items-center ',
-      currentColor === WHITE ? 'flex-col' : 'flex-col-reverse',
+      currentColor === BLACK ? 'flex-col-reverse' : 'flex-col',
     ]"
   >
     <chess-player :index="1" />
