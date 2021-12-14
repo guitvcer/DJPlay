@@ -8,7 +8,7 @@ services:
       - "8001:8001"
     volumes:
       - ./backend:/app/backend/
-    command: bash -c "poetry run python3 manage.py makemigrations account gomoku chat &&
+    command: bash -c "poetry run python3 manage.py makemigrations account gomoku chat chess &&
       poetry run python3 manage.py migrate &&
       poetry run python3 manage.py setup &&
       poetry run python3 manage.py runserver 0.0.0.0:8001"

@@ -25,7 +25,7 @@ services:
     build: ../backend/
     ports:
       - "8001:8001"
-    command: bash -c "poetry run python3 manage.py makemigrations account gomoku chat &&
+    command: bash -c "poetry run python3 manage.py makemigrations account gomoku chat chess &&
       poetry run python3 manage.py migrate &&
       poetry run python3 manage.py setup &&
       poetry run daphne -b 0.0.0.0 -p 8001 core.asgi:application"
