@@ -19,7 +19,7 @@ def main():
 
     load_dotenv()
 
-    Command.default_addr = os.getenv("HOST")
+    Command.default_addr = os.getenv("BASE_URL")
     execute_from_command_line(sys.argv)
 
 

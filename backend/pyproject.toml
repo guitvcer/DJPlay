@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "DJPlay"
-version = "2.0"
+version = "2.1"
 description = ""
 authors = ["guitvcer <abdrakhman.galaxy.s2@gmail.com>"]
 

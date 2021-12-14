@@ -18,7 +18,7 @@ def add_chess_into_database() -> None:
               " противник которого признал себя побеждённым.</li><li>Партия считается выигранной, если у"
               " одного из шахматистов закончилось время на ходы.</li></ul>",
         image="/chess/chess-logo.png",
-        is_released=False,
+        is_released=True,
     )
     Queue.objects.get_or_create(game=chess)
 

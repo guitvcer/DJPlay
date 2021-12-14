@@ -5,9 +5,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv("HOST"), f"www.{os.getenv('HOST')}", "localhost", "127.0.0.1"]
-PROTOCOL = os.getenv("PROTOCOL")
-CORS_ALLOWED_ORIGINS = [f"{PROTOCOL}://{ALLOWED_HOSTS[0]}"]
+ALLOWED_HOSTS = [os.getenv("HOST"), f"www.{os.getenv('BASE_URL')}", "localhost", "127.0.0.1"]
+CORS_ALLOWED_ORIGINS = [f"{'VUE_APP_BASE_URL'}"]
 
 
 CHANNEL_LAYERS = {
@@ -31,8 +30,3 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT")
     }
 }
-
-
-DRF_RECAPTCHA_SECRET_KEY = os.getenv("DRF_RECAPTCHA_SECRET_KEY")
-SOCIAL_AUTH_VK_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH_SECRET")
-SOCIAL_AUTH_GOOGLE_OAUTH_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH_SECRET")
