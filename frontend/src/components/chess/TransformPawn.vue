@@ -3,15 +3,15 @@
     <div class="p-6 pb-4 border-b dark:border-main">
       <h3 class="font-bold text-xl">Выберите фигуру для пешки</h3>
     </div>
-    <div class="pt-4 pb-8 px-8 flex justify-between">
+    <div class="pt-4 pb-8 px-2 sm:px-4 flex justify-center">
       <button
         v-for="piece in pieces"
-        class="rounded border p-4 hover:bg-gray-50 dark:bg-main-dark dark:hover:bg-main dark:border-main mx-1"
+        class="rounded border p-2 hover:bg-gray-50 dark:bg-main-dark dark:hover:bg-main dark:border-main mx-0.5 sm:mx-1"
         :title="piece.title"
         @click="transform(piece.name)"
       >
         <img
-          class="w-16 h-16"
+          class="w-12 sm:w-16 h-12 sm:h-16"
           :src="pieceImageUrl + currentColor + '/' + piece.name + '.svg'"
           :alt="piece.title"
         >
