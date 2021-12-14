@@ -109,7 +109,7 @@ export function chessPartySocketOnMessage(e) {
       store.commit("chess/updateSelectedPiece", selectedPiece);
 
       if (data["notation"].length >= 7) {
-        store.dispatch("chess/movePiece", { coordinate, pawnTo: data["notation"].split("=")[1]})
+        store.dispatch("chess/movePiece", { coordinate, pawnTo: data["notation"].split("=")[1]}).then();
       } else {
         store.dispatch("chess/movePiece", { coordinate }).then();
       }

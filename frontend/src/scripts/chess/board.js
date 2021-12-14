@@ -137,7 +137,7 @@ export function isCellHostile(coordinate, copyOfPieces = null) {
 
   const piece = copyOfPieces ? copyOfPieces[coordinate] : store.getters["chess/pieces"][coordinate];
 
-  return !(isCellEmpty(coordinate) || piece.color === store.getters["chess/currentColor"]);
+  return !(isCellEmpty(coordinate) || piece.color === store.getters["chess/moveOf"]);
 }
 
 export function eatingOnAisle(coordinate, copyOfSelectedPiece = null) {

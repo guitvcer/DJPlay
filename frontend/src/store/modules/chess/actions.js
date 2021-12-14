@@ -344,14 +344,19 @@ export default {
       to_coordinate: coordinate,
     };
 
-    if (
-      getters.field[coordinate].edible ||
-      (
-        getters.gameStatus === GAME_STASUSES.WATCH &&
-        getters.pieces[coordinate] !== undefined &&
-        getters.pieces[coordinate].color !== getters.moveOf
-      )
-    ) {
+    if (getters.gameStatus === GAME_STASUSES.ONLINE) {
+      if (getters.field[coordinate].edible) {
+        commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.field[coordinate].edible.name]: 1 });
+        newMove.eatenPiece = getters.field[coordinate].edible;
+        commit("removePiece", newMove.eatenPiece.coordinate);
+      } else {
+        if (isCellHostile(coordinate)) {
+          commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.pieces[coordinate].name]: 1 });
+          newMove.eatenPiece = getters.pieces[coordinate];
+          commit("removePiece", newMove.eatenPiece.coordinate);
+        }
+      }
+    } else if (getters.field[coordinate].edible) {
       commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.field[coordinate].edible.name]: 1 });
       newMove.eatenPiece = getters.field[coordinate].edible;
       commit("removePiece", newMove.eatenPiece.coordinate);
