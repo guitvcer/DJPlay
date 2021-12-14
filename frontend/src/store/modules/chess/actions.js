@@ -349,12 +349,10 @@ export default {
         commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.field[coordinate].edible.name]: 1 });
         newMove.eatenPiece = getters.field[coordinate].edible;
         commit("removePiece", newMove.eatenPiece.coordinate);
-      } else {
-        if (isCellHostile(coordinate)) {
-          commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.pieces[coordinate].name]: 1 });
-          newMove.eatenPiece = getters.pieces[coordinate];
-          commit("removePiece", newMove.eatenPiece.coordinate);
-        }
+      } else if (isCellHostile(coordinate)) {
+        commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.pieces[coordinate].name]: 1 });
+        newMove.eatenPiece = getters.pieces[coordinate];
+        commit("removePiece", newMove.eatenPiece.coordinate);
       }
     } else if (getters.field[coordinate].edible) {
       commit("updatePlayerEatenPieces", { playerIndex: getters.movingPlayerIndex, [getters.field[coordinate].edible.name]: 1 });
@@ -499,14 +497,16 @@ export default {
   ediblePiece({ dispatch, commit, getters }, coordinate) {
     /* Сделать фигуру съедобным */
 
-    if (isCellHostile(coordinate)) {
-      const properties = { edible: getters.pieces[coordinate] };
+    if (!willCheckEntail(coordinate)) {
+      if (isCellHostile(coordinate)) {
+        const properties = { edible: getters.pieces[coordinate] };
 
-      commit("updateCell", { coordinate, properties });
-    } else if (eatingOnAisle(coordinate)) {
-      const properties = { edible: getters.moves[getters.moves.length - 1].piece };
+        commit("updateCell", { coordinate, properties });
+      } else if (eatingOnAisle(coordinate)) {
+        const properties = { edible: getters.moves[getters.moves.length - 1].piece };
 
-      commit("updateCell", { coordinate, properties });
+        commit("updateCell", { coordinate, properties });
+      }
     }
   },
   ediblePieces({ dispatch }, coordinates) {
