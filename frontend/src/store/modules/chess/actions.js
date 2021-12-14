@@ -247,6 +247,10 @@ export default {
             }, { root: true });
             commit("updateIntervalHandle", { playerIndex });
           }
+        } else if (getters.players[playerIndex].secondsRemaining === 60) {
+          if (getters.currentColor === getters.moveOf) {
+            commit("playLowTime");
+          }
         }
 
         if (getters.gameStatus === GAME_STASUSES.FINISHED) {

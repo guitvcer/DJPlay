@@ -63,6 +63,14 @@ export default {
       state.gameStatus = GAME_STASUSES.OFFLINE;
     }
 
+    if (move.eatenPiece) {
+      state.captureSound.currentTime = 0;
+      state.captureSound.play().then();
+    } else {
+      state.moveSound.currentTime = 0;
+      state.moveSound.play().then();
+    }
+
     state.moves.push(move);
   },
   deleteLastMove(state) {
@@ -156,5 +164,26 @@ export default {
   },
   updatePieces(state, pieces) {
     state.pieces = pieces;
+  },
+
+  playMoveSound(state) {
+    state.moveSound.currentTime = 0;
+    state.moveSound.play().then();
+  },
+  playCaptureSound(state) {
+    state.captureSound.currentTime = 0;
+    state.captureSound.play().then();
+  },
+  playSocialSound(state) {
+    state.socialSound.currentTime = 0;
+    state.socialSound.play().then();
+  },
+  playGenericSound(state) {
+    state.genericSound.currentTime = 0;
+    state.genericSound.play().then();
+  },
+  playLowtime(state) {
+    state.lowTime.currentTime = 0;
+    state.lowTime.play().then();
   },
 }

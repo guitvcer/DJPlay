@@ -29,6 +29,7 @@ export function findOpponentSocketOnMessage(e) {
 
   store.commit("chess/openChessPartySocket");
   store.dispatch("chess/cancelFinding").then();
+  store.commit("chess/playGenericSound");
 }
 
 export function findOpponentSocketOnClose(e) {
@@ -122,6 +123,7 @@ export function chessPartySocketOnMessage(e) {
           level: "simple",
         });
       } else {
+        store.commit("chess/playSocialSound");
         store.commit("createAlert", {
           title: "Соперник предлагает ничью.",
           level: "simple",
@@ -138,6 +140,8 @@ export function chessPartySocketOnMessage(e) {
         });
       }
     } else {
+      store.commit("chess/playMoveSound");
+
       if (data["accept"]) {
         store.commit("removeAlert", store.getters.alerts.length - 1);
         store.commit("createAlert", {
@@ -188,6 +192,7 @@ export function chessPartySocketOnMessage(e) {
           level: "simple",
         });
       } else {
+        store.commit("chess/playSocialSound");
         store.commit("createAlert", {
           title: "Соперник запрашивает отмену хода.",
           level: "simple",
@@ -206,6 +211,8 @@ export function chessPartySocketOnMessage(e) {
 
       store.commit("chess/updateCancelingMove", data["notation"]);
     } else if (data["accept"]) {
+      store.commit("chess/playMoveSound");
+
       if (data["player"].id === store.getters.user.id) {
         store.commit("createAlert", {
           title: "Соперник отменили ход.",
@@ -260,6 +267,7 @@ export function chessPartySocketOnMessage(e) {
 
 export function chessPartySocketOnClose(e) {
   store.commit("chess/updateGameStatus", GAME_STASUSES.FINISHED);
+  store.commit("chess/playGenericSound");
 
   if ([1006, 1011].includes(e.code)) {
     store.commit("createAlert", {
