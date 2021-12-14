@@ -175,15 +175,25 @@ export default {
     state.captureSound.play().then();
   },
   playSocialSound(state) {
-    state.socialSound.currentTime = 0;
-    state.socialSound.play().then();
+    if (state.gameStatus !== GAME_STASUSES.WATCH) {
+      state.socialSound.currentTime = 0;
+      state.socialSound.play().then();
+    }
   },
   playGenericSound(state) {
-    state.genericSound.currentTime = 0;
-    state.genericSound.play().then();
+    if (state.gameStatus !== GAME_STASUSES.WATCH) {
+      state.genericSound.currentTime = 0;
+      state.genericSound.play().then();
+    }
   },
-  playLowtime(state) {
-    state.lowTime.currentTime = 0;
-    state.lowTime.play().then();
+  playLowTime(state) {
+    if (state.gameStatus !== GAME_STASUSES.WATCH) {
+      state.lowTime.currentTime = 0;
+      state.lowTime.play().then();
+    }
   },
+
+  updateDrawOffered(state, value) {
+    state.drawOffered = value;
+  }
 }

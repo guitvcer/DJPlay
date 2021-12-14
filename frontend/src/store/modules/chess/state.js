@@ -55,4 +55,6 @@ export default {
   socialSound: new Audio(process.env.VUE_APP_BASE_URL + "/media/chess/sounds/social_notify.mp3"),
   genericSound: new Audio(process.env.VUE_APP_BASE_URL + "/media/chess/sounds/generic_notify.mp3"),
   lowTime: new Audio(process.env.VUE_APP_BASE_URL + "/media/chess/sounds/low_time.mp3"),
+
+  drawOffered: false,
 }

@@ -50,4 +50,7 @@ export default {
   party(state) {
     return state.party;
   },
+  drawOffered(state) {
+    return state.drawOffered;
+  }
 }

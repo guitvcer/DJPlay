@@ -49,6 +49,7 @@ export default {
       commit("updateColor", WHITE);
       commit("updateMoveOf", WHITE);
       commit("updateGameStatus", null);
+      commit("updateDrawOffered", false);
       dispatch("stopStopwatch");
 
       const avatarURL = "/media/avatars/user.png";
@@ -556,11 +557,19 @@ export default {
       });
     }
   },
-  offerDraw({ commit }) {
-    commit("sendChessPartySocket", {
-      action: "offer_draw",
-      request: true,
-    });
+  offerDraw({ commit, getters }) {
+    if (getters.drawOffered) {
+      commit("createAlert", {
+        title: "Вы уже предлагали ничью.",
+        level: "warning",
+      }, { root: true });
+    } else {
+      commit("updateDrawOffered", true);
+      commit("sendChessPartySocket", {
+        action: "offer_draw",
+        request: true,
+      });
+    }
   },
   acceptDraw({ commit }) {
     commit("sendChessPartySocket", {
