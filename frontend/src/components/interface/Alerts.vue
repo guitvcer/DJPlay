@@ -25,7 +25,7 @@
             v-if="alert.buttons"
             v-for="button in alert.buttons"
             class="rounded p-2 hover:bg-gray-100 border-2 border-gray-500 mx-1"
-            @click="button.onclick"
+            @click="button.onclick(); removeAlert(index)"
           >
             <check-icon v-if="button.icon === 'check'" class="h-6 w-6" />
             <x-icon v-else-if="button.icon === 'x'" class="h-6 w-6" />

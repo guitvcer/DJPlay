@@ -215,7 +215,7 @@ export function chessPartySocketOnMessage(e) {
 
       if (data["player"].id === store.getters.user.id) {
         store.commit("createAlert", {
-          title: "Соперник отменили ход.",
+          title: "Соперник отменил ход.",
           level: "simple",
         });
       } else {

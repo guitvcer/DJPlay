@@ -168,11 +168,13 @@ export default {
             }
           }
 
-          commit("sendChessPartySocket", {
-            action: "cancel_move",
-            request: true,
-            notation,
-          });
+          if (getters.cancelingMove !== notation) {
+            commit("sendChessPartySocket", {
+              action: "cancel_move",
+              request: true,
+              notation,
+            });
+          }
         } else {
           commit("createAlert", {
             title: "Последний ход не Ваш.",
