@@ -28,6 +28,11 @@ const routes = [
     name: "chessParty",
   },
   {
+    path: "/checkers/",
+    component: () => import("./views/checkers/Checkers.vue"),
+    name: "checkers",
+  },
+  {
     path: "/account/",
     component: () => import("./views/account/Profile.vue"),
     name: "userProfile",

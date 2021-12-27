@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "chat",
     "gomoku",
     "chess",
+    "checkers",
 ]
 
 MIDDLEWARE = [

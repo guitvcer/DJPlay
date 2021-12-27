@@ -5,6 +5,7 @@
 ## Список игр
 * Гомоку (5 в ряд)
 * Шахматы
+* Шашки (в разработке)
 
 ___
 
@@ -17,7 +18,7 @@ ___
     cd DJPlay/backend
     poetry install
     poetry shell
-    python manage.py makemigrations account chat gomoku chess
+    python manage.py makemigrations account chat gomoku chess checkers
     python manage.py migrate
     python manage.py setup
     python manage.py runserver
